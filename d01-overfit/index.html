@@ -1,0 +1,1913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fit or overfit? · MLPS</title>
+<meta name="description" content="Lecture 1 demo for Machine Learning for Physical Systems (TUHH): fit a line by hand, then find out how flexible a curve should be to predict new measurements.">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23003566'/%3E%3Cpath d='M5 25C13 25 15 9 27 7' fill='none' stroke='%2300C1D4' stroke-width='3.5'/%3E%3C/svg%3E">
+<style id="fonts">
+/* Poppins, Copyright 2020 The Poppins Project Authors, SIL Open Font License 1.1.
+   Subset (Latin-1 and a few symbols) of Regular and SemiBold, embedded as WOFF. */
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url(data:font/woff;base64,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) format("woff")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url(data:font/woff;base64,d09GRgABAAAAACaMAAwAAAAAOVQABAEGAAAAAAAAAAAAAAAAAAAAAAAAAABHUE9TAAAmPAAAACAAAAAgRHZMdUdTVUIAACZcAAAALgAAADAfSCdrT1MvMgAAJKgAAABMAAAAYFpDgWVjbWFwAAAk9AAAAGAAAAB8i4+Ev2dseWYAAAEcAAAfUAAAMEa3hwXtaGVhZAAAIjAAAAA2AAAANhqEJG5oaGVhAAAkiAAAACAAAAAkDDACZmhtdHgAACJoAAACHQAAAz7UeiQ7bG9jYQAAIIwAAAGiAAABom+cZDltYXhwAAAgbAAAACAAAAAgAVIBJW5hbWUAACVUAAAA0gAAAZIhaTiMcG9zdAAAJigAAAATAAAAIP+4ADJ4nI16CXxTVbr4PSeloWVt0zSFrulNctu0aZPcJjfpku7pvkL3HehGSwttaaGAShEo0qLsyFMUUfmLuMyo4GNxBlwe8/5PHXXGBR1xG8dBfOI24mhv3nfuvUlTZN7vFe6S797zne982/mWS2GqwfUTkuNXKBm1gKIUMloWqLMkWVlzsDLIl/7nwuGAWJNJpzUatfgVPhx9OsUm0nQiOShMaXEhypNFwFg5jJXTjBqO++e2zEPR81rmySL+BH8UvLeYomR5+DMqlIqkKCRnlbSc5oTDwgoHKxcOpZqWs/ik+vbDmq2aU5o7NQd/qz7wG/pO+hS9lb6D/+iU+hS6cHjTCfjbdHjTo/C36TCgpiyuxzAnC6JoSk+ZKErj6ytX0hadjmGDVZYEDOvhLKwyOFhFA0wZgZUUwH19lYFWSxIAMGfpdGasGMUHfHPyazM2Lc9oHZQflNHhRTUZ/D0xOo3+2Tg9s78hZVZFpV9nbf6C3wVqynNr+mZXVMxeURse53deQZflIkXsvCdmxWv5IWO0OmbeU9QsSuv6XhaCL1FzgLchlIaKp6hAN2ujdRYtopGPMog1Axk05fXASoAA09Y5nXXkwGP8yDga5/u40Ag7WgSgmhpnXm273WbDA9XVxSXV1SUHpnLwufzSMiamlF9dVVVCYKWlZWWlRAI0UOKP/0DFEv6oGTILETMnnMnMwXLaqqOjfZVBwSqV1cqBOHzlKg3HEAiLm4vbJkrWZpQWh4aYmxzp9fGycRQdHqaNiH4aY2Tf4wxSPcavST/ZlmMrqrG0ZeT2RavTaGNJvLHcpKbVixeZNE9iH9yygaGPdyWfiCszpFGI6A91v6A/gvYQzSFKA096XCnoLdl9RCeDQX6BHKv0xcqgQJWSfrtndc9k3+Cq9slOpDn+ODK0zuvmL993iP9r13wYGQgjR8WRKos10JKEGQsbHKgMwnJ1+6rBvkkY3vby/C4Ueug+pOue18q/9fhx/oNmUEwqB3WhC/gTKgB+qOQqOaOiOTnDMZyKYeXobvPYWFKvqiu4hxvbzParukPwk/WJiU11d93V0JpoaKzduRNwVFLtuBwvB5lTiAYtBPUG3WNx+fk7z8N/xFy8OHrxIpltgWuU+pDaS1bPyWjFh2vrM/fyf0OLKJeLykN69DV6ECT3XxR5N971E/UudT/BGuxln02Sbco9Rkm46ipC52TPELwINAyd47/dgebLnvn5kE8X0QULhXEF/hvgCp2pjxod0QAi8GDQSavFsmn37k3kQHsUoGl2RWCyzZYciOmXXnriyVdeebKwPSOjvbC4Mz29sxjm1cB8Svwe6D2lsLABdIDmm3tw7eYpBteSFVD+OBT/nVoEq3WASMlUoHPS9L5ytVJtaWsdKDaazVY07rO9a2B0aW8NYvjAI+U9QzY2OTt53cb1y0t3dRcOdQE+g+tnHI6vgsWLayBY5ErhQhYDph8sGJaOBgmY3fOlbukp6LJkGpIzuZ6iNbt8xnE6x3LF5eHhu1hjIuuzA29axdZw6TULfAIb81ObLQP9phS7ITVpsCXOyDLAPWAxXoP/SPlT82AlFsQGgDsDOStkbCLKO1ZbO+H36qu7+tCfeNvorl3oJP8akUkZjCrF7wv+T620ugmeSSghMECNI/lzytL48o6ELesHxv3G/dJNKalpKXrb3G3oJdz6+GK1c5VjcGKgMcZYmObI1NPoJJFqrovHTuBHKMWAxgjIPNO4zR1+qmhBwNKM6BFTQm4mCmm0Zq6w2fuKu0YSbxvvHvIb+7f87DRreloKLtH3b4ox2HqK8vodjY+sP312oOqUIyUlJ8uWnAPromHqWfgdylfUNbVFjWfx/9iF5vIn0Ce4f2o3bllHPHSy6zouAJ1bTOkoM0jM7XWI0GaQyGkkL0Qo9Ca1iOsvL+/nrAbOkbuuqGgk18EhKoU1p6QZjY7jeblAk9OOTq2y1lksdVZuiSqkMT2n3Wptz0lvUr1gtZoNVs7wn8lWc3qGyZJCOJbpcuFkN8es0oTTnHITxbBWSTqEmCt2o8OmWmLM6Ey9c2DXWsOq5sIuzmfsSGq6FfiVdjSxczRKY+ku6t9y6vTYo9X2JtuzGdaUzGzOkk3sWrBjnEJFE/8Euyac0RGAx4IvuIE5oGQBtQgdBurmLRb15k70Hs4hNqVlwCerUOzly09fvnznR/AHb7VST+HNeJG4AyMwoVlw4M1TV7AajkWjo9dHRwmeOsDzmYhHwapg5637zeXLv3kf5xA0gCcaooCv8ZuUikiUElQTHLJHL5W0DuSFvTwPWn37bV0+G2YZaprZ+AT2TmTtzut0Rwpvrlm+rLPkREJafJI5Pq3VOsVM+ydM5bniZG/heyg7lUfm8liscBYVQ8WxMkn2EgXiL07lFhBQM+MRfu1Eg723MCnDL7yRLa529OVWR/mtTZQFhWhMi/ZtHzzTvXd7W2FQy9Dq/9e447uDZal0QqzWFhkTg++pvq+jck99XAxjaCgrGitLTeK/VSwMCcnpYNdv7f/d2o3b6MaYqvs6916/a+oNvTNGn2TIj4k1SnENfgafBd77g3wg+FGwCpqRydA3/NWEvT8f+3nf0vb2rVvx2ancH5CG/4BYQi6MqcVnqIXgCaMlXvvS6gC1ZA1at9cKFC+wdcwt5rry+LdQVF6nJdPqou4Arpjv+L09lb1rEjW0OmxVRnwmoTIprTIgyaDXJ/CxxngDe47InXb9E7+KX6TCiZcU7X+Gk+dYSeXppqMr1j5NHw2psae1WCwtafaakKP0U8Mrjjahl481rFtpNtu7nLnddtbcM9LwUCfxOLCSx2Al/pRiWo50ACsRHsCi48cbGo73ff9997p1fcuX4zPVD3R331+Nz0ydX7dq1QaeJRQCFnQZeAg7m0JJXClsBAFq5Rtffon8+B60Hxc81f/vA/jsgPTu9zCjn6Dr5G3YZdD3/F+uXJnAZ9Y808+/B0/FVf8FVq2G92Yul7aolfOxR4eAHzguZKnN0WrllmWWdyy8jkbnN+6ubz/W1HRsxfCTavRFfIKtK8fZZasq7hkt2FgES+881jDYJVKDx2E+stMDHWo4WDjj8Qn+zxMTKA7W6USx/Dv4DP8xipTWSr0BI0i8A2+/MUFeESjWgP19AHfEHwSIu7G0LwSgD4aXr9gwgWIZXQygCu5YM9RlMBv16KpEwx2CDCi1TCBAwSKEXucnJvjH+I9QDOL4P8Co/0B2/lH+QYmHp2EEeAIIqtQB7Buf87sm+vsBJD6VOeB2rrgmSAcIUoVC5pg4u/LcxAMffiis6hU+mRxw/xOWS+PwYZAiSEZNk5EsCmDx4Qn+ReBE2gS6wqvxWT4KfSTEoj/h/8YvwVqBKT7TEaigP0JoMC0yxDzc2vrwsuXHWloeXpbearW2pqe3Wa1t6fLGY50dxxobj3V0HmvcZF/pdHbbbN1O50q7pJlZwiqCgOOCVtKigfmSUJvYVJZlTfXaCYQqBuyXbAP9/ejEslQedMu2zNFuMXb8f4HOrfhnoFNBfOIsxtdLawRLVVHBbgclEoxLVsYnLHMTXJbz4NTzQKmH6g23z/EQ3XSv8Vm0b6XdQ7hEdRlQPR+8MEjTQzNMpUBur4CeOJw1gXyB7PKy4/zYWhKXrUUL+ev4jL0tNbdfyf8VredMRguRCgucNsAK4knU6BVp6BghKfLyB4TZKkiMiAi+WpuDDsg4o8mms5tzqtIcq/N7t8sPY3tirEnLmXOqHcmrS+Tm5ow4c6IuMkY1P4gpy3I0mrqbNYn6mDCtakFQTHmmrdUOFETBmqJgTcLuRFZEW3DUmYkzYK1Tp3HBGkJlNlA5Au8oiFWI+z3osTskCHi9MDuncLJkc1np7YWgyeV5RUV56Gm+om6Dw7GhDj0FGObDLM8DBikKAX3Fz7uoEy7qwO9/J5rY1J9xHJkr2OWSXZX0G5RbJpfBy0S/r774yJYdD587sGHXfds2Cjr+Db8Agef+BEdM/RWHwljdtL2rGfD1MpZsUwr0t4M7jnxw5ejB8SPvXwGv1Yrqr17lj/KPkPngXbwaxswm80GUSKbDq69NfHXkwH5YjP2779B/8BdQOnkX4iI8X/RuHImGSTSl/BNK5jXIxl8CNzDci94d7oU3t0OOMwY5jsRV4gfR2MjIz7L7Bn7ZOuTTRrA94SrCS8QsYBYCn/Cf/KfjKOI5n66fD8HTPsDQLWKYRZNg3cKi7p8BxctDsg0DZLyaOo6343OEp5ywr8mevvv6tuv3PHQcK6e+RP2UkKUtwadc7wpzkLjj1NRzMVu3kif+uIK6LosXPJ2SsVz/HD+3onuA7Jlq1494GWapQLL7SXuSQIAk75uTEHX2YJ6jKWxyMrTF4RzMRs/G5DBMVmxsto7JiUE9Y06zrmzq7QqGzd9SZSpgdAVmc1EMU8CKMfGPeCv+zD2XVzTMELYF+Nw017WWtLzBbHFC8Fva2GxGly1MlR2Lkdm5uapqS76JKcOf8T/cU6BjCs3mQiamUNjHyLpssK7FN+20Ytzi3mbVzo3lndtVB+fa9alOZ2rV4oOq8Y7yjU7Uszmvs0kTW1NeVlNcvzJvc/U0rz6bwauA/5VXQ3nWZeG7di1udjiHbsGrRAbJp8IqY803M0ucKx/oV1ERJDJVB3uT7fZ6jDChHOf78D2zCq2l6oMh48vLb89z3lZZtil3NyrmkvJmI1lIak52eWfeWFX1mDNnU0WMNTPdRnikhFO2bK6QX4vOgAXUKqXOV6lkUXbbrvT0obVsTBs6zReg04NhHa2yYaRJVAm84L8W9CaSZGCUoDMzMz2LF63BNzEGNTaHTjo21g4f9N85pyAprTi0JQ0YBJI+7c0izIJwp94sWZ/X16IzFBRWM0nAqKVjzi+9eSXudlUglyAx7oGViFEy2fdIcofOLeMmsuzJ2RMTofUcNkOuyZ9F5qy8vCz+NfyZSxNLVmSF0Z/IFgrVIcq76qYCPBBLa7Vw5E7gXnfwnDX1NoZ0F7s+5W9QHwsjVTNHKuAg6S7xoB1SNJ7bUOWIiVrshWfK3lgxsigMb3Pv3NmwFhJBiFYhOLXJcxMTZ059/49r10DZG77kr/LXpiOYz7wimM+mwuC3GDm8i81STOvNkpm8ARWGs6xhEzDInu3mUhWb2REW2pmKzZtWE1Zl5uZm8q+5r1ifTcdwrDHZw3uzGHPegvXvj0o4w2qS3NgkxutzgfEk1/kRN4ImLaDChH3x1/GHZLZf3lFQNFZePlZUsqVClx2zJDW1oizVD9S6aixPPI9qCy1lVVVlZVXE2/A3wNuwt/I2AnX/0tukNYX/yttQrOhtzDr+MZm5fPcMb0Os4QZYg/lXXjTgX3mG3OG8lAbwomHNKU7Y35/VZ+u02Xp9tlaXrUfdm/MNdP4vr6GlGmPB2BJzoU5XwLJFOl2hpO1oA8w1V1iV0sPtazU2bRYwGlPmvY4S/hrWV8PbjOtH9B1wQX9TzHGrkAMiDhXh0J9702WTPlxsjIFLdZTZLcuzlw/7bpOZYnWxtpTUUjuyLM/yMy1lo/RRi0JDFy6IyrIlFMcvX6pmwhaFhS9YEJXNGYuF/X0RnFbgZ4AvYixByLUESDU45RehUZm1v8nKmtwIHub7sEXDJ9GcwR07BsnIDIhCysG8goTI1+1MSCAiRiS4fDK0hs1cYSfqlYX1U287NbFcTyHK5V8n+oVMwr4HwikBLLBrahUsRBgsip/Y/+qJ/zqwGT0mmC8ie64sF+7cMQjtjkFyHzrY3n7o2K5lK/d1LSMzoC38Jqzn69GjfAMS4gmII7ASxt4cg4wMtB947vSRNR0HTj1/8iQKRkGPP85f46+SMbP4f+IaGCMXoiOFEILU8I/tX/fh/Xfvxvpf/oiCcBi/CW0RYxx0Dt71E7MDi4IkTC//yK/89hu0Z3BwDXIOCjFbn8uOHpcdoSANVpAImBGcEOG2MkjlXYuTC5ZEHsAbnKAIfUaTn39TSa7eMRvNTrJYkuASEaXPLWny9zMZ0UM+8Vp9WXNcac1wSthS/yaNxemP5+Rao5vmLg2NDBupKY1vLovVxvsQOpa6toMnjCH+SAU6+fHk5HrZUYBXAH27RPooX0KS0uMZgVah0GQRL0JCYBH8p0CrSomaJfqiIqYJdHjoM8VrY8ua40trRsIiQ5fObYq25s7B/k6Lpsl/aVjKcE1pXHOZHshbRQnx7xVsRPcTvRQ8gso765Z2U9rUmBthClOpAxfTPl0BTbkRieGLIgMXa2Z1oMxGReD8+VFRbcJVHUlsv8HVi+TYLu0b7uItsF8OUdo74PF14PkdwwsPQsQuefyrfDihhnM9hpNwA9nhNQIRYpvEuz8iuT7Ub/cfk6+tzegfHe3PqF0rH1PVOfLzHf3a6OIVs6uq/Hf19u7yr6qavaI4rzQ3t5QSLH8Kp+K/EB3SKtWMoBbAWd2vzR7UQdANnMqHBhv0uH9JUMrK3P61ss3IyCZyc+acO4bV0atW58c35MgXtuZwOcuTNrQaOVvyYpZuXTg7rioa+JBKHUE/4Bqp4knK9cAIRs5wRNMYTiXUkVRyMenzLOxDtc2ensDZ4h3J9sio5OQMvd2uz7Db1MdMRpo2JtLIkWBLdgQHw/O4tDQDvKFUZiTb49NbzIYEszkhweQV14fAwlmlXK4Ui8DE0TCMhRUsGl0eeIS+dGni0iX6kYGDR/bvO4LubcPZfm07drT55aA2pObPICeRaDdo8Q+CFpM+GrhxBehy9wT5k8Xwa6b+G90Nb2lcOhyNL1ImKg3kN13ndud0UkfnFokdsUS5brrMrMSUpT2nbRhP+Obr9KGZ6Q11tuRyCYQZrQQb+CnVZEohB11hLE1oqShVRwar1Ys0NRlJ5SqrCNPFeIDd5iELWb6F1Mn9cS/Kx9/8OkYxe90bdbqwMIYJu1+64l7xGqZzX4EnetcN/DepXpDiXTEUlzofe3Y5koh7fnK0u6BIuMHCI/T1A3V1D3R0knNn/bb8/G31dXDeWp+xwm5fkV6yOmDDnNjoBIslIcrgtyGgvxS/1HCsq+tYg3hmi3Y2Ne4sKdnZ2LSzqMzWmZPTZatyhkVkZ2RkRYTlLyGSDEON6AR+BSJcd8VtRnLjVepXhhmKEypje3sD02ITSw39Fq02KUmrteC8SkNSAn/UoApNWGJJSEoyGOAguA3UOvQeepuaRbSPE6rBrHDeWlu7tbGxqK7uzsbGdU9Jf8QiY6kX8Qg6RWo9kCdaIEMbmeAd6NR323tn9Jggf6Z8KAMKQ2/jl4HPoWKf8GZOB3rZkdVXrqIZovNElHKxh0kjoTiTltbGcW1p+TU1+fnV1fnNSkVSaZxvdjetH4qS+wdE4ZetbY60Vo5rTXO0Wfm76vIL6uoKCmqfiZpdWVT0NhOpmD17gZhFrkPj+AOhk0US4nF+DH+wYgVQHIoa0FF8QdKuGT2s6fZB6Kqa6l5yoBCzhjabNDSL21rbKiqXLas0WiwmY1KSEWZZQo3gCtwv1N6UZNNj3U07Jdp/jsfnz5/feg6t2jg6unF0fHwURkRAkp+NLxHrV5ABnFSKlvpZgm/bf5L/eCAyMmhh5KxeWXlufIbaaEfPVZWXKGODA4O1SRlRbLiGUwO2AFhLPmDTTa9E2jy97Xu6jSWnQyry05dER0Rpq7MLK2S9vowiZHEwHZkYrND6duC7HKmGCEYu89NHxNscVp0yMFBp1wUo1Dfl5XILd/3zz/GZ7hUj8KQIIsqGmfGPELZ64p+GycV1yfGRO3dmQ9xOopOqeKOCvyYz869nOp2ZYvwTJdWwFpA6YIDwT6rpq3HZSOa6wOERdmU5ysKlU79FwSMNyS120ESW+p66gg4J/RA59TOhk7+BwuE+UFJC994tsEH5ZlGJbddIyKJFIY7aOJvFmlw5PzBw3m1mQkEQaqWex7+f7kIGPdyD+yr5B9F8wT4b0KOSjktx87SOe+tOGFtnt9eb2Xq7vc6MwlitxmTSaJKws9JgqLRaKhMSKolxJhpY1gB4zWCbH7ptU8GQFotWOE823Al2ieIahQvjNk4fSgucOi3Q6Qc8V7mpJd8EKMStBAIwlpGz2od70Lf85m3ojmv63hf279fvqauTFlQylYvPTm3LzEz+/KO9e0h3Qety4QsSVsgMFEJth9TE/qWeNtsB/1f8tm1ofdktVFacqZF8WzB16Nfa6wOegpIFCdqrpyyU7f+sw79eqPF/1eqd/PA2dNfHcT0v3H04bk99/b9W8+UCsVsFrhw6RDxnnKsJ3cBWkI2nuyVuDGJHi2NVIHiVKHg2GLQBrZeS58ekLldtM/K0ubDVk0gzUqMrPd4sNLpAl4WekOw8cD9a6PBlUp9Su28BH5oBv9cDv0Bd8oIPeuAvUie84GMeeBd13gv+hgd+kbpK7Ya1QyQv68dnQeMDRf8mdFgstJxGaiUKkOHuL75AvvyqH3LvRUOgaKvO4ZJne1/o37IFn+3jH0Id/GHSUeH/IfSREqcjR/PNdnlzgidV8M/XhByNPNjBTdts3WT5zd2mEdbcunZOrMeW1/q3HG7p9O47ke6p0CsSeKiTeDsurP1m+NAM+L0e+AWq1ws+5oF3UcsEOHCIuiHg0Uv4Z98SPiTCXT8CnigBvwi/4PpKgJNSiV7AL8K7XJ8IsoDoDv9WqPCHenfMiJGynnYfCIhFTwudsx+czh+61q1btfz4cU/3DEWOIvXU8xv7+jacHH1C4go+LGhKoqQpzwpUC30WgWqjuBrke0v40Az4vR74BaJBHvigB/4i9aoXfMwD76I+glUi4OUGyAMqiCfUMuLnMxCGq9BHe3Y37J5smJxsnNyzAe73kPuGyb3Eb4UArp8gxiM9UZLIT5dO5PT0R0qQ61IqJOqWhkFi0IcP6BNaHl6W2m+wta3QJ7bCbV8C1zZ1RouMlkIISNDjWv6PXEF6qxWXJY7mdR5r1KgdfcYNzo5jjbQ6la9IQSWMrdtZaeefYewrnYSnQk9C4JFV0oT3hDXfDB+aAb/XA79AveAFH/PAuyTZCPmDgCdZwnNW0BCxc3VW7AEJnSuhvs+6e1c6r+bVzuGKAfsf7HZ7fz/Stabehc+O21rTum0mk+1NshMmuf6BH5bJwCt77XRywSxVv/76REofPN86kMpa6khVYZ89nlEqmJTinDWtLWv9t8vidbRWa15aQKvDQ+0mh30Ct7fbTRWJpgyNQjUnYLEytCytpHlZnS4uLCyMDgh3JKqTosJ1Kk1sWvLU3zHsUGJdG6KQaCqLItLPpIDgW8CHZsBne+AXqFPTcPyJB/4ida8X/BsPvIs66YUnwwO/SL0rXAHuo8Qs7GVGKsNT/fak6Urau7ZMInrlzHq4r1cTkPg8H+Usvmr2kiSjY95B1W31ae3hd0S2ppCC83DBUPZtmua0wsHM3ag8lavw/yUnxlOCRnMj0nM0keWd5thKsUhftdlZU1pq0OduKlPbc7KT32AKWNZdjCZdB/DLpOsQD375/+iWhSx4++KDyjVVXj45p9M+szXRX1zR4c94HPKgf9H6kurpJoXEzXxZAnDTKdnIbyl8C/jQDLi/B36BOjANx9954F3UhACH6JriBW34PSV8rzOfugV0iEBdU6TTL2iICL3wHYF+C1CjoAcitOsLsatyAzfhv0KGFu/5/mJauOBxLJzw5SinlOMZgmVxWGbR2JLyzUUFG4tLHCGxQ3khidvmqVZnb8yKicnS6jKYihSc83hj195CUh/e7DRwSZoM1WJmjorOUE5d0RZZrUVaOJdXS367StDeMkl7HxC0VKhPy1iAl0t8vUjJbwEfmgFf4IFfoB6dhuO/e+AvUju84Dc88C6K9AFlVAHF4Ty8T6grkf3JuyMBEYN3Do+0Unz0C48/kG7RdXdYVDo6yu+f/uJHRilhxnahtxRJxXh5d2/nLvh2TlBQDSOXXLsqii7ZUtFaoKsqiYouGitfXsBU8QWBf9QaUytQWODr0Qm67Bj0Z+0ye9VYHqtfqhNukuL455lPQ6vKTMyni7SFFlizUN0VtKZa8jiXBF7fDB+aAZ/tgV+QPIhYJf7GA++iHhLgQo1VwFMv4TkpaJzYE7hlBzLgVh3IrxpS84ZzcobzUuulnoBOR8r0cI6FLCN/85IlW/Ktify/ya7x13cWanWFLFuo0xWxbhoE2uol2rYJ344WwfkdyOykns07EyR5EyrRkA0iFlY5S8wGVcoH9u/fhx9Z2lFR0UGon43rqW/BX4pZ9nQ1RanzypS+zTabcnJM5uzcsKCgMHLge9PTk5LgUIWGqpTh4Uqhco2b0VrQdqWnEurpLzJCQhCQaVZGBUUEaX2L/ITbcKVWXoiPZs6bq4jLgnNQvPBFHNLjfvSguyaA+6c+Qg8OD8OTSPQCdU36uobm2Gf29bahF34hY2LgyffSE1ZOt+3tbcVnhCfzXYeo96l9wje48CQPxuz7BVYOuNApYYRcxKaSMO4Wsf7yC+EP4EUveN6C8VoJO5KJU8BriFpBXUQb0XskJ7be1G36Q4ZWm6FjMrXaTOYiuSO/GV2GVvpWEN9N3Q85ywKgkSJXdFrQqgWCXN31G3d15Gu+lnACRkZRh7ARZ0J020L9O9DWAu8/LEQXGvSW8BUgZAUKFc1wLCQB6p8uP3v58rP8JnQ7vxntOHf2HF/Uc/PbHEfSWfKVbu577z3z/vtPk5dfhXfPOnr+Bz32cNcAAQAAANAAkAAMAHQABgABAAIAHgAGAAAAZAAAAAMAAgAAAAAAAAAeADIAYgCuAPMBPgFLAWgBhgGoAb0BywHTAekB+QIlAjQCXAKYArMC5AMfAzMDfQO3A8MDzwPfA/MEAwQ5BJ4EuATvBR0FQAVWBWoFnQW2BcMF3wX4BgcGIwY5BmoGjQbFBu4HLwdBB2IHdweVB68HxQfaB+wH+wgMCB4IKwg4CG4IpAjOCQQJNglUCZoJvQnaCgAKFwokClgKeQqlCtsLEQsoC2cLhAunC7kL1wvxDAcMGwxfDGsMrwzZDNkM9g0lDV0Nmw3CDdUOLA5RDqcO1Q7uDv0PBQ9OD1sPgQ+aD8EP9xAEECcQQhBLEGgQdxCjELwQ5xEgEXIRqBG0EcARzBHYEeQR8BITElYSYhJuEnoShhKSEp4SqhK2EuES7RL5EwUTERMdEykTQxOLE5cToxOvE7sTxxPtFDoURhRSFF4UahR2FIIU3xUdFSkVNRVBFU0VWBVjFW4VeRW9FckV1RXhFe0V+RYFFjIWcxZ/FosWlxajFq8W5RbxFv4XDhc0F1gXZRdyF38XixeeF7EXzRfdF+oX9hgNGCMAAAABAAAABAEG+kOu0F8PPPUAAwPoAAAAANikqcUAAAAA2xY2zf3h/a8JzgRDAAAABwACAAAAAAAAeJxtkk1IlFEYhZ/3nSl1AsXRJlMpZxx/SiXSRkEylJwsDCwLQqMwKcgKF22CqCiUatUikqBFi4jIRW0jiBa1aNHPskCQIqtVRIUR/dqZz6nEWhzO/e597897ns+mgXdgg+y0Q1SFjlDq50iF2jSOUMl9quw1B6WoL6TTr9DLTwq8iy4LU29vqPLTpOwASV9Hve+gwcdY5aP0+EnSnqTSR2j1w3RYjuo7WeEbtfaSAW+hz0tJhMvo8ke6d4R0CNU/1r5iKfr322L6btUdFzV+qHnV+nN5odYH5EXyU5rbQ5N3UOG3We8PyA9DzG9S7cdY5O002gfO+DQ37D3Dfp14KKbeCoj4NeJS2vsDj/sQcetjcTAeC+5vttjMlN4evCVcolrN+wkSwT7V2QV5nBobZanW2pVFJLSZHC8n13exwKaotu8MW4rt8q2+hYrf2auvFuVe46tZm3mr7WbIN5C0Xp1RyEp7QrnnKdtx5afsPUyDnSdidyjzq2yz/SyzfRTyNeil2y9RYfk0WQ0RXlFs94L9jT4hXp/Etk7nlFIX5P4fhcbJC7IvzrLISr1HZzXzWXrrT9VflsN8+WUG5SUBi7nKsBAzf8aabO7/KJyS989ymCtLUDKrmR/SR+Uf/8Nhvs6yyY+KYYbFXIlFwCzDJEG3tSmjL+TacXG6S48VsVyq5Rv5NqnxJLX2gr1+S/93s7IXN19CmvQvBIyOIgAAAHicY2BkYGCR+reIIYVzz9+HPy04zzEARVDAeQCoqAefeJxjYGFOYopgYGVgYOoC0gwM3hCaMY7BiNEHyGdgZ4ADZgYk4Bni5s9wgEFBKZVF6t8ihhSWfKZioDAjSI5Ji2kvkFJgYAEA1MgKe3icY2BgYGJgYGAGYhEgyQimWRgygLQYgwBQhI2hjuG/grCClIKsgpKCmpKQkodS6v//QHkFhgVAcQkFGbh4yv///x/+P/Bg44O1D9Y8WPFg6b1d91rvZYFNxQIAPAQbSnicbY67DgFhFIS/dQ2FWrklhUtEISQSJBIVQaVzXQS7WbbwOh7FE3gks78t3PLn5J+ZM3POAdLMiGMlMsBN9cIWttgLx8hxj3CcNo8IJ948SbJWLsIpbCtPDxePKz47HLZc5K5RNWUzlbLWPzIuT54TZ8N9KXv1libRIdC/leabfsFMuihxpklFz1E2dAQsKCvlcpQaahvhQHNXyl6lfe4q/uyeaOtRrCv9oNRY3NGEA3NNGOjmPkNaf67+Toaeuq6p6tV1V+ONfWZL39knQf48FAAAeJxjYGYAg/9bGYwYsAAALMIB6gAAAQAAAAoAHAAeAAFERkxUAAgABAAAAAD//wAAAAAAAHicY2BkYGDgYtBh0GNgdnHzCWEQSUktM2KQA5KJDHIMLEBZhv//GeAAAKU8BvYAAA==) format("woff")}
+</style>
+<style>
+/* ---------- design tokens (DESIGN.md, lecture figure colours) ---------- */
+:root{
+  --canvas:#FFFFFF; --soft:#F2F4F5; --ink:#265D71; --emph:#003566; --struct:#00C1D4; --mute:#6B757D; --line:#C9D3D8;
+  --c-train:#003566; --c-new:#D55E00; --c-new-text:#B24E00; --c-model:#007A85; --c-truth:#265D71;
+  --c-physics:#7300FE; --c-warn:#D93636; --grid:#E3E8EA;
+  --font:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --math:"Cambria","STIX Two Text","Times New Roman","Cambria Math","STIX Two Math",serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{font-size:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.presenter{font-size:150%}
+body{margin:0;background:var(--canvas);color:var(--ink);font:400 1rem/1.5 var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ol,ul,figure,fieldset{margin:0}
+button,input{font:inherit;color:inherit}
+strong,b{font-weight:600}
+.vh{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--emph);outline-offset:2px}
+.v{font-family:var(--math);font-style:italic;font-size:1.06em}
+.math{font-family:var(--math);font-size:1.06em;white-space:nowrap}
+.math i{font-style:italic}
+sub,sup{font-size:.72em;line-height:0}
+sup{vertical-align:.45em}
+.nowrap{white-space:nowrap}
+kbd{font:inherit;font-size:.8125rem;font-weight:600;color:var(--emph);border:1px solid var(--ink);padding:0 .35em;line-height:1.4}
+
+/* ---------- frame ---------- */
+.wrap{max-width:75rem;margin:0 auto;padding-left:1.5rem;padding-right:1.5rem}
+.site-head{border-bottom:1px solid var(--struct)}
+.head{padding-top:.8rem;padding-bottom:.7rem}
+.head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:.5rem 2rem}
+.course{font-size:.8125rem;color:var(--mute)}
+h1{font-size:1.625rem;line-height:1.2;font-weight:600;color:var(--emph);margin-top:.1rem}
+.context{margin-top:.3rem;text-wrap:pretty}
+.context strong{color:var(--emph)}
+.head-actions{display:flex;align-items:center;gap:.75rem;flex:none}
+.pm-hint{display:flex;align-items:center;gap:.625rem;font-size:.8125rem;color:var(--mute);flex:none}
+.page{display:flex;flex-direction:column;gap:.875rem;padding-top:.875rem;padding-bottom:1.5rem}
+.site-foot{border-top:1px solid var(--struct)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1.5rem;padding-top:.875rem;padding-bottom:1.25rem;font-size:.8125rem;color:var(--mute)}
+
+/* ---------- buttons, sliders, checkboxes (radius 0) ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.5rem;padding:.4rem .9rem;border:1px solid var(--emph);border-radius:0;background:var(--canvas);color:var(--emph);font-size:.875rem;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer;transition:background-color .12s ease}
+.btn:hover{background:var(--soft)}
+.btn:active{transform:translateY(1px)}
+.btn[aria-pressed=true]{background:var(--emph);color:#FFFFFF}
+.btn-primary{background:var(--emph);color:#FFFFFF;font-size:.9375rem;min-height:2.75rem;width:100%}
+.btn-primary:hover{background:#0B4C87}
+.btn-primary:disabled{background:var(--mute);border-color:var(--mute);cursor:default;transform:none}
+input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:2rem;margin:0;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:1.125rem;height:1.125rem;margin-top:calc(1px - .5625rem);background:var(--emph);border:0;border-radius:0}
+input[type=range]::-moz-range-track{height:2px;background:var(--ink);border:0}
+input[type=range]::-moz-range-thumb{width:1.125rem;height:1.125rem;background:var(--emph);border:0;border-radius:0}
+input[type=range]:hover::-webkit-slider-thumb{background:#0B4C87}
+input[type=range]:focus-visible{outline-offset:3px}
+.knob input[type=range]::-webkit-slider-thumb{background:var(--c-model)}
+.knob input[type=range]::-moz-range-thumb{background:var(--c-model)}
+.check{display:flex;align-items:center;gap:.625rem;min-height:2rem;font-size:.9375rem;cursor:pointer}
+.check input{-webkit-appearance:none;appearance:none;flex:none;width:1.125rem;height:1.125rem;margin:0;border:1.5px solid var(--emph);border-radius:0;background:var(--canvas) center/78% no-repeat;cursor:pointer}
+.check input:checked{background-color:var(--emph);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.2l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E")}
+.check:hover input{background-color:var(--soft)}
+.check:hover input:checked{background-color:#0B4C87}
+.field{display:flex;flex-direction:column}
+.field-row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+.field-row label{font-size:.9375rem;color:var(--ink)}
+.field-val{font-weight:600;color:var(--emph);white-space:nowrap}
+.field-val.big{font-size:1.375rem;line-height:1.2}
+.field-val small{font-size:.8125rem;font-weight:400;color:var(--ink)}
+.scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--mute);margin-top:-.2rem}
+.note{font-size:.8125rem;color:var(--mute);text-wrap:pretty}
+
+/* ---------- learning-loop strip ---------- */
+.flow{position:relative;background:var(--soft);padding:.6rem .875rem 2.05rem}
+.flow-row{display:flex;align-items:stretch;list-style:none;padding:0;margin:0}
+.node{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;background:var(--canvas);border:1px solid var(--line);padding:.3rem .6rem .35rem}
+.n-lab{font-size:.75rem;line-height:1.3;color:var(--mute);white-space:nowrap}
+.n-val{font-size:.9375rem;line-height:1.3;font-weight:600;color:var(--emph);white-space:nowrap}
+.node-model{border-color:var(--c-model);flex-grow:1.4}
+.node-model .n-val{color:var(--c-model)}
+.node-pred .n-val{color:var(--c-model)}
+.node-meas{border-color:var(--c-train)}
+.node-meas.is-new{border-color:var(--c-new)}
+.node-meas.is-new .n-val{color:var(--c-new-text)}
+.node-err .n-val{color:var(--ink)}
+.n-sub{font-size:.8125rem;line-height:1.3;color:var(--ink);white-space:nowrap}
+.model-line{display:flex;align-items:center;gap:.6rem;min-width:0}
+.dials{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.dials svg{display:block}
+.arr{flex:0 0 2.1rem;display:flex;align-items:center;justify-content:center}
+.arr svg{display:block;overflow:visible}
+.vs{flex:0 0 auto;display:flex;align-items:center;padding:0 .55rem;font-size:.75rem;color:var(--mute);white-space:nowrap}
+.a-base{stroke:var(--mute);fill:none}
+.a-head{fill:var(--mute)}
+.pulse{stroke:var(--c-model);fill:none;stroke-linecap:round;opacity:0}
+.flow-over{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.loop-text{font-size:.75rem;fill:var(--ink)}
+.flow-caption{display:none;margin-top:.5rem;font-size:.8125rem;color:var(--ink)}
+.flow.go .pulse{animation:flowpulse .42s ease-out forwards;animation-delay:calc(var(--i) * .17s)}
+.flow.go .fl{animation:nodeflash .6s ease-out;animation-delay:calc(var(--i) * .17s)}
+.flow.training .pulse.loop{animation:flowpulse .9s linear infinite}
+.flow.no-loop .pulse.loop{display:none}
+@keyframes flowpulse{0%{stroke-dashoffset:var(--dash);opacity:1}88%{opacity:1}100%{stroke-dashoffset:calc(-1px * var(--len));opacity:0}}
+@keyframes nodeflash{0%{background:var(--canvas)}30%{background:#DDEFF1}100%{background:var(--canvas)}}
+
+/* ---------- step tabs ---------- */
+.tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--emph)}
+.tab{display:flex;align-items:center;gap:.75rem;min-height:2.9rem;padding:.45rem 1rem;border:0;border-radius:0;background:var(--canvas);color:var(--emph);font-size:1.0625rem;font-weight:600;text-align:left;cursor:pointer;transition:background-color .12s ease}
+.tab+.tab{border-left:1px solid var(--emph)}
+.tab:hover{background:var(--soft)}
+.tab[aria-selected=true]{background:var(--emph);color:#FFFFFF}
+.tab .badge{flex:none;display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;border:1.5px solid currentColor;font-size:.9375rem;line-height:1}
+.tab[aria-selected=true] .badge{background:#FFFFFF;color:var(--emph);border-color:#FFFFFF}
+.tab:focus-visible{outline-offset:-5px}
+.tab[aria-selected=true]:focus-visible{outline-color:#FFFFFF}
+
+/* ---------- step panels ---------- */
+.panel{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1.75rem;align-items:start}
+.side{display:flex;flex-direction:column;gap:.75rem;min-width:0}
+.steps{list-style:none;padding:0;display:grid;gap:.2rem;counter-reset:st}
+.steps li{counter-increment:st;display:grid;grid-template-columns:1.375rem minmax(0,1fr);gap:.55rem;font-size:.9375rem;line-height:1.38}
+.steps li::before{content:counter(st);display:grid;place-items:center;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--emph);color:#FFFFFF;font-size:.75rem;font-weight:600;line-height:1}
+.fig{display:flex;flex-direction:column;gap:.4rem;min-width:0}
+.legend{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.2rem 1.1rem;font-size:.8125rem;color:var(--ink)}
+.legend li{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.sw{flex:none;display:block}
+.plot{position:relative;min-width:0}
+.plot svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+.cap{font-size:.8125rem;color:var(--mute);line-height:1.5;text-wrap:pretty}
+
+/* meter (step 1) */
+.meter-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-size:.9375rem}
+.meter-val{font-weight:600;color:var(--emph);font-size:1.125rem;white-space:nowrap}
+.meter-track{position:relative;height:.875rem;margin-top:.3rem;border:1px solid var(--line)}
+.meter-fill{position:absolute;left:0;top:0;bottom:0;background:var(--c-train);opacity:.8}
+.knob-group,.gd-group{display:flex;flex-direction:column;gap:.75rem}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--emph)}
+.seg-opt{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:3.1rem;padding:.35rem .8rem;cursor:pointer;color:var(--emph);background:var(--canvas);transition:background-color .12s ease}
+.seg-opt+.seg-opt{border-left:1px solid var(--emph)}
+.seg-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.seg-opt:hover{background:var(--soft)}
+.seg-opt.is-on{background:var(--emph);color:#FFFFFF}
+.seg-opt:has(input:focus-visible){outline:2px solid var(--emph);outline-offset:2px;z-index:1}
+.seg-main{font-weight:600;font-size:.9375rem;line-height:1.25}
+.seg-sub{font-size:.8125rem;line-height:1.3}
+.msg{min-height:1.5em;font-weight:600;color:var(--c-model);font-size:.9375rem;text-wrap:pretty}
+.map-title{font-size:.8125rem;color:var(--ink)}
+#map svg{cursor:crosshair}
+
+/* error bars (step 2) */
+.errs{display:flex;flex-direction:column;gap:.3rem}
+.err-top{display:flex;justify-content:space-between;align-items:baseline;gap:.75rem}
+.err-lab{display:inline-flex;align-items:center;gap:.45rem;font-size:.9375rem;color:var(--c-train)}
+.err-new .err-lab{color:var(--c-new-text)}
+.err-val{font-size:1.125rem;font-weight:600;color:var(--c-train);white-space:nowrap}
+.err-new .err-val{color:var(--c-new-text)}
+.err-track{position:relative;height:.95rem;margin-top:.15rem}
+.err-bar{position:absolute;left:0;top:0;bottom:0}
+.err-bar.train{background:var(--c-train)}
+.err-bar.new{background:var(--canvas);border:2px solid var(--c-new)}
+.err-grid{position:absolute;top:0;bottom:0;width:1px;background:var(--grid)}
+.err-base{position:absolute;left:0;top:-2px;bottom:-2px;width:1px;background:var(--ink)}
+.err-axis{position:relative;height:1.1rem;font-size:.75rem;color:var(--mute)}
+.err-axis span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.diag{display:flex;flex-direction:column;gap:.35rem}
+.diag{min-height:1.5rem}
+.verdict{font-size:.9375rem;font-weight:600;color:var(--ink);text-wrap:pretty}
+.verdict.flex{color:var(--c-warn)}
+.verdict.right{color:var(--c-model)}
+.physics{padding:.2rem .35rem;border:1px solid var(--c-physics);background:rgba(115,0,254,.07);color:var(--c-physics);font-size:.78rem;font-weight:600;line-height:1.35;letter-spacing:-.01em}
+.physics-ok{padding:.2rem .35rem;border:1px solid var(--c-physics);color:var(--c-physics);font-size:.78rem;line-height:1.35}
+.diag.rubber{min-height:4.5rem}
+.charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.9rem}
+.chart-title{font-size:.875rem;color:var(--ink);line-height:1.35}
+.knobs-note{font-size:.75rem;color:var(--mute);white-space:nowrap}
+.deg-errs{display:flex;flex-direction:column;gap:.6rem}
+.bar-knob.free{fill:var(--canvas);stroke:var(--c-model)}
+
+/* svg furniture */
+.plot text{font-family:var(--font);fill:var(--ink)}
+.plot .tick{font-size:.8125rem;fill:var(--mute)}
+.plot .tick.small{font-size:.75rem}
+.plot .ax-label{font-size:.875rem;fill:var(--ink)}
+.plot .region{font-size:.8125rem;fill:var(--c-new-text)}
+.plot .halo{paint-order:stroke;stroke:#FBF1EA;stroke-width:4px;stroke-linejoin:round}
+.plot .dlabel{font-size:.8125rem;fill:var(--ink)}
+.plot .v{font-family:var(--math);font-style:italic}
+.axis{stroke:var(--ink);fill:none;shape-rendering:crispEdges}
+.gridline{stroke:var(--grid);fill:none;shape-rendering:crispEdges}
+.shade{fill:#FBF1EA}
+.boundary{stroke:var(--c-new);stroke-opacity:.6;fill:none}
+.ln-model{stroke:var(--c-model);fill:none;stroke-linejoin:round;stroke-linecap:round}
+.ln-refit{stroke:var(--c-model);fill:none;stroke-opacity:.28;stroke-linejoin:round}
+.ln-truth{stroke:var(--c-truth);fill:none}
+.ln-physics{stroke:var(--c-physics);fill:none;stroke-linecap:round}
+.ln-train{stroke:var(--c-train);fill:none;stroke-linejoin:round}
+.ln-new{stroke:var(--c-new);fill:none;stroke-linejoin:round}
+.ln-current{stroke:var(--c-model);fill:none}
+.xhair{stroke:var(--mute);fill:none;shape-rendering:crispEdges}
+.mk-train{fill:var(--c-train);stroke:var(--canvas)}
+.mk-new{fill:var(--canvas);stroke:var(--c-new)}
+.mk-sel{fill:none;stroke:var(--c-model)}
+.mk-current{fill:none;stroke:var(--c-model)}
+.sq{fill:var(--c-train);fill-opacity:.12;stroke:var(--c-train);stroke-opacity:.55}
+.sq.sel{fill-opacity:.2;stroke:var(--c-model);stroke-opacity:1}
+.pivot{fill:var(--canvas);stroke:var(--c-model)}
+.bar-knob{fill:var(--c-model)}
+.zero{stroke:var(--ink);shape-rendering:crispEdges}
+.ell{fill:var(--c-model);fill-opacity:.085;stroke:var(--c-model);stroke-opacity:.3}
+.gd-path{stroke:var(--c-model);fill:none;stroke-linejoin:round}
+.gd-dot{fill:var(--c-model)}
+.map-cur{fill:var(--c-model);stroke:var(--canvas)}
+.map-min{stroke:var(--emph);fill:none}
+.brk{stroke:var(--ink);fill:none}
+.tip{position:absolute;left:0;top:0;z-index:2;pointer-events:none;min-width:9rem;max-width:16rem;background:var(--canvas);border:1px solid var(--emph);padding:.4rem .6rem;font-size:.8125rem;line-height:1.45;color:var(--ink)}
+.tip strong{color:var(--emph)}
+.tip .row{display:flex;align-items:center;gap:.4rem;white-space:nowrap}
+.tip .lbl{color:var(--mute)}
+
+/* ---------- more options ---------- */
+.more{border-top:1px solid var(--struct);border-bottom:1px solid var(--struct)}
+.more>summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.75rem 0;cursor:pointer;font-weight:600;font-size:1rem;color:var(--emph);list-style:none}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"+";font-weight:400;font-size:1.25rem;line-height:1}
+.more details[open]>summary::after,.more[open]>summary::after{content:"\2212"}
+.more-body{display:flex;flex-direction:column;gap:1.25rem;padding-bottom:1.25rem}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem 2rem}
+.opt{border:0;padding:0;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.opt>legend,.opt-h{font-size:.875rem;font-weight:600;color:var(--emph);padding:0;margin-bottom:.35rem}
+.preview{display:flex;flex-direction:column;gap:.5rem}
+.preview-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1rem 2rem;align-items:start}
+.preview-side{display:flex;flex-direction:column;gap:.75rem;align-items:flex-start}
+.btn-row{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap}
+.sub{border-top:1px solid var(--grid)}
+.sub>summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.6rem 0;cursor:pointer;font-weight:600;font-size:.9375rem;color:var(--emph);list-style:none}
+.sub>summary::after{content:"+";font-weight:400;font-size:1.125rem;line-height:1}
+.sub[open]>summary::after{content:"\2212"}
+.sub .body{padding:0 0 .9rem;display:flex;flex-direction:column;gap:.6rem;max-width:72ch}
+.sub .body p{font-size:.9375rem;text-wrap:pretty}
+.table-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.8125rem;font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--emph);text-align:right;padding:.35rem .6rem;border-bottom:1px solid var(--ink);white-space:nowrap}
+td{text-align:right;padding:.22rem .6rem;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+th.txt,td.txt{text-align:left}
+tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
+#plot-err svg{cursor:pointer}
+
+/* ---------- guided tour: one focus at a time ---------- */
+.tour{position:absolute;left:0;top:0;width:0;height:0;z-index:20}
+.tour-veil{position:absolute;background:rgba(255,255,255,.86);transition:opacity .16s ease}
+.tour-ring{position:absolute;border:3px solid var(--emph);pointer-events:none;transition:opacity .16s ease}
+.tour-box{position:absolute;width:min(21rem,calc(100vw - 2rem));background:var(--canvas);border:1px solid var(--emph);padding:.65rem .85rem .75rem;display:flex;flex-direction:column;gap:.4rem;transition:opacity .16s ease}
+.tour.fading .tour-veil,.tour.fading .tour-ring,.tour.fading .tour-box{opacity:0}
+.tour-count{font-size:.75rem;color:var(--mute)}
+.tour-text{font-size:1.0625rem;font-weight:600;color:var(--emph);line-height:1.35;text-wrap:pretty}
+.tour-nav{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.tour-nav .btn{min-height:2.25rem;padding:.3rem .75rem}
+.tour-next{background:var(--emph);color:#FFFFFF}
+.tour-next:hover{background:#0B4C87}
+.tour-end{margin-left:auto}
+.btn:disabled{color:var(--mute);border-color:var(--line);cursor:default;background:var(--canvas);transform:none}
+
+html.shot-slide .site-head,html.shot-slide .flow,html.shot-slide .tabs,html.shot-slide #more,html.shot-slide .site-foot{display:none !important}
+
+/* ---------- phones ---------- */
+@media (max-width:767.98px){
+  .wrap{padding-left:1rem;padding-right:1rem}
+  .pm-hint{display:none}
+  h1{font-size:1.5rem}
+  .panel{grid-template-columns:minmax(0,1fr);gap:1.25rem}
+  .opts,.preview-grid,.charts{grid-template-columns:minmax(0,1fr)}
+  .flow{padding:.6rem .6rem .7rem}
+  .flow-row{display:grid;grid-template-columns:minmax(0,1fr) 1.1rem minmax(0,1fr) 1.1rem minmax(0,1fr);grid-template-areas:"in a1 mo a2 pr" "vs vs me a3 er";row-gap:.45rem}
+  #fn-in{grid-area:in} #fa-1{grid-area:a1} #fn-model{grid-area:mo} #fa-2{grid-area:a2} #fn-pred{grid-area:pr}
+  #fn-vs{grid-area:vs;justify-content:flex-end} #fn-meas{grid-area:me} #fa-3{grid-area:a3} #fn-err{grid-area:er}
+  .node{padding:.25rem .4rem .3rem}
+  .n-val{font-size:.8125rem;white-space:normal}
+  .n-lab{font-size:.6875rem;white-space:normal}
+  .n-sub{font-size:.75rem;white-space:normal}
+  .model-line{flex-direction:column;align-items:flex-start;gap:.2rem}
+  .flow-over{display:none}
+  .flow-caption{display:block}
+  .tab{font-size:.9375rem;padding:.4rem .6rem;gap:.5rem}
+  .tab .badge{width:1.5rem;height:1.5rem;font-size:.8125rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  .pulse{display:none}
+  .btn:active{transform:none}
+  .tour-veil{display:none}
+}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap head">
+    <div class="head-row">
+      <div>
+        <p class="course">Machine Learning for Physical Systems · Lecture 1</p>
+        <h1>Fit or overfit?</h1>
+      </div>
+      <div class="head-actions">
+        <button id="tour-btn" class="btn" type="button">Guide me</button>
+        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Shortcut: <kbd>P</kbd></span></p>
+      </div>
+    </div>
+    <p class="context">Engineers fit curves to measurements every day, for example how hard rubber pulls back when stretched. <strong>How flexible should the curve be?</strong></p>
+  </div>
+</header>
+
+<main class="wrap page" id="main">
+  <noscript><p>This demo needs JavaScript to compute the fits.</p></noscript>
+
+  <section id="flow" class="flow" aria-label="How one measurement flows through the model">
+    <div class="flow-row" id="flow-row">
+      <div class="node node-in fl" id="fn-in" style="--i:0"><span class="n-lab">Input</span><span class="n-val" id="fv-in">stretch 4.03</span></div>
+      <div class="arr" id="fa-1" aria-hidden="true"><svg width="30" height="12"><path class="a-base" d="M1 6H24"/><path class="a-head" d="M23 1.5L29 6L23 10.5Z"/><path class="pulse" d="M1 6H27" style="--i:0"/></svg></div>
+      <div class="node node-model fl" id="fn-model" style="--i:1"><span class="n-lab" id="fv-model-lab">Model: 2 knobs</span><span class="model-line"><span class="n-val" id="fv-model">straight line</span><span class="dials" id="fv-dials" aria-hidden="true"></span></span></div>
+      <div class="arr" id="fa-2" aria-hidden="true"><svg width="30" height="12"><path class="a-base" d="M1 6H24"/><path class="a-head" d="M23 1.5L29 6L23 10.5Z"/><path class="pulse" d="M1 6H27" style="--i:1"/></svg></div>
+      <div class="node node-pred fl" id="fn-pred" style="--i:2"><span class="n-lab">Prediction</span><span class="n-val" id="fv-pred">1.28 MPa</span></div>
+      <div class="vs fl" id="fn-vs" style="--i:3">compared with</div>
+      <div class="node node-meas fl" id="fn-meas" style="--i:3"><span class="n-lab" id="fv-meas-lab">Measurement (training data)</span><span class="n-val" id="fv-meas">1.23 MPa</span></div>
+      <div class="arr" id="fa-3" aria-hidden="true"><svg width="30" height="12"><path class="a-base" d="M1 6H24"/><path class="a-head" d="M23 1.5L29 6L23 10.5Z"/><path class="pulse" d="M1 6H27" style="--i:4"/></svg></div>
+      <div class="node node-err fl" id="fn-err" style="--i:5"><span class="n-lab">Residual (measured − predicted)</span><span class="n-val" id="fv-err">0.73 MPa</span><span class="n-sub" id="fv-err2">squared 0.53 MPa²</span></div>
+    </div>
+    <svg class="flow-over" id="flow-over" aria-hidden="true"></svg>
+    <p class="flow-caption" id="flow-caption">Training turns the knobs to make these errors small.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Steps">
+    <button class="tab" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" type="button"><span class="badge" aria-hidden="true">1</span>Fit a line yourself</button>
+    <button class="tab" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" type="button"><span class="badge" aria-hidden="true">2</span>How flexible?</button>
+  </div>
+
+  <section class="panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">
+    <figure class="fig" id="fig-1" aria-labelledby="cap-1">
+      <ul class="legend" id="legend-1" aria-label="Legend"></ul>
+      <div class="plot" id="plot-1"><svg id="svg-1" role="img" aria-labelledby="svg-1-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-1-desc">Six measurements and a straight line</desc></svg></div>
+      <figcaption class="cap" id="cap-1">Six real measurements of stretched rubber. Stretch: how many times longer the rubber is. Stress: force per area, in MPa.</figcaption>
+    </figure>
+    <div class="side" id="side-1">
+      <ol class="steps">
+        <li>Drag the knobs until the squares are small.</li>
+        <li>Each square's area is that point's error squared.</li>
+        <li>Then let the computer find the best line.</li>
+      </ol>
+      <div class="knob-group" id="knob-group">
+      <div class="field knob">
+        <div class="field-row"><label for="k1">Knob 1: slope</label></div>
+        <input id="k1" type="range" min="-0.4" max="1.2" step="0.01" value="0.05">
+      </div>
+      <div class="field knob">
+        <div class="field-row"><label for="k2">Knob 2: height of the line at stretch 3</label></div>
+        <input id="k2" type="range" min="-0.2" max="2" step="0.01" value="0.45">
+      </div>
+      </div>
+      <div class="meter" id="meter">
+        <div class="meter-row"><span>Total area of the squares</span><span class="meter-val" id="area-val" data-value="">&nbsp;</span></div>
+        <div class="meter-track" aria-hidden="true"><div class="meter-fill" id="area-fill"></div></div>
+      </div>
+      <button class="btn btn-primary" id="gd-btn" type="button">Let the computer find the best line</button>
+      <p class="msg" id="ls-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+    <figure class="fig" id="fig-2" aria-labelledby="cap-2">
+      <div class="seg" id="data-switch" role="radiogroup" aria-label="Data">
+        <label class="seg-opt is-on"><input type="radio" name="data" value="rubber" checked aria-label="Stretching rubber (real measurements, 1944)"><span class="seg-main">Stretching rubber</span><span class="seg-sub">(real measurements, 1944)</span></label>
+        <label class="seg-opt"><input type="radio" name="data" value="synthetic" aria-label="Made-up law with noise"><span class="seg-main">Made-up law with noise</span></label>
+      </div>
+      <ul class="legend" id="legend-2" aria-label="Legend"></ul>
+      <div class="plot" id="plot-2"><svg id="svg-2" role="img" aria-labelledby="svg-2-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-2-desc">Measurements and a fitted curve</desc></svg></div>
+      <figcaption class="cap" id="cap-2"></figcaption>
+    </figure>
+    <div class="side" id="side-2">
+      <ol class="steps">
+        <li>Raise the flexibility and watch both errors.</li>
+        <li>Which degree predicts the new data best?</li>
+        <li id="step2-i3">Find the first degree that breaks the physics check.</li>
+      </ol>
+      <div class="deg-errs" id="deg-errs">
+      <div class="field" id="deg-field">
+        <div class="field-row"><label for="deg">Flexibility (degree)</label><span class="field-val big" id="deg-out" aria-hidden="true">3 <small>(4 knobs)</small></span></div>
+        <input id="deg" type="range" min="0" max="12" step="1" value="3" aria-valuetext="3, 4 knobs">
+        <div class="scale" aria-hidden="true"><span>0</span><span>12</span></div>
+      </div>
+      <div class="errs" id="errs" role="group" aria-label="Errors of the model">
+        <div class="err err-train">
+          <div class="err-top"><span class="err-lab"><svg class="sw" viewBox="0 0 12 12" style="width:.75em;height:.75em" aria-hidden="true"><circle cx="6" cy="6" r="4.5" class="mk-train" stroke-width="0"/></svg>Error on the training data</span><span class="err-val" id="err-train" data-value="">&nbsp;</span></div>
+          <div class="err-track" id="track-train"><div class="err-bar train" id="bar-train"></div></div>
+        </div>
+        <div class="err err-new">
+          <div class="err-top"><span class="err-lab"><svg class="sw" viewBox="0 0 12 12" style="width:.75em;height:.75em" aria-hidden="true"><rect x="1.75" y="1.75" width="8.5" height="8.5" class="mk-new" stroke-width="2"/></svg>Error on the new data</span><span class="err-val" id="err-new" data-value="">&nbsp;</span></div>
+          <div class="err-track" id="track-new"><div class="err-bar new" id="bar-new"></div></div>
+        </div>
+        <div class="err-axis" id="err-axis" aria-hidden="true"></div>
+        <p class="note">Log scale: each step is 100 times larger.</p>
+      </div>
+      </div>
+      <div class="diag" id="diag">
+        <p class="verdict" id="verdict"></p>
+        <p class="physics" id="physics" hidden>Physics check failed: stress falls while the rubber is stretched further.</p>
+        <p class="physics-ok" id="physics-ok" hidden>Physics check passed (stress rises everywhere). Passing is necessary, not sufficient.</p>
+      </div>
+      <div class="charts">
+        <div class="fig" id="errchart-box">
+          <p class="chart-title" id="errchart-title">Error for every degree</p>
+          <div class="plot" id="plot-err">
+            <svg id="svg-err" role="img" aria-labelledby="svg-err-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-err-desc">Error for every degree</desc></svg>
+            <div id="tip-err" class="tip" hidden></div>
+          </div>
+        </div>
+        <div class="fig" id="knobs-box">
+          <p class="chart-title">Size of each knob <i class="v">θ</i></p>
+          <div class="plot" id="knobs"><svg id="svg-knobs" role="img" aria-labelledby="svg-knobs-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-knobs-desc">Size of each knob</desc></svg></div>
+          <p class="knobs-note" id="knobs-note" data-value=""></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p id="live" class="vh" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <details class="more" id="more">
+    <summary>More options</summary>
+    <div class="more-body">
+      <section class="preview" id="preview" aria-labelledby="preview-h">
+        <h3 class="opt-h" id="preview-h">How a computer walks downhill: Lecture 2</h3>
+        <div class="preview-grid">
+          <div class="fig" id="map-box">
+            <p class="map-title">The bowl of the error, seen from above (step 1): darker means a smaller total area</p>
+            <div class="plot" id="map"><svg id="svg-map" role="img" aria-labelledby="svg-map-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-map-desc">Total area for every setting of the two knobs</desc></svg></div>
+          </div>
+          <div class="preview-side">
+            <p class="note">Instead of the formula, a computer can also walk downhill: every step turns both knobs a little towards a smaller total area.</p>
+            <button class="btn" id="gd-walk" type="button">Walk downhill in 40 steps</button>
+          </div>
+        </div>
+      </section>
+      <p class="note">The options below change step 2.</p>
+      <div class="opts">
+        <fieldset class="opt">
+          <legend>Made-up law with noise</legend>
+          <div class="field">
+            <div class="field-row"><label for="sigma">Noise level <i class="v">σ</i></label><span class="field-val" id="sigma-out" aria-hidden="true">0.25</span></div>
+            <input id="sigma" type="range" min="0" max="1" step="0.05" value="0.25">
+          </div>
+          <div class="field">
+            <div class="field-row"><label for="npts">Number of points <i class="v">n</i></label><span class="field-val" id="npts-out" aria-hidden="true">15</span></div>
+            <input id="npts" type="range" min="5" max="60" step="1" value="15">
+          </div>
+          <div class="btn-row"><button id="resample" class="btn" type="button">New random data</button><span id="seed-out" class="note">Data set 1</span></div>
+          <label class="check"><input id="truth" type="checkbox" checked>Show the true law</label>
+          <label class="check"><input id="refits" type="checkbox" aria-describedby="refits-help">Show 20 refits</label>
+          <p id="refits-help" class="note">Same degree, 20 sets of new random data: wide scatter means high variance, a shared miss means high bias.</p>
+        </fieldset>
+        <fieldset class="opt">
+          <legend>Rubber data</legend>
+          <label class="check"><input id="rsplit" type="checkbox">Random split: new points inside the range</label>
+          <p class="note">Normally the new data are all points above stretch 5.</p>
+        </fieldset>
+        <fieldset class="opt">
+          <legend>Penalty (preview of Lecture 5)</legend>
+          <div class="field">
+            <div class="field-row"><label for="alpha">Penalty <i class="v">α</i></label><span class="field-val" id="alpha-out" aria-hidden="true">0 (off)</span></div>
+            <input id="alpha" type="range" min="0" max="17" step="1" value="0" aria-valuetext="0, off" aria-describedby="alpha-help">
+          </div>
+          <p id="alpha-help" class="note">Loss = fit + penalty: mean squared error + <i class="v">α</i> × (sum of squared coefficients).</p>
+        </fieldset>
+      </div>
+      <details class="sub">
+        <summary>Table: error for every degree</summary>
+        <div class="body table-wrap">
+          <table>
+            <thead><tr><th scope="col">Degree</th><th scope="col">Knobs</th><th scope="col">Training error</th><th scope="col">New-data error</th><th scope="col" class="txt">Physics check</th></tr></thead>
+            <tbody id="tbl-err"></tbody>
+          </table>
+        </div>
+      </details>
+      <details class="sub">
+        <summary>Table: data points</summary>
+        <div class="body table-wrap"><table><thead id="tbl-data-head"></thead><tbody id="tbl-data"></tbody></table></div>
+      </details>
+      <p class="note" id="source">Data source: L. R. G. Treloar (1944), <i>Trans. Faraday Soc.</i> 40, 59–70; 25 measurements of vulcanised rubber in uniaxial tension (nominal stress against stretch).</p>
+      <details class="sub">
+        <summary>How the fit is computed</summary>
+        <div class="body">
+          <p>A model with <i class="v">d</i> + 1 knobs is a polynomial <span class="math"><i>f</i>(<i>x</i>) = <i>θ</i><sub>0</sub> + <i>θ</i><sub>1</sub><i>x</i> + … + <i>θ</i><sub><i>d</i></sub><i>x</i><sup><i>d</i></sup></span>. Training chooses the knobs that minimise the mean squared error (MSE) on the training data, plus <i class="v">α</i> times the sum of squared coefficients if a penalty is set. The errors on the main view are the root of the MSE (RMSE), so they carry the unit of the data.</p>
+          <p>Step 1 uses the same idea with a straight line: the button moves the two knobs to the least-squares solution, which a formula gives at once. The Lecture 2 preview above reaches the same line by gradient descent: 40 small steps downhill, the last one lands exactly on it.</p>
+          <p>For numerical stability the input is rescaled so that the training points span −1 to 1, and the polynomial is written in Legendre polynomials instead of powers of <i class="v">x</i>. A Householder QR factorisation solves the least-squares problem. With more knobs than training points, the demo takes the solution with the smallest coefficients (minimum norm). A tiny ridge of 10<sup>−10</sup> is added only if the factorisation finds the problem numerically singular.</p>
+          <p>The knobs <i class="v">θ<sub>j</sub></i> are the coefficients of the powers of the rescaled input <i class="v">t</i>, which runs from −1 to 1 over the training data; the chart shows their size |<i class="v">θ<sub>j</sub></i>| on a log scale. The penalty acts on exactly these knobs and leaves the height <i class="v">θ</i><sub>0</sub> free, so the total size of <i class="v">θ</i><sub>1</sub> to <i class="v">θ<sub>d</sub></i> shrinks whenever <i class="v">α</i> grows. A penalty smooths the curve between the data points, but it does not make predictions beyond the training data safe.</p>
+          <p>The verdict compares the error on the new data with the best degree without a penalty: "about right" means within 50% of that error; a penalty so strong that no degree gets close reads "too stiff".</p>
+          <p>The physics check samples the fitted curve between stretch 1 and 7.6 and fails if the stress ever decreases. The fits were checked against numpy (numpy.polyfit and a Legendre least-squares fit) on the Treloar data.</p>
+        </div>
+      </details>
+    </div>
+  </details>
+</main>
+
+<div class="tour" id="tour" hidden>
+  <div class="tour-veil" id="veil-t"></div><div class="tour-veil" id="veil-b"></div><div class="tour-veil" id="veil-l"></div><div class="tour-veil" id="veil-r"></div>
+  <div class="tour-ring" id="tour-ring"></div>
+  <div class="tour-box" id="tour-box" role="dialog" aria-label="Guided tour" aria-describedby="tour-text">
+    <p class="tour-count" id="tour-count"></p>
+    <p class="tour-text" id="tour-text" aria-live="polite"></p>
+    <div class="tour-nav"><button id="tour-prev" class="btn" type="button">Back</button><button id="tour-next" class="btn tour-next" type="button">Next</button><button id="tour-end" class="btn tour-end" type="button">End tour</button></div>
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap foot">
+    <p>Rubber data: real measurements from 1944 (source under More options)</p>
+    <p>MLPS · TUHH</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var NB = String.fromCharCode(160), MINUS = '−';
+
+  /* =====================================================================
+     Data
+     Treloar (1944), uniaxial tension of vulcanised rubber: stretch lambda [-]
+     and nominal stress P [MPa]. Parsed once from
+     assets/data/treloar_uniaxial_tension.csv (25 rows) and embedded here.
+     ===================================================================== */
+  var TRELOAR = [
+    [1.0, 0.0],
+    [1.02423152035831, 0.0282511465836337],
+    [1.12114496145751, 0.131851324390999],
+    [1.23416218812609, 0.21666796581211],
+    [1.39557925384108, 0.310964857764641],
+    [1.58118991891226, 0.405299670719298],
+    [1.90388500666778, 0.490444960825498],
+    [2.17820553604497, 0.584918817454616],
+    [2.4202552926132, 0.669937704220397],
+    [3.01728355007995, 0.858961259482884],
+    [3.57398914195306, 1.04792161307516],
+    [4.03390769606738, 1.22732587413177],
+    [4.76019600944654, 1.58583102822797],
+    [5.36552896637882, 1.95355098584072],
+    [5.75311952910542, 2.32092965443433],
+    [6.14876198461671, 2.67891655483482],
+    [6.40730737710962, 3.0366885695566],
+    [6.60136178532078, 3.41316827866038],
+    [6.85991981814773, 3.78034470190932],
+    [7.05392366502272, 4.11920677690442],
+    [7.15120367580914, 4.4955348019997],
+    [7.25654821971429, 4.87187546742902],
+    [7.40217750821095, 5.22006610894704],
+    [7.49945751899737, 5.59639413404232],
+    [7.60526975526207, 6.3206979149769]
+  ];
+  var LAMBDA_SPLIT = 5, LAMBDA_TOP = 7.60526975526207;
+  var SIX = [0, 5, 7, 9, 11, 12];            // step 1: six of the training measurements
+  var PIVOT = 3;                              // step 1: the line turns around stretch 3
+  var K1 = { min: -0.4, max: 1.2 }, K2 = { min: -0.2, max: 2 };
+  function trueLaw(x) { return Math.sin(2 * Math.PI * x); }      // the made-up law of the slides
+  var SYN_LO = 0, SYN_HI = 1, N_MAX = 60, VAL_SHARE = 0.3, N_REFITS = 20, DEG_MAX = 12;
+  var VERDICT_TOL = 1.5;                      // "about right": new-data error within 50 % of the best degree
+  var RIDGE_STAB = 1e-10;                     // fallback ridge for numerically singular problems
+  var ZERO_REL = 1e-12;                       // squared error below ZERO_REL * var(y) counts as an exact fit
+  var GD_STEPS = 40, GD_RATE = 0.12, GD_MS = 45;
+  var LOG_LO = -3, LOG_HI = 7;                // error scale: 0.001 to 10 000 000
+  var SYM_C = 0.01;
+  var KNOB_LO = -2.5;                         // knob chart: |theta_j| on a log axis from 0.003 upwards
+  var ALPHAS = [{ v: 0 }];
+  for (var e = -8; e <= 0; e++) {
+    ALPHAS.push({ v: Math.pow(10, e), m: 1, e: e });
+    if (e < 0) ALPHAS.push({ v: 3 * Math.pow(10, e), m: 3, e: e });
+  }
+
+  /* =====================================================================
+     Numerics: Legendre basis on the scaled training range, Householder QR
+     ===================================================================== */
+  function legendreRow(t, deg) {
+    var r = new Float64Array(deg + 1);
+    r[0] = 1;
+    if (deg >= 1) r[1] = t;
+    for (var k = 1; k < deg; k++) r[k + 1] = ((2 * k + 1) * t * r[k] - k * r[k - 1]) / (k + 1);
+    return r;
+  }
+  function legendreSum(c, t) {
+    var s = c[0];
+    if (c.length === 1) return s;
+    var p0 = 1, p1 = t;
+    s += c[1] * t;
+    for (var k = 1; k < c.length - 1; k++) {
+      var p2 = ((2 * k + 1) * t * p1 - k * p0) / (k + 1);
+      s += c[k + 1] * p2; p0 = p1; p1 = p2;
+    }
+    return s;
+  }
+  function householder(A, m, n) {
+    var d = new Float64Array(n), vtv = new Float64Array(n);
+    for (var k = 0; k < n; k++) {
+      var s = 0, i, j;
+      for (i = k; i < m; i++) s += A[i][k] * A[i][k];
+      var nrm = Math.sqrt(s);
+      if (nrm === 0) { d[k] = 0; vtv[k] = 0; continue; }
+      var x0 = A[k][k], alpha = x0 > 0 ? -nrm : nrm;
+      vtv[k] = 2 * (s - alpha * x0);          // |v|^2 with v = x - alpha e1 (no cancellation)
+      A[k][k] = x0 - alpha;                   // column k (rows k..m-1) now holds v
+      for (j = k + 1; j < n; j++) {
+        var w = 0;
+        for (i = k; i < m; i++) w += A[i][k] * A[i][j];
+        var f = 2 * w / vtv[k];
+        for (i = k; i < m; i++) A[i][j] -= f * A[i][k];
+      }
+      d[k] = alpha;
+    }
+    var dmax = 0, dmin = Infinity;
+    for (var q = 0; q < n; q++) { var a = Math.abs(d[q]); if (a > dmax) dmax = a; if (a < dmin) dmin = a; }
+    return { A: A, d: d, vtv: vtv, m: m, n: n, rcond: dmax > 0 ? dmin / dmax : 0 };
+  }
+  function applyQt(H, b) {
+    for (var k = 0; k < H.n; k++) {
+      if (H.vtv[k] === 0) continue;
+      var w = 0, i;
+      for (i = k; i < H.m; i++) w += H.A[i][k] * b[i];
+      var f = 2 * w / H.vtv[k];
+      for (i = k; i < H.m; i++) b[i] -= f * H.A[i][k];
+    }
+  }
+  function copyRows(rows, m, n) {
+    var A = new Array(m);
+    for (var i = 0; i < m; i++) A[i] = Float64Array.from(rows[i].subarray ? rows[i].subarray(0, n) : rows[i].slice(0, n));
+    return A;
+  }
+  function lsqQR(rows, y, m, n) {             // min |A c - y| for m >= n
+    var H = householder(copyRows(rows, m, n), m, n);
+    if (!(H.rcond > 1e-13)) return null;
+    var b = Float64Array.from(y);
+    applyQt(H, b);
+    var c = new Float64Array(n);
+    for (var i = n - 1; i >= 0; i--) {
+      var s = b[i];
+      for (var j = i + 1; j < n; j++) s -= H.A[i][j] * c[j];
+      c[i] = s / H.d[i];
+    }
+    return c;
+  }
+  function minNormQR(rows, y, m, n) {         // smallest-norm solution of A c = y for m < n (QR of A^T)
+    var B = new Array(n);
+    for (var i = 0; i < n; i++) { B[i] = new Float64Array(m); for (var j = 0; j < m; j++) B[i][j] = rows[j][i]; }
+    var H = householder(B, n, m);
+    if (!(H.rcond > 1e-13)) return null;
+    var z = new Float64Array(n);
+    for (var r = 0; r < m; r++) {
+      var s = y[r];
+      for (var q = 0; q < r; q++) s -= H.A[q][r] * z[q];
+      z[r] = s / H.d[r];
+    }
+    for (var k = m - 1; k >= 0; k--) {
+      var w = 0, t;
+      for (t = k; t < n; t++) w += H.A[t][k] * z[t];
+      var f = 2 * w / H.vtv[k];
+      for (t = k; t < n; t++) z[t] -= f * H.A[t][k];
+    }
+    return z;
+  }
+  var MONO = {};                            // MONO[deg][j][k]: coefficient of t^j in the Legendre polynomial P_k(t)
+  function legToMono(deg) {
+    if (MONO[deg]) return MONO[deg];
+    var P = [[1]], j, k;
+    if (deg >= 1) P.push([0, 1]);
+    for (k = 1; k < deg; k++) {
+      var nx = new Array(k + 2).fill(0);
+      for (j = 0; j < P[k].length; j++) nx[j + 1] += (2 * k + 1) * P[k][j] / (k + 1);
+      for (j = 0; j < P[k - 1].length; j++) nx[j] -= k * P[k - 1][j] / (k + 1);
+      P.push(nx);
+    }
+    var M = [];
+    for (j = 0; j <= deg; j++) { M.push(new Float64Array(deg + 1)); for (k = 0; k <= deg; k++) M[j][k] = P[k][j] || 0; }
+    return (MONO[deg] = M);
+  }
+  // penalty alpha * sum_{j>=1} theta_j^2 on the displayed knobs theta = M c (the constant theta_0 stays free)
+  function penaltyQR(A, y, N, p, alpha) {
+    var s = Math.sqrt(N * alpha), M = legToMono(p - 1), rows = A.slice(), yy = Array.prototype.slice.call(y);
+    for (var j = 1; j < p; j++) { var r = new Float64Array(p); for (var k = 0; k < p; k++) r[k] = s * M[j][k]; rows.push(r); yy.push(0); }
+    return lsqQR(rows, yy, rows.length, p);
+  }
+  function ridgeQR(A, y, N, p, alpha, penaliseConstant) {
+    var s = Math.sqrt(N * alpha), rows = A.slice(), yy = Array.prototype.slice.call(y);
+    for (var k = penaliseConstant ? 0 : 1; k < p; k++) { var r = new Float64Array(p); r[k] = s; rows.push(r); yy.push(0); }
+    return lsqQR(rows, yy, rows.length, p);
+  }
+  /* minimise (1/N) sum (y_i - f(x_i))^2 + alpha sum_{k>=1} c_k^2 over polynomials of degree deg,
+     written in Legendre polynomials of t = (x - mid) / half */
+  function fitPoly(xs, ys, deg, alpha) {
+    alpha = alpha || 0;
+    var N = xs.length, p = deg + 1, lo = Infinity, hi = -Infinity, i;
+    for (i = 0; i < N; i++) { if (xs[i] < lo) lo = xs[i]; if (xs[i] > hi) hi = xs[i]; }
+    var mid = (lo + hi) / 2, half = (hi - lo) / 2;
+    if (!(half > 1e-12)) half = 1;
+    var A = new Array(N);
+    for (i = 0; i < N; i++) A[i] = legendreRow((xs[i] - mid) / half, deg);
+    var c = null, method;
+    if (alpha > 0) { c = penaltyQR(A, ys, N, p, alpha); method = 'penalty'; }
+    else if (p <= N) { c = lsqQR(A, ys, N, p); method = 'qr'; }
+    else { c = minNormQR(A, ys, N, p); method = 'min-norm'; }
+    if (!c) { c = ridgeQR(A, ys, N, p, RIDGE_STAB + alpha, true); method += '+stabilising ridge'; }
+    return { c: c, deg: deg, mid: mid, half: half, method: method, predict: function (x) { return legendreSum(c, (x - mid) / half); } };
+  }
+  // the knobs: coefficients theta_j of f = sum_j theta_j t^j, with t the input rescaled to [-1, 1] over the training data
+  function monomials(model) {
+    var c = model.c, n = c.length, M = legToMono(n - 1), th = new Array(n).fill(0);
+    for (var j = 0; j < n; j++) for (var k = 0; k < n; k++) th[j] += M[j][k] * c[k];
+    return th;
+  }
+  // physics check: nominal stress must not fall while the stretch grows (1 <= lambda <= 7.6)
+  function physicsCheck(model) {
+    var N = 900, lo = 1, hi = LAMBDA_TOP, dx = (hi - lo) / N, prev = model.predict(lo), segs = [], cur = null;
+    for (var i = 1; i <= N; i++) {
+      var x = lo + dx * i, f = model.predict(x);
+      if (f < prev - 1e-9 * Math.max(1, Math.abs(prev))) { if (cur) cur[1] = x; else { cur = [x - dx, x]; segs.push(cur); } } else cur = null;
+      prev = f;
+    }
+    return { ok: segs.length === 0, segs: segs };
+  }
+  function meanSq(model, set) {
+    if (!set.x.length) return NaN;
+    var s = 0;
+    for (var i = 0; i < set.x.length; i++) { var r = set.y[i] - model.predict(set.x[i]); s += r * r; }
+    return s / set.x.length;
+  }
+  function variance(v) {
+    var m = 0, s = 0, i;
+    for (i = 0; i < v.length; i++) m += v[i];
+    m /= v.length;
+    for (i = 0; i < v.length; i++) s += (v[i] - m) * (v[i] - m);
+    return s / v.length;
+  }
+
+  /* =====================================================================
+     Data sets
+     ===================================================================== */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function mixSeed(seed, k) {
+    var h = (seed >>> 0) ^ Math.imul(k + 1, 0x9E3779B1);
+    h = Math.imul(h ^ (h >>> 16), 0x85EBCA6B);
+    h = Math.imul(h ^ (h >>> 13), 0xC2B2AE35);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+  function splitSet(pts, isNew) {
+    var tr = { x: [], y: [] }, nw = { x: [], y: [] };
+    pts.forEach(function (p, i) { var s = isNew(p, i) ? nw : tr; s.x.push(p[0]); s.y.push(p[1]); });
+    return { train: tr, val: nw };
+  }
+  function rubberSet(random, seed) {
+    var ds;
+    if (!random) ds = splitSet(TRELOAR, function (p) { return p[0] > LAMBDA_SPLIT; });
+    else {
+      var rng = mulberry32(mixSeed(seed, 777)), keys = TRELOAR.map(function () { return rng(); });
+      var order = keys.map(function (k, i) { return i; }).sort(function (a, b) { return keys[a] - keys[b]; });
+      var isNew = {};
+      order.slice(0, Math.round(VAL_SHARE * TRELOAR.length)).forEach(function (i) { isNew[i] = true; });
+      ds = splitSet(TRELOAR, function (p, i) { return !!isNew[i]; });
+    }
+    ds.kind = 'rubber'; ds.random = !!random;
+    return ds;
+  }
+  /* Every sample draws N_MAX points in a fixed order (position, noise, split key), so the first
+     n points stay when n changes, and sigma only scales the same noise. */
+  function syntheticSet(n, sigma, seed, k) {
+    var rng = mulberry32(mixSeed(seed, k)), pts = [], i;
+    for (i = 0; i < N_MAX; i++) {
+      var x = SYN_LO + (SYN_HI - SYN_LO) * rng();
+      var u1 = 1 - rng(), u2 = rng();
+      var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      pts.push({ x: x, z: z, key: rng(), i: i });
+    }
+    var use = pts.slice(0, n), nVal = Math.round(VAL_SHARE * n);
+    var byKey = use.slice().sort(function (a, b) { return a.key - b.key; }), isVal = {};
+    for (i = 0; i < nVal; i++) isVal[byKey[i].i] = true;
+    var tr = { x: [], y: [] }, va = { x: [], y: [] };
+    use.forEach(function (p) { var s = isVal[p.i] ? va : tr; s.x.push(p.x); s.y.push(trueLaw(p.x) + sigma * p.z); });
+    return { kind: 'synthetic', train: tr, val: va };
+  }
+  var SIX_X = SIX.map(function (i) { return TRELOAR[i][0]; }), SIX_Y = SIX.map(function (i) { return TRELOAR[i][1]; });
+  var LS1 = (function () {                    // closed-form least squares for y = k2 + k1 (x - PIVOT)
+    var n = SIX_X.length, mx = 0, my = 0, sxx = 0, sxy = 0, i;
+    for (i = 0; i < n; i++) { mx += SIX_X[i] - PIVOT; my += SIX_Y[i]; }
+    mx /= n; my /= n;
+    for (i = 0; i < n; i++) { var dx = SIX_X[i] - PIVOT - mx; sxx += dx * dx; sxy += dx * (SIX_Y[i] - my); }
+    var k1 = sxy / sxx, k2 = my - k1 * mx;
+    return { k1: k1, k2: k2, area: area1(k1, k2) };
+  })();
+  function area1(k1, k2) {
+    var s = 0;
+    for (var i = 0; i < SIX_X.length; i++) { var r = SIX_Y[i] - (k2 + k1 * (SIX_X[i] - PIVOT)); s += r * r; }
+    return s;
+  }
+  function gdPath(k1, k2) {                   // gradient descent on the mean squared error of the line
+    var path = [[k1, k2]], n = SIX_X.length;
+    for (var s = 0; s < GD_STEPS; s++) {
+      var g1 = 0, g2 = 0;
+      for (var i = 0; i < n; i++) { var dx = SIX_X[i] - PIVOT, r = SIX_Y[i] - (k2 + k1 * dx); g1 -= 2 * r * dx / n; g2 -= 2 * r / n; }
+      k1 -= GD_RATE * g1; k2 -= GD_RATE * g2;
+      path.push([k1, k2]);
+    }
+    path[GD_STEPS] = [LS1.k1, LS1.k2];        // the last step lands exactly on the least-squares line
+    return path;
+  }
+
+  /* =====================================================================
+     State and URL hash
+     ===================================================================== */
+  var DEFAULTS = { step: 1, k1: 0.05, k2: 0.45, mode: 'rubber', d: 3, a: 0, n: 15, s: 0.25, seed: 1, truth: true, refits: false, rsplit: false };
+  var state = Object.assign({}, DEFAULTS);
+  function clampInt(v, lo, hi, def) { v = parseInt(v, 10); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
+  function clampNum(v, lo, hi, def) { v = parseFloat(v); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
+  function readHash() {
+    var p = new URLSearchParams(location.hash.replace(/^#/, '')), st = Object.assign({}, DEFAULTS);
+    if (p.has('step')) st.step = p.get('step') === '2' ? 2 : 1;
+    else if (p.has('d') || p.has('mode')) st.step = 2;
+    st.k1 = clampNum(p.get('k1'), K1.min, K1.max, DEFAULTS.k1);
+    st.k2 = clampNum(p.get('k2'), K2.min, K2.max, DEFAULTS.k2);
+    var mode = (p.get('mode') || '').toLowerCase();
+    if (mode === 'synthetic' || mode === 'synth' || mode === 'law') st.mode = 'synthetic';
+    st.d = clampInt(p.get('d') || p.get('degree'), 0, DEG_MAX, DEFAULTS.d);
+    st.a = clampInt(p.get('a'), 0, ALPHAS.length - 1, DEFAULTS.a);
+    st.n = clampInt(p.get('n'), 5, N_MAX, DEFAULTS.n);
+    var s = parseFloat(p.get('s') || p.get('noise'));
+    st.s = isFinite(s) ? Math.min(1, Math.max(0, Math.round(s * 20) / 20)) : DEFAULTS.s;
+    st.seed = clampInt(p.get('seed'), 1, 999999, DEFAULTS.seed);
+    if (p.has('truth')) st.truth = p.get('truth') !== '0';
+    if (p.has('refits')) st.refits = p.get('refits') === '1';
+    if (p.has('rsplit')) st.rsplit = p.get('rsplit') === '1';
+    return st;
+  }
+  function hashString() {
+    return '#step=' + state.step + '&k1=' + state.k1.toFixed(4) + '&k2=' + state.k2.toFixed(4) + '&mode=' + state.mode + '&d=' + state.d +
+      '&a=' + state.a + '&n=' + state.n + '&s=' + state.s.toFixed(2) + '&seed=' + state.seed + '&truth=' + (state.truth ? 1 : 0) +
+      '&refits=' + (state.refits ? 1 : 0) + '&rsplit=' + (state.rsplit ? 1 : 0);
+  }
+  var hashTimer = 0;
+  function writeHash() {
+    clearTimeout(hashTimer);
+    hashTimer = setTimeout(function () {
+      var h = hashString();
+      if (location.hash === h) return;
+      try { history.replaceState(null, '', h); } catch (err) { /* some file:// contexts refuse; the demo still works */ }
+    }, 150);
+  }
+
+  /* =====================================================================
+     Compute (step 2)
+     ===================================================================== */
+  var last2 = null;
+  function compute2() {
+    var syn = state.mode === 'synthetic';
+    var ds = syn ? syntheticSet(state.n, state.s, state.seed, 0) : rubberSet(state.rsplit, state.seed);
+    var alpha = ALPHAS[state.a].v, curve = [];
+    var zeroTol = ZERO_REL * Math.max(variance(ds.train.y), 1e-12);
+    for (var d = 0; d <= DEG_MAX; d++) {
+      var m = fitPoly(ds.train.x, ds.train.y, d, alpha), tr = meanSq(m, ds.train), va = meanSq(m, ds.val);
+      curve.push({ d: d, model: m, train: tr, val: va, rTrain: tr < zeroTol ? 0 : Math.sqrt(tr), rNew: va < zeroTol ? 0 : Math.sqrt(va),
+        physics: syn ? null : physicsCheck(m) });
+    }
+    var res = { ds: ds, syn: syn, alpha: alpha, curve: curve, model: curve[state.d].model, zeroTol: zeroTol, refits: null };
+    curve.forEach(function (c) { c.theta = monomials(c.model); });
+    var ref = curve;                             // unpenalised fits: fixed knob scale, and the best model without a penalty
+    if (alpha > 0) {
+      ref = [];
+      for (var d0 = 0; d0 <= DEG_MAX; d0++) {
+        var m0 = fitPoly(ds.train.x, ds.train.y, d0, 0), t0 = meanSq(m0, ds.train), v0 = meanSq(m0, ds.val);
+        ref.push({ d: d0, rTrain: t0 < zeroTol ? 0 : Math.sqrt(t0), rNew: v0 < zeroTol ? 0 : Math.sqrt(v0), theta: monomials(m0) });
+      }
+    }
+    var kmax = 1e-3;
+    ref.forEach(function (c) { c.theta.forEach(function (t) { kmax = Math.max(kmax, Math.abs(t)); }); });
+    res.knobTop = Math.max(2, 2 * Math.ceil(Math.log10(kmax) / 2));   // top tick of the knob axis: 100, 10 000, ...
+    res.theta = curve[state.d].theta;
+    res.physics = curve[state.d].physics;
+    var best = 0, rb = 0;
+    curve.forEach(function (c) { if (c.rNew < curve[best].rNew) best = c.d; });
+    ref.forEach(function (c) { if (c.rNew < ref[rb].rNew) rb = c.d; });
+    res.best = best;
+    var lim = VERDICT_TOL * ref[rb].rNew, lo = rb, hi = rb, cur = curve[state.d];
+    while (lo > 0 && ref[lo - 1].rNew <= lim) lo--;             // "about right" without a penalty: the contiguous band
+    while (hi < DEG_MAX && ref[hi + 1].rNew <= lim) hi++;       // around the best degree (no lucky islands)
+    res.band = [lo, hi];
+    if (!(alpha > 0)) res.verdict = state.d < lo ? 'simple' : state.d > hi ? 'flex' : 'right';
+    else if (cur.rNew <= lim) res.verdict = 'right';             // with a penalty: judged against the best plain model
+    else if (state.d < lo) res.verdict = 'simple';
+    else if (state.d <= hi || cur.rTrain > 1.2 * ref[rb].rTrain) res.verdict = 'stiff';   // fits worse than the best plain model
+    else res.verdict = 'flex';
+    if (syn && state.refits) {
+      res.refits = [];
+      for (var k = 1; k <= N_REFITS; k++) { var s = syntheticSet(state.n, state.s, state.seed, k); res.refits.push(fitPoly(s.train.x, s.train.y, state.d, alpha)); }
+    }
+    if (syn) {
+      var all = ds.train.y.concat(ds.val.y);
+      res.dom = { x: [SYN_LO - 0.05, SYN_HI + 0.05], draw: [SYN_LO, SYN_HI],
+        y: [Math.min(-1 - 3 * state.s - 0.2, Math.min.apply(null, all) - 0.15), Math.max(1 + 3 * state.s + 0.2, Math.max.apply(null, all) + 0.15)] };
+    } else res.dom = { x: [0.6, 8.0], y: [-0.9, 7.3], draw: [1.0, 8.0] };
+    last2 = res;
+    return res;
+  }
+
+  /* =====================================================================
+     Formatting: plain numbers
+     ===================================================================== */
+  function group(intStr) { return intStr.replace(/\B(?=(\d{3})+(?!\d))/g, NB); }
+  function plain(v, digits) {
+    digits = digits || 3;
+    if (!isFinite(v)) return 'n/a';
+    var a = Math.abs(v), sign = v < 0 ? MINUS : '';
+    if (a === 0) return '0';
+    if (a >= 1000) {
+      var e = Math.floor(Math.log10(a)), q = Math.pow(10, e - digits + 1);
+      return sign + group(String(Math.round(a / q) * q > 1e21 ? a.toExponential(2) : Math.round(Math.round(a / q) * q)));
+    }
+    if (a < 5e-7) return '≈' + NB + '0';
+    return sign + a.toPrecision(digits).replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
+  }
+  function stripNum(v) { return Math.abs(v) >= 1000 ? plain(v) : fixed(Math.abs(v) < 0.005 ? 0 : v, 2); }
+  function errText(v, unit) { return (v === 0 ? '≈' + NB + '0' : v < 0.001 ? '<' + NB + '0.001' : plain(v)) + (unit ? NB + unit : ''); }
+  function signed(n) { return n < 0 ? MINUS + (-n) : String(n); }
+  function alphaHTML(i) {
+    var a = ALPHAS[i];
+    if (!a.v) return '0 (off)';
+    if (a.e >= -2) return String(+(a.m * Math.pow(10, a.e)).toFixed(2));
+    return (a.m === 1 ? '' : a.m + ' × ') + '10<sup>' + signed(a.e) + '</sup>';
+  }
+  function alphaSpeech(i) {
+    var a = ALPHAS[i];
+    if (!a.v) return '0, off';
+    if (a.e >= -2) return String(+(a.m * Math.pow(10, a.e)).toFixed(2));
+    return a.m + ' times 10 to the power of minus ' + (-a.e);
+  }
+  function fixed(v, dg) { return (v < 0 ? MINUS : '') + Math.abs(v).toFixed(dg); }
+  function sym(v) { return (v < 0 ? -1 : 1) * Math.log10(1 + Math.abs(v) / SYM_C); }
+  function logPos(v) { return v <= 0 ? 0 : Math.min(1, Math.max(0, (Math.log10(v) - LOG_LO) / (LOG_HI - LOG_LO))); }
+
+  /* =====================================================================
+     SVG helpers
+     ===================================================================== */
+  var NS = 'http://www.w3.org/2000/svg';
+  function S(tag, attrs, parent) {
+    var el = document.createElementNS(NS, tag);
+    if (attrs) for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) el.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+  function T(parent, x, y, parts, attrs) {    // parts: strings or {t, cls, sup, sub}
+    var t = S('text', Object.assign({ x: x, y: y }, attrs || {}), parent);
+    [].concat(parts).forEach(function (p) {
+      if (typeof p === 'string') { t.appendChild(document.createTextNode(p)); return; }
+      var ts = S('tspan', p.sup ? { dy: '-0.5em', 'font-size': '72%' } : p.sub ? { dy: '0.3em', 'font-size': '72%' } : null, t);
+      if (p.cls) ts.setAttribute('class', p.cls);
+      ts.textContent = p.t;
+    });
+    return t;
+  }
+  function wrapText(parent, x, y, text, maxW, lh, attrs) {
+    var words = text.split(' '), line = [], lines = [], t = T(parent, x, y, [''], attrs);
+    words.forEach(function (w) {
+      t.textContent = line.concat(w).join(' ');
+      if (t.getComputedTextLength() > maxW && line.length) { lines.push(line.join(' ')); line = [w]; } else line.push(w);
+    });
+    lines.push(line.join(' '));
+    t.textContent = '';
+    lines.forEach(function (l, i) { var ts = S('tspan', { x: x, dy: i ? lh : 0 }, t); ts.textContent = l; });
+    return lines.length;
+  }
+  function clearSvg(svg) { while (svg.lastChild && svg.lastChild.nodeName !== 'desc') svg.removeChild(svg.lastChild); }
+  function sizeSvg(svg, W, H) { svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); }
+  function lin(d0, d1, r0, r1) {
+    var f = function (v) { return r0 + (v - d0) * (r1 - r0) / (d1 - d0); };
+    f.inv = function (p) { return d0 + (p - r0) * (d1 - d0) / (r1 - r0); };
+    return f;
+  }
+  function niceTicks(a, b, count) {
+    var raw = (b - a) / count, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw / mag;
+    var step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag, out = [];
+    for (var v = Math.ceil(a / step) * step; v <= b + step * 1e-9; v += step) out.push(Math.abs(v) < step * 1e-9 ? 0 : v);
+    return out;
+  }
+  function tickText(v) { var s = +v.toFixed(6); return s < 0 ? MINUS + String(-s) : String(s); }
+  function rootPx() { return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16; }
+  function lineScale() { return document.documentElement.classList.contains('presenter') ? 1.6 : 1; }
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  function curvePath(fn, a, b, sx, sy, yLo, yHi, nSeg) {
+    var d = '', i, x, py;
+    for (i = 0; i <= nSeg; i++) {
+      x = a + (b - a) * i / nSeg;
+      py = sy(fn(x));
+      if (py !== py) continue;
+      py = clamp(py, yLo, yHi);
+      d += (d ? 'L' : 'M') + sx(x).toFixed(1) + ',' + py.toFixed(1);
+    }
+    return d;
+  }
+  function axes(g, o) {                       // o: sx, sy, x0, x1, y0, y1, xt, yt, xl, yl, W, H, fs
+    S('path', { d: 'M' + o.x0 + ',' + o.y1 + 'V' + o.y0 + 'H' + o.x1, class: 'axis', 'stroke-width': 1 }, g);
+    o.xt.forEach(function (v) {
+      var px = Math.round(o.sx(v)) + 0.5;
+      S('line', { x1: px, x2: px, y1: o.y0, y2: o.y0 + 5, class: 'axis', 'stroke-width': 1 }, g);
+      T(g, px, o.y0 + 1.3 * o.fs, [tickText(v)], { class: 'tick', 'text-anchor': 'middle' });
+    });
+    o.yt.forEach(function (v) {
+      var py = Math.round(o.sy(v)) + 0.5;
+      S('line', { x1: o.x0 - 5, x2: o.x0, y1: py, y2: py, class: 'axis', 'stroke-width': 1 }, g);
+      T(g, o.x0 - 0.55 * o.fs, py + 0.3 * o.fs, [tickText(v)], { class: 'tick', 'text-anchor': 'end' });
+    });
+    T(g, (o.x0 + o.x1) / 2, o.H - 0.45 * o.fs, o.xl, { class: 'ax-label', 'text-anchor': 'middle' });
+    var yLab = T(g, 0, 0, o.yl, { class: 'ax-label', 'text-anchor': 'middle' });
+    yLab.setAttribute('transform', 'translate(' + (0.95 * o.fs) + ',' + ((o.y0 + o.y1) / 2) + ') rotate(-90)');
+  }
+  var SW = {
+    train: ['0 0 14 14', '<circle cx="7" cy="7" r="4.5" class="mk-train" stroke-width="0"/>'],
+    'new': ['0 0 14 14', '<rect x="2.5" y="2.5" width="9" height="9" class="mk-new" stroke-width="2"/>'],
+    model: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-model" stroke-width="3"/>'],
+    truth: ['0 0 26 14', '<line x1="0" x2="26" y1="7" y2="7" class="ln-truth" stroke-width="2" stroke-dasharray="6 4"/>'],
+    refits: ['0 0 26 14', '<path d="M1 4H25M1 7H25M1 10H25" class="ln-refit" stroke-width="1.25"/>'],
+    square: ['0 0 14 14', '<rect x="1.5" y="1.5" width="11" height="11" class="sq" stroke-width="1.25"/>'],
+    physics: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-physics" stroke-width="3.5"/>'],
+    etrain: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-train" stroke-width="2"/><circle cx="13" cy="7" r="4" class="mk-train" stroke-width="2"/>'],
+    enew: ['0 0 26 14', '<line x1="0" x2="26" y1="7" y2="7" class="ln-new" stroke-width="2" stroke-dasharray="5 3"/><rect x="9" y="3" width="8" height="8" class="mk-new" stroke-width="2"/>'],
+    current: ['0 0 10 16', '<line x1="5" x2="5" y1="1" y2="15" class="ln-current" stroke-width="2"/>']
+  };
+  function swatch(kind) {
+    var d = SW[kind], vb = d[0].split(' ');
+    return '<svg class="sw" viewBox="' + d[0] + '" style="width:' + (vb[2] / 14).toFixed(3) + 'em;height:' + (vb[3] / 14).toFixed(3) + 'em" aria-hidden="true">' + d[1] + '</svg>';
+  }
+  function li(kind, html) { return '<li>' + swatch(kind) + '<span>' + html + '</span></li>'; }
+  var LAM = '<i class="v">λ</i>';
+
+  /* =====================================================================
+     Layout helpers
+     ===================================================================== */
+  var els = {};
+  function $(id) { return document.getElementById(id); }
+  function isWide() { return window.innerWidth >= 768; }
+  function plotHeight(svg, W) {               // fill the viewport below the plot on wide screens
+    var k = rootPx() / 16;
+    if (!isWide()) return Math.round(clamp(W * 0.82, 250 * k, 460 * k));
+    var top = svg.getBoundingClientRect().top + window.scrollY;
+    var avail = window.innerHeight - top - 3.2 * rootPx();
+    var tall = document.documentElement.classList.contains('shot-slide') ? 1.3 : 0.9;
+    return Math.round(clamp(Math.min(avail, W * tall), 300 * k, 640 * k));
+  }
+
+  /* =====================================================================
+     The learning-loop strip
+     ===================================================================== */
+  var sel = { 1: { set: 'train', i: 4 }, 2: null }, hoverSel = null, pulseBusy = false, pulsePending = false;
+  function defaultSel2() {
+    var ds = last2.ds, best = null, bd = Infinity, target = last2.syn ? 0.25 : 4.0339;
+    ['train', 'val'].forEach(function (k) {         // prefer a training point: the loop caption is about training
+      ds[k].x.forEach(function (x, i) { var d = Math.abs(x - target) + (k === 'val' ? 1e6 : 0); if (d < bd) { bd = d; best = { set: k === 'val' ? 'new' : 'train', i: i }; } });
+    });
+    return best;
+  }
+  function flowSample() {
+    if (state.step === 1) {
+      var s1 = hoverSel || sel[1];
+      return { x: SIX_X[s1.i], y: SIX_Y[s1.i], yhat: state.k2 + state.k1 * (SIX_X[s1.i] - PIVOT), isNew: false, rubber: true, s: s1 };
+    }
+    var s2 = hoverSel || sel[2] || defaultSel2(), set = s2.set === 'new' ? last2.ds.val : last2.ds.train;
+    if (s2.i >= set.x.length) { sel[2] = null; s2 = defaultSel2(); set = s2.set === 'new' ? last2.ds.val : last2.ds.train; }
+    return { x: set.x[s2.i], y: set.y[s2.i], yhat: last2.model.predict(set.x[s2.i]), isNew: s2.set === 'new', rubber: !last2.syn, s: s2 };
+  }
+  function dial(value01Angle, r) {            // value in [-1, 1] maps to -135 .. 135 degrees
+    var a = (value01Angle * 135 - 90) * Math.PI / 180, c = r + 1.5, x = c + r * 0.78 * Math.cos(a), y = c + r * 0.78 * Math.sin(a);
+    return '<svg width="' + 2 * c + '" height="' + 2 * c + '"><circle cx="' + c + '" cy="' + c + '" r="' + r + '" fill="#fff" stroke="#007A85" stroke-width="1.25"/>' +
+      '<line x1="' + c + '" y1="' + c + '" x2="' + x.toFixed(2) + '" y2="' + y.toFixed(2) + '" stroke="#007A85" stroke-width="1.75" stroke-linecap="round"/></svg>';
+  }
+  function renderFlow() {
+    var f = flowSample(), unit = f.rubber ? NB + 'MPa' : '', h = '';
+    els.fvIn.textContent = f.rubber ? 'stretch ' + f.x.toFixed(2) : 'x = ' + fixed(f.x, 2);
+    if (state.step === 1) {
+      els.fvModelLab.textContent = 'Model: 2 knobs';
+      els.fvModel.textContent = 'straight line';
+      h = dial(2 * (state.k1 - K1.min) / (K1.max - K1.min) - 1, 7) + dial(2 * (state.k2 - K2.min) / (K2.max - K2.min) - 1, 7);
+    } else {
+      els.fvModelLab.textContent = 'Model: ' + (state.d + 1) + (state.d ? ' knobs' : ' knob');
+      els.fvModel.textContent = 'degree ' + state.d;
+      var r = state.d > 7 ? 4.5 : 6;
+      last2.theta.forEach(function (t) { h += dial(2 * clamp((Math.log10(Math.abs(t) + 1e-300) - KNOB_LO) / (last2.knobTop - KNOB_LO), 0, 1) - 1, r); });
+    }
+    els.fvDials.innerHTML = h;
+    els.fvPred.textContent = stripNum(f.yhat) + unit;
+    els.fvMeas.textContent = stripNum(f.y) + unit;
+    els.fvMeasLab.textContent = f.isNew ? 'Measurement (new data)' : 'Measurement (training data)';
+    els.fnMeas.classList.toggle('is-new', f.isNew);
+    var er = f.y - f.yhat, sq = er * er;       // residual: measured minus predicted
+    els.fvErr.textContent = stripNum(er) + unit;
+    els.fvErr2.textContent = 'squared ' + (sq >= 1000 || sq < 0.01 ? plain(sq) : fixed(sq, 2)) + (f.rubber ? NB + 'MPa²' : '');
+    els.flow.classList.toggle('no-loop', f.isNew);
+    var cap = f.isNew ? 'Not used for training: this point tests the model.' : 'Training turns the knobs to make these errors small.';
+    els.flowCaption.textContent = cap;
+    drawLoop(cap);
+  }
+  var loopKey = '';
+  function drawLoop(cap) {
+    var svg = els.flowOver, box = els.flow.getBoundingClientRect(), m = els.fnModel.getBoundingClientRect(), er = els.fnErr.getBoundingClientRect();
+    var single = isWide() && Math.abs(m.top - er.top) <= 4;
+    var key = single ? [Math.round(m.left - box.left), Math.round(m.width), Math.round(er.left - box.left), Math.round(er.width), Math.round(m.bottom - box.top), rootPx(), cap].join('|') : 'none';
+    if (key === loopKey) return;              // unchanged: keep the running pulse animation
+    loopKey = key;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (!single) return;
+    var y0 = m.bottom - box.top, yb = y0 + 0.95 * rootPx(), xm = m.left + m.width / 2 - box.left, xe = er.left + er.width / 2 - box.left;
+    var d = 'M' + xe + ',' + y0 + 'V' + yb + 'H' + xm + 'V' + (y0 + 7);
+    S('path', { d: d, class: 'a-base', 'stroke-width': 1.25, 'stroke-dasharray': '4 3' }, svg);
+    S('path', { d: 'M' + (xm - 4.5) + ',' + (y0 + 7) + 'L' + xm + ',' + (y0 + 1) + 'L' + (xm + 4.5) + ',' + (y0 + 7) + 'Z', class: 'a-head' }, svg);
+    var len = (yb - y0) * 2 + Math.abs(xe - xm);
+    var p = S('path', { d: d, class: 'pulse loop', 'stroke-width': 3, style: '--i:6;--len:' + Math.round(len) + ';--dash:14px', 'stroke-dasharray': '14 ' + Math.round(len + 30) }, svg);
+    p.style.strokeDashoffset = '14px';
+    var tx = (xm + xe) / 2, t = T(svg, tx, yb + 0.28 * rootPx(), [cap], { class: 'loop-text', 'text-anchor': 'middle' });
+    try {
+      var bb = t.getBBox();
+      svg.insertBefore(S('rect', { x: bb.x - 8, y: bb.y - 1, width: bb.width + 16, height: bb.height + 2, fill: '#F2F4F5' }), t);
+    } catch (err) { /* not rendered yet */ }
+  }
+  function pulse() {
+    if (reducedMotion() || (tour.on && tourTargetId() !== 'flow')) return;
+    if (pulseBusy) { pulsePending = true; return; }
+    pulseBusy = true;
+    els.flow.classList.remove('go');
+    void els.flow.offsetWidth;                // restart the CSS animation
+    els.flow.classList.add('go');
+    setTimeout(function () { pulseBusy = false; if (pulsePending) { pulsePending = false; pulse(); } }, 1250);
+  }
+  function initPulses() {
+    Array.prototype.forEach.call(els.flow.querySelectorAll('.arr .pulse'), function (p) {
+      var len = 26; p.style.setProperty('--len', len); p.style.setProperty('--dash', '12px');
+      p.setAttribute('stroke-width', 3); p.setAttribute('stroke-dasharray', '12 ' + (len + 30)); p.style.strokeDashoffset = '12px';
+    });
+  }
+
+  /* =====================================================================
+     Step 1: fit a line yourself
+     ===================================================================== */
+  var geom1 = null, trail = null, anim = null;
+  function renderPlot1() {
+    var svg = els.svg1, W = Math.floor(els.plot1.clientWidth);
+    if (W < 60) return;
+    var fs = rootPx(), lw = lineScale(), H = plotHeight(svg, W);
+    var M = { l: 3.5 * fs, r: 1 * fs, t: 0.9 * fs, b: 3.0 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t;
+    var sx = lin(0.6, 5.3, x0, x1), sy = lin(-0.45, 2.2, y0, y1), pxPerMPa = (y0 - y1) / 2.65;
+    var defs = S('defs', null, svg), cp = S('clipPath', { id: 'd01-clip-1' }, defs);
+    S('rect', { x: x0, y: y1, width: x1 - x0, height: y0 - y1 }, cp);
+    axes(S('g', null, svg), { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, xt: [1, 2, 3, 4, 5], yt: niceTicks(-0.45, 2.2, 5), fs: fs, W: W, H: H,
+      xl: ['Stretch ', { t: 'λ', cls: 'v' }, ' [-]'], yl: ['Stress ', { t: 'P', cls: 'v' }, ' [MPa]'] });
+    var g = S('g', { 'clip-path': 'url(#d01-clip-1)' }, svg), f = flowSample(), pts = [];
+    SIX_X.forEach(function (x, i) {               // one square per point: side = error, area = error squared
+      var yl = state.k2 + state.k1 * (x - PIVOT), r = SIX_Y[i] - yl, side = Math.abs(r) * pxPerMPa, px = sx(x);
+      var top = Math.min(sy(SIX_Y[i]), sy(yl)), left = px + side > x1 - 2 ? px - side : px;
+      S('rect', { x: left, y: top, width: side, height: side, class: 'sq' + (f.s.i === i ? ' sel' : ''), 'stroke-width': 1.25 }, g);
+    });
+    S('path', { d: 'M' + sx(0.6) + ',' + sy(state.k2 + state.k1 * (0.6 - PIVOT)) + 'L' + sx(5.3) + ',' + sy(state.k2 + state.k1 * (5.3 - PIVOT)), class: 'ln-model', 'stroke-width': 3 * lw }, g);
+    S('circle', { cx: sx(PIVOT), cy: sy(state.k2), r: 4.5 * (lw > 1 ? 1.3 : 1), class: 'pivot', 'stroke-width': 2 }, g);
+    var r = 5 * (lw > 1 ? 1.35 : 1);
+    SIX_X.forEach(function (x, i) {
+      var px = sx(x), py = sy(SIX_Y[i]);
+      S('circle', { cx: px, cy: py, r: r, class: 'mk-train', 'stroke-width': 2 }, svg);
+      pts.push({ px: px, py: py, set: 'train', i: i });
+    });
+    S('circle', { cx: sx(f.x), cy: sy(f.y), r: r + 4, class: 'mk-sel', 'stroke-width': 2 }, svg);
+    geom1 = { pts: pts };
+    svg.querySelector('desc').textContent = 'Six measurements, a straight line with slope ' + fixed(state.k1, 2) + ' and height ' + fixed(state.k2, 2) +
+      ' MPa at stretch 3, and one square per point whose area is the squared error. Total area ' + plain(area1(state.k1, state.k2)) + ' MPa squared.';
+  }
+  function renderSide1() {
+    var a = area1(state.k1, state.k2);
+    els.k1.value = state.k1; els.k2.value = state.k2;
+    els.k1.setAttribute('aria-valuetext', fixed(state.k1, 2) + ' MPa');
+    els.k2.setAttribute('aria-valuetext', fixed(state.k2, 2) + ' MPa');
+    els.areaVal.textContent = plain(a) + NB + 'MPa²';
+    els.areaVal.setAttribute('data-value', String(a));
+    els.areaFill.style.width = (100 * clamp(a / 2.5, 0, 1)).toFixed(1) + '%';
+    var atMin = a <= LS1.area * 1.01 + 1e-12;
+    els.lsMsg.textContent = atMin ? 'This is least squares: the line with the smallest total area.' : '';
+    if (els.more.open) renderMap();
+  }
+  function renderMap() {
+    var svg = els.svgMap, W = Math.floor(els.map.clientWidth);
+    if (W < 60) return;
+    var fs = rootPx(), H = Math.round(clamp(W * 0.42, 9.5 * fs, 13 * fs));
+    var M = { l: 3.1 * fs, r: 0.6 * fs, t: 0.4 * fs, b: 2.9 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sx = lin(K1.min, K1.max, x0, x1), sy = lin(K2.min, K2.max, y0, y1);
+    var defs = S('defs', null, svg), cp = S('clipPath', { id: 'd01-clip-map' }, defs);
+    S('rect', { x: x0, y: y1, width: x1 - x0, height: y0 - y1 }, cp);
+    var g = S('g', { 'clip-path': 'url(#d01-clip-map)' }, svg);
+    // total area is quadratic in the knobs: nested ellipses around the minimum
+    var n = SIX_X.length, sxx = 0, sx1 = 0;
+    SIX_X.forEach(function (x) { sxx += (x - PIVOT) * (x - PIVOT); sx1 += x - PIVOT; });
+    var a11 = sxx, a12 = sx1, a22 = n, tr = a11 + a22, det = a11 * a22 - a12 * a12;
+    var l1 = tr / 2 + Math.sqrt(tr * tr / 4 - det), l2 = tr / 2 - Math.sqrt(tr * tr / 4 - det);
+    var vx = a12, vy = l1 - a11, vn = Math.hypot(vx, vy) || 1; vx /= vn; vy /= vn;   // eigenvector of l1
+    [8, 3, 1, 0.3, 0.1, 0.04].forEach(function (lev) {
+      var c = lev - LS1.area; if (c <= 0) return;
+      var d = '';
+      for (var i = 0; i <= 72; i++) {
+        var ph = 2 * Math.PI * i / 72, u = Math.sqrt(c / l1) * Math.cos(ph), w = Math.sqrt(c / l2) * Math.sin(ph);
+        var k1 = LS1.k1 + u * vx - w * vy, k2 = LS1.k2 + u * vy + w * vx;
+        d += (i ? 'L' : 'M') + sx(k1).toFixed(1) + ',' + sy(k2).toFixed(1);
+      }
+      S('path', { d: d + 'Z', class: 'ell', 'stroke-width': 1 }, g);
+    });
+    S('path', { d: 'M' + (sx(LS1.k1) - 5) + ',' + (sy(LS1.k2) - 5) + 'l10,10M' + (sx(LS1.k1) - 5) + ',' + (sy(LS1.k2) + 5) + 'l10,-10', class: 'map-min', 'stroke-width': 1.75 }, g);
+    if (trail && trail.length > 1) {
+      S('path', { d: trail.map(function (p, i) { return (i ? 'L' : 'M') + sx(p[0]).toFixed(1) + ',' + sy(p[1]).toFixed(1); }).join(''), class: 'gd-path', 'stroke-width': 1.75 }, g);
+      trail.forEach(function (p, i) { if (i < trail.length - 1 && i % 2 === 0) S('circle', { cx: sx(p[0]), cy: sy(p[1]), r: 1.8, class: 'gd-dot' }, g); });
+    }
+    S('circle', { cx: sx(state.k1), cy: sy(state.k2), r: 5.5, class: 'map-cur', 'stroke-width': 2 }, g);
+    var gA = S('g', null, svg);
+    axes(gA, { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, xt: [0, 0.5, 1], yt: [0, 1, 2], fs: fs, W: W, H: H,
+      xl: ['Knob 1: slope [MPa]'], yl: ['Knob 2 [MPa]'] });
+    Array.prototype.forEach.call(gA.querySelectorAll('.tick'), function (t) { t.classList.add('small'); });
+    els.mapGeom = { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+  function set1(k1, k2) { state.k1 = clamp(k1, K1.min, K1.max); state.k2 = clamp(k2, K2.min, K2.max); update1(true); }
+  function update1(user) {
+    if (user) { stopAnim(); stopTween(); trail = null; }
+    renderSide1(); renderPlot1(); renderFlow();
+    if (user) { pulse(); announce1(); writeHash(); }
+    if (tour.on) tourLayout();
+  }
+  function stopAnim() {
+    if (!anim) return;
+    cancelAnimationFrame(anim.raf); anim = null;
+    els.flow.classList.remove('training'); els.gdWalk.disabled = false;
+  }
+  function runLS() {                          // the least-squares formula gives the best line at once: move the knobs there
+    stopAnim(); stopTween(); trail = null;
+    tweenKnobs(LS1.k1, LS1.k2, 900, function () { announce1(); });
+  }
+  function runGD() {
+    stopAnim();
+    var path = gdPath(state.k1, state.k2);
+    if (reducedMotion()) { trail = path; state.k1 = LS1.k1; state.k2 = LS1.k2; finishGD(); return; }
+    var t0 = performance.now(), total = GD_STEPS * GD_MS;
+    els.gdWalk.disabled = true;
+    els.flow.classList.add('training');
+    anim = { raf: 0 };
+    var frame = function (now) {
+      var u = clamp((now - t0) / total, 0, 1), fpos = u * GD_STEPS, i = Math.min(GD_STEPS - 1, Math.floor(fpos)), w = u >= 1 ? 1 : fpos - i;
+      var p = [path[i][0] + w * (path[i + 1][0] - path[i][0]), path[i][1] + w * (path[i + 1][1] - path[i][1])];
+      trail = path.slice(0, i + 1).concat([p]);
+      state.k1 = p[0]; state.k2 = p[1];
+      update1(false);
+      if (u < 1) anim.raf = requestAnimationFrame(frame);
+      else { anim = null; finishGD(); }
+    };
+    anim.raf = requestAnimationFrame(frame);
+  }
+  function finishGD() {
+    state.k1 = LS1.k1; state.k2 = LS1.k2;
+    els.flow.classList.remove('training'); els.gdWalk.disabled = false;
+    update1(false); announce1(); writeHash();
+  }
+
+  /* =====================================================================
+     Step 2: how flexible?
+     ===================================================================== */
+  var geom2 = null;
+  function renderLegend2() {
+    var res = last2, h;
+    if (res.syn) h = li('train', 'Training data') + li('new', 'New data');
+    else if (res.ds.random) h = li('train', 'Training data') + li('new', 'New data (random)');
+    else h = li('train', 'Training data (stretch up to 5)') + li('new', 'New data (stretch above 5)');
+    h += li('model', 'Model, degree ' + state.d);
+    if (res.syn && state.truth) h += li('truth', 'True law');
+    if (res.refits) h += li('refits', N_REFITS + ' refits');
+    if (res.physics && !res.physics.ok) h += li('physics', 'Stress falls');
+    els.legend2.innerHTML = h;
+    els.cap2.innerHTML = res.syn
+      ? 'Made-up law <span class="math"><i>y</i> = sin(2π<i>x</i>)</span> plus random noise. The model only sees the filled points.'
+      : 'Stretch: how many times longer the rubber is. Stress here is mechanical stress (force per area), not a voltage. The model only sees the filled points.';
+  }
+  function renderPlot2() {
+    var res = last2, svg = els.svg2, W = Math.floor(els.plot2.clientWidth);
+    if (!res || W < 60) return;
+    var fs = rootPx(), lw = lineScale(), H = plotHeight(svg, W);
+    var M = { l: 3.5 * fs, r: 0.9 * fs, t: 0.9 * fs, b: 3.0 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t;
+    var sx = lin(res.dom.x[0], res.dom.x[1], x0, x1), sy = lin(res.dom.y[0], res.dom.y[1], y0, y1);
+    var defs = S('defs', null, svg), cp = S('clipPath', { id: 'd01-clip-2' }, defs);
+    S('rect', { x: x0, y: y1, width: x1 - x0, height: y0 - y1 }, cp);
+    if (!res.syn && !res.ds.random) {             // new data band: not used for fitting
+      var xs = sx(LAMBDA_SPLIT);
+      S('rect', { x: xs, y: y1, width: x1 - xs, height: y0 - y1, class: 'shade' }, svg);
+      S('line', { x1: xs, x2: xs, y1: y1, y2: y0, class: 'boundary', 'stroke-width': 1 }, svg);
+      var bandW = x1 - xs - 1.2 * fs, bandText = 'Not used for fitting: can the model predict here?';
+      if (bandW >= 13 * fs) wrapText(svg, xs + 0.6 * fs, y1 + 1.3 * fs, bandText, bandW, 1.3 * fs, { class: 'region halo' });
+      else {                                      // narrow plot: the empty bottom of the band keeps the text off the points
+        var gl = S('g', null, svg), nl = wrapText(gl, xs + 0.5 * fs, 0, 'Not used for fitting', bandW + 0.2 * fs, 1.25 * fs, { class: 'region halo' });
+        gl.setAttribute('transform', 'translate(0,' + (y0 - 0.6 * fs - (nl - 1) * 1.25 * fs) + ')');
+      }
+    }
+    axes(S('g', null, svg), { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, fs: fs, W: W, H: H,
+      xt: res.syn ? [0, 0.2, 0.4, 0.6, 0.8, 1] : [1, 2, 3, 4, 5, 6, 7, 8], yt: niceTicks(res.dom.y[0], res.dom.y[1], W < 600 ? 4 : 5),
+      xl: res.syn ? ['Input ', { t: 'x', cls: 'v' }, ' [-]'] : ['Stretch ', { t: 'λ', cls: 'v' }, ' [-]'],
+      yl: res.syn ? ['Output ', { t: 'y', cls: 'v' }, ' [-]'] : ['Stress ', { t: 'P', cls: 'v' }, ' [MPa]'] });
+    var g = S('g', { 'clip-path': 'url(#d01-clip-2)' }, svg);
+    var yLo = y1 - 2 * H, yHi = y0 + 2 * H, a = res.dom.draw[0], b = res.dom.draw[1], nSeg = Math.max(160, Math.round((sx(b) - sx(a)) / 1.5));
+    if (res.refits) res.refits.forEach(function (m) { S('path', { d: curvePath(m.predict, a, b, sx, sy, yLo, yHi, Math.round(nSeg / 2)), class: 'ln-refit', 'stroke-width': 1.25 * lw }, g); });
+    if (res.syn && state.truth) S('path', { d: curvePath(trueLaw, a, b, sx, sy, yLo, yHi, nSeg), class: 'ln-truth', 'stroke-width': 2 * lw, 'stroke-dasharray': (7 * lw) + ' ' + (5 * lw) }, g);
+    S('path', { d: curvePath(res.model.predict, a, b, sx, sy, yLo, yHi, nSeg), class: 'ln-model', 'stroke-width': 3 * lw }, g);
+    if (res.physics && !res.physics.ok) {
+      res.physics.segs.forEach(function (sg) { S('path', { d: curvePath(res.model.predict, sg[0], sg[1], sx, sy, yLo, yHi, Math.max(8, Math.round((sx(sg[1]) - sx(sg[0])) / 1.5))), class: 'ln-physics', 'stroke-width': 4 * lw }, g); });
+    }
+    var pts = [], r = 4.5 * (lw > 1 ? 1.35 : 1), q = 8.5 * (lw > 1 ? 1.35 : 1), gp = S('g', null, svg);
+    res.ds.val.x.forEach(function (x, i) {
+      var px = sx(x), py = sy(res.ds.val.y[i]);
+      S('rect', { x: px - q / 2, y: py - q / 2, width: q, height: q, class: 'mk-new', 'stroke-width': 2 * (lw > 1 ? 1.25 : 1) }, gp);
+      pts.push({ px: px, py: py, set: 'new', i: i });
+    });
+    res.ds.train.x.forEach(function (x, i) {
+      var px = sx(x), py = sy(res.ds.train.y[i]);
+      S('circle', { cx: px, cy: py, r: r, class: 'mk-train', 'stroke-width': 2 }, gp);
+      pts.push({ px: px, py: py, set: 'train', i: i });
+    });
+    var f = flowSample();
+    S('circle', { cx: sx(f.x), cy: clamp(sy(f.y), y1, y0), r: r + 4.5, class: 'mk-sel', 'stroke-width': 2 }, svg);
+    geom2 = { pts: pts };
+    svg.querySelector('desc').textContent = (res.syn ? 'Made-up law with noise: ' : 'Stretching rubber: ') + res.ds.train.x.length + ' training points, ' +
+      res.ds.val.x.length + ' new points and a fitted curve of degree ' + state.d + '.' + (res.physics && !res.physics.ok ? ' The curve falls in places.' : '');
+  }
+  function renderSide2() {
+    var res = last2, c = res.curve[state.d], unit = res.syn ? '' : 'MPa';
+    els.deg.value = state.d;
+    els.degOut.innerHTML = state.d + ' <small>(' + (state.d + 1) + (state.d ? ' knobs' : ' knob') + ')</small>';
+    els.deg.setAttribute('aria-valuetext', state.d + ', ' + (state.d + 1) + (state.d ? ' knobs' : ' knob'));
+    els.errTrain.textContent = errText(c.rTrain, unit);
+    els.errTrain.setAttribute('data-value', String(c.rTrain));
+    els.errNew.textContent = errText(c.rNew, unit);
+    els.errNew.setAttribute('data-value', String(c.rNew));
+    els.barTrain.style.width = (100 * logPos(c.rTrain)).toFixed(2) + '%';
+    els.barNew.style.width = (100 * logPos(c.rNew)).toFixed(2) + '%';
+    els.barNew.style.display = logPos(c.rNew) > 0 ? '' : 'none';
+    var texts = res.syn
+      ? { simple: 'Too simple: it misses the shape of the law.', right: 'About right: the best prediction of the new data.', flex: 'Too flexible: it follows the noise.', stiff: 'Too stiff: the penalty keeps the curve from fitting.' }
+      : res.ds.random
+        ? { simple: 'Too simple: the curve cannot bend enough.', right: 'About right: the best prediction of the new data.', flex: 'Too flexible: it wiggles between the points.', stiff: 'Too stiff: the penalty keeps the curve from fitting.' }
+        : { simple: 'Too simple: the curve cannot bend enough.', right: 'About right: the best prediction of the new data.', flex: 'Too flexible: it goes wild beyond the training data.', stiff: 'Too stiff: the penalty keeps the curve from fitting.' };
+    els.verdict.textContent = texts[res.verdict];
+    els.step2i3.textContent = res.syn ? 'Watch the knobs: what happens at high degree?' : 'Find the first degree that breaks the physics check.';
+    els.verdict.className = 'verdict ' + res.verdict;
+    els.diag.classList.toggle('rubber', !res.syn);
+    els.physics.hidden = res.syn || res.physics.ok;
+    els.physicsOk.hidden = res.syn || !res.physics.ok;
+    renderKnobs();
+    announce2();
+  }
+  function renderErrAxis() {
+    var h = '';
+    [0.01, 1, 100, 10000, 1000000].forEach(function (v) { h += '<span style="left:' + (100 * logPos(v)).toFixed(2) + '%">' + plain(v) + '</span>'; });
+    els.errAxis.innerHTML = h;
+    [els.trackTrain, els.trackNew].forEach(function (tr) {
+      var g = '<span class="err-base"></span>';
+      [0.01, 1, 100, 10000, 1000000].forEach(function (v) { g += '<span class="err-grid" style="left:' + (100 * logPos(v)).toFixed(2) + '%"></span>'; });
+      tr.insertAdjacentHTML('afterbegin', g);
+    });
+  }
+  function renderKnobs() {                  // size of each knob |theta_j| on a log axis (plain labels 0.01, 1, 100, ...)
+    var res = last2, svg = els.svgKnobs, W = Math.floor(els.knobs.clientWidth);
+    if (!res || W < 60) return;
+    var fs = rootPx(), H = Math.round(8.4 * fs), top = res.knobTop;
+    var M = { l: 4.1 * fs, r: 0.4 * fs, t: 0.8 * fs, b: 1.7 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sy = lin(KNOB_LO, top, y0, y1), slot = (x1 - x0) / (DEG_MAX + 1);
+    var every = (top + 2) / 2 > 4 ? 4 : 2;
+    for (var e = -2; e <= top; e += every) {
+      var py = Math.round(sy(e)) + 0.5;
+      S('line', { x1: x0, x2: x1, y1: py, y2: py, class: 'gridline', 'stroke-width': 1 }, svg);
+      T(svg, x0 - 0.4 * fs, py + 0.28 * fs, [plain(Math.pow(10, e))], { class: 'tick small', 'text-anchor': 'end' });
+    }
+    S('path', { d: 'M' + x0 + ',' + y1 + 'V' + y0 + 'H' + x1, class: 'axis', 'stroke-width': 1 }, svg);
+    var bw = Math.max(3, Math.min(1.4 * fs, slot * 0.62)), norm = 0, big = 0;
+    res.theta.forEach(function (t, j) {
+      var v = Math.abs(t), cx = x0 + slot * (j + 0.5), yv = sy(clamp(Math.log10(v + 1e-300), KNOB_LO, top));
+      S('rect', { x: cx - bw / 2, y: Math.min(yv, y0 - 1), width: bw, height: Math.max(1, y0 - yv), class: 'bar-knob' + (j ? '' : ' free'), 'stroke-width': j ? 0 : 1.25 }, svg);
+      if (j) { norm += t * t; big = Math.max(big, v); }
+    });
+    for (var j = 0; j <= state.d; j += (slot > 1.4 * fs ? 1 : 3)) {
+      T(svg, x0 + slot * (j + 0.5), y0 + 1.2 * fs, [{ t: 'θ', cls: 'v' }, { t: String(j), sub: true }], { class: 'tick small', 'text-anchor': 'middle' });
+    }
+    norm = Math.sqrt(norm);
+    els.knobsNote.innerHTML = state.d ? 'total size (without <i class="v">θ</i><sub>0</sub>): ' + plain(norm) : 'only the height <i class="v">θ</i><sub>0</sub>';
+    els.knobsNote.setAttribute('data-value', String(norm));
+    svg.querySelector('desc').textContent = (state.d + 1) + ' knobs; the largest of θ1 to θ' + state.d + ' has size ' + plain(big) + '; θ0 is not penalised.';
+  }
+
+  /* =====================================================================
+     More options: error for every degree, tables
+     ===================================================================== */
+  var errGeom = null, errRows = [];
+  function renderErrPlot() {                // small chart under the error bars: both errors for every degree
+    var res = last2, svg = els.svgErr, W = Math.floor(els.plotErr.clientWidth);
+    if (!res || W < 60) return;
+    var fs = rootPx(), lw = lineScale(), H = Math.round(8.4 * fs);
+    var M = { l: 3.3 * fs, r: 0.5 * fs, t: 0.8 * fs, b: 1.7 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    els.errChartTitle.textContent = res.syn ? 'Error for every degree' : 'Error for every degree, in MPa';
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, vals = [], anyZero = false;
+    res.curve.forEach(function (c) { [c.rTrain, c.rNew].forEach(function (v) { if (v > 0) vals.push(v); else anyZero = true; }); });
+    var lo = Math.floor(Math.log10(Math.min.apply(null, vals))), hi = Math.ceil(Math.log10(Math.max.apply(null, vals)));
+    if (hi - lo < 2) { lo -= 1; hi += 1; }
+    var band = anyZero ? 1.3 * fs : 0, sx = lin(-0.5, DEG_MAX + 0.5, x0, x1), sy = lin(lo, hi, y0 - band, y1);
+    var yOf = function (v) { return v > 0 ? sy(Math.log10(v)) : y0 - band / 2 + 1; };
+    var step = [1, 2, 3, 4, 6, 8].filter(function (st) { return (hi - lo) / st <= 3.2; })[0] || 10;   // about four plain labels
+    var gA = S('g', null, svg);
+    for (var e = Math.ceil(lo / step) * step; e <= hi; e += step) {
+      var py = Math.round(sy(e)) + 0.5;
+      S('line', { x1: x0, x2: x1, y1: py, y2: py, class: 'gridline', 'stroke-width': 1 }, gA);
+      T(gA, x0 - 0.4 * fs, py + 0.28 * fs, [plain(Math.pow(10, e))], { class: 'tick small', 'text-anchor': 'end' });
+    }
+    S('path', { d: 'M' + x0 + ',' + y1 + 'V' + y0 + 'H' + x1, class: 'axis', 'stroke-width': 1 }, gA);
+    if (anyZero) T(gA, x0 - 0.4 * fs, y0 - band / 2 + 0.28 * fs, ['≈' + NB + '0'], { class: 'tick small', 'text-anchor': 'end' });
+    [0, 3, 6, 9, 12].forEach(function (d) {
+      var px = Math.round(sx(d)) + 0.5;
+      S('line', { x1: px, x2: px, y1: y0, y2: y0 + 4, class: 'axis', 'stroke-width': 1 }, gA);
+      T(gA, px, y0 + 1.2 * fs, [String(d)], { class: 'tick small', 'text-anchor': 'middle' });
+    });
+    var cx = sx(state.d);
+    S('line', { x1: cx, x2: cx, y1: y1 - 0.3 * fs, y2: y0, class: 'ln-current', 'stroke-width': 2 * lw }, svg);
+    var hover = S('g', null, svg), pT = '', pN = '';
+    res.curve.forEach(function (c) {
+      pT += (c.d ? 'L' : 'M') + sx(c.d).toFixed(1) + ',' + yOf(c.rTrain).toFixed(1);
+      pN += (c.d ? 'L' : 'M') + sx(c.d).toFixed(1) + ',' + yOf(c.rNew).toFixed(1);
+    });
+    S('path', { d: pN, class: 'ln-new', 'stroke-width': 1.75 * lw, 'stroke-dasharray': (5 * lw) + ' ' + (3 * lw) }, svg);
+    S('path', { d: pT, class: 'ln-train', 'stroke-width': 1.75 * lw }, svg);
+    var r = 3 * (lw > 1 ? 1.3 : 1), q = 6 * (lw > 1 ? 1.3 : 1);
+    res.curve.forEach(function (c) {
+      var px = sx(c.d);
+      S('rect', { x: px - q / 2, y: yOf(c.rNew) - q / 2, width: q, height: q, class: 'mk-new', 'stroke-width': 1.75 }, svg);
+      S('circle', { cx: px, cy: yOf(c.rTrain), r: r, class: 'mk-train', 'stroke-width': 1.5 }, svg);
+    });
+    var cur = res.curve[state.d];
+    S('circle', { cx: cx, cy: yOf(cur.rTrain), r: r + 3, class: 'mk-current', 'stroke-width': 1.75 }, svg);
+    S('rect', { x: cx - q / 2 - 3, y: yOf(cur.rNew) - q / 2 - 3, width: q + 6, height: q + 6, class: 'mk-current', 'stroke-width': 1.75 }, svg);
+    errGeom = { sx: sx, yOf: yOf, x0: x0, x1: x1, y0: y0, y1: y1, hover: hover };
+    svg.querySelector('desc').textContent = 'Error on the training data and on the new data for degrees 0 to 12, log scale. The new-data error is smallest at degree ' + res.best + '.';
+  }
+  function buildErrTable() {
+    for (var d = 0; d <= DEG_MAX; d++) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + d + '<span class="vh"></span></td><td>' + (d + 1) + '</td><td></td><td></td><td class="txt"></td>';
+      els.tblErr.appendChild(tr); errRows.push(tr);
+    }
+  }
+  function renderTables() {
+    var res = last2, unit = res.syn ? '' : ' MPa';
+    res.curve.forEach(function (c, i) {
+      var tr = errRows[i], cells = tr.children;
+      cells[2].textContent = errText(c.rTrain, '') + unit;
+      cells[3].textContent = errText(c.rNew, '') + unit;
+      cells[4].textContent = c.physics ? (c.physics.ok ? 'passed' : 'failed') : 'not applicable';
+      tr.className = c.d === state.d ? 'is-current' : '';
+      cells[0].querySelector('.vh').textContent = c.d === state.d ? ' (current)' : '';
+    });
+    var key = state.mode + '|' + state.rsplit + '|' + state.seed + '|' + (res.syn ? state.n + '|' + state.s : '');
+    if (els.tblData.getAttribute('data-key') === key) return;
+    els.tblData.setAttribute('data-key', key);
+    var rows = [];
+    res.ds.train.x.forEach(function (x, i) { rows.push([x, res.ds.train.y[i], 'Training data']); });
+    res.ds.val.x.forEach(function (x, i) { rows.push([x, res.ds.val.y[i], 'New data']); });
+    rows.sort(function (a, b) { return a[0] - b[0]; });
+    els.tblDataHead.innerHTML = res.syn ? '<tr><th scope="col">Input <i class="v">x</i> [-]</th><th scope="col">Output <i class="v">y</i> [-]</th><th scope="col" class="txt">Set</th></tr>'
+      : '<tr><th scope="col">Stretch ' + LAM + ' [-]</th><th scope="col">Stress <i class="v">P</i> [MPa]</th><th scope="col" class="txt">Set</th></tr>';
+    els.tblData.innerHTML = rows.map(function (r) { return '<tr><td>' + fixed(r[0], 3) + '</td><td>' + fixed(r[1], 3) + '</td><td class="txt">' + r[2] + '</td></tr>'; }).join('');
+  }
+
+
+  /* =====================================================================
+     Guided tour: dims everything except one element, one line of text,
+     and changes at most one thing after the spotlight has settled
+     ===================================================================== */
+  var TOUR = {
+    1: [
+      { el: 'flow', text: 'Every measurement flows through the model and gives an error.' },
+      { el: 'knob-group', text: 'Turn these two knobs to move the line.' },
+      { el: 'plot-1', text: 'Watch the squares shrink as the line gets better.',
+        act: function () { if (area1(state.k1, state.k2) > 1.5 * LS1.area) tweenKnobs((state.k1 + LS1.k1) / 2, (state.k2 + LS1.k2) / 2, 1200); } },
+      { el: 'meter', text: 'This number adds up the areas of all squares.' },
+      { el: 'gd-btn', text: 'Press the button: a formula finds the best line at once.' },
+      { el: 'plot-1', text: 'Least squares: the line with the smallest total area.',
+        act: function () { if (area1(state.k1, state.k2) > LS1.area * 1.001) runLS(); } }
+    ],
+    2: [
+      { el: 'deg-errs', text: 'Drag the slider: watch the training and new-data errors.' },
+      { el: 'band', text: 'These points were hidden from the model during fitting.', when: function () { return !last2.syn && !last2.ds.random; } },
+      { el: 'plot-2', text: 'Open squares were hidden from the model during fitting.', when: function () { return last2.syn || last2.ds.random; } },
+      { el: 'errchart-box', text: 'Errors for every degree: find where the new-data error is smallest.' },
+      { el: 'knobs-box', text: 'At degree 9 the knobs grow huge.', act: function () { if (state.d !== 9) set2({ d: 9 }); } },
+      { el: 'diag', text: 'Physics check: stress must never fall as the rubber stretches.', when: function () { return !last2.syn; } },
+      { el: 'data-switch', text: 'Now try the made-up law: there the true curve is known.', when: function () { return !last2.syn; } },
+      { el: 'data-switch', text: 'Switch back to stretching rubber, the real measurements.', when: function () { return last2.syn; } }
+    ]
+  };
+  var tour = { on: false, tab: 1, i: 0, steps: [], timer: 0 };
+  function tourSteps(tab) { return TOUR[tab].filter(function (st) { return !st.when || st.when(); }); }
+  function tourEl(st) { return st.el === 'band' ? els.svg2.querySelector('rect.shade') || els.plot2 : $(st.el); }
+  function tourTargetId() { var st = tour.on && tour.steps[tour.i]; return st ? st.el : null; }
+  function startTour() {
+    if (!last2) compute2();
+    clearTimeout(tour.timer);
+    tour.on = true; tour.tab = state.step; tour.steps = tourSteps(tour.tab); tour.i = 0;
+    els.tour.hidden = false;
+    document.documentElement.classList.add('touring');
+    tourTransition(function () { tour.i = 0; placeTour(); });
+  }
+  function endTour() {
+    if (!tour.on) return;
+    tour.on = false; clearTimeout(tour.timer);
+    els.tour.hidden = true; els.tour.classList.remove('fading');
+    document.documentElement.classList.remove('touring');
+    els.tourBtn.focus({ preventScroll: true });
+  }
+  function nextTour() {
+    if (!tour.on) return;
+    if (tour.i < tour.steps.length - 1) { tourTransition(function () { tour.i += 1; placeTour(); }); return; }
+    if (tour.tab === 1) {
+      tourTransition(function () { showStep(2, false); tour.tab = 2; tour.steps = tourSteps(2); tour.i = 0; placeTour(); });
+      return;
+    }
+    endTour();
+  }
+  function prevTour() { if (tour.on && tour.i > 0) tourTransition(function () { tour.i -= 1; placeTour(); }); }
+  // fade out, move the spotlight, fade in; the step's own change (if any) comes after that
+  function tourTransition(change) {
+    clearTimeout(tour.timer);
+    if (reducedMotion()) { change(); runTourAct(); return; }
+    els.tour.classList.add('fading');
+    tour.timer = setTimeout(function () {
+      change();
+      els.tour.classList.remove('fading');
+      tour.timer = setTimeout(runTourAct, 380);
+    }, 170);
+  }
+  function runTourAct() { var st = tour.on && tour.steps[tour.i]; if (st && st.act) st.act(); }
+  function placeTour() {
+    var st = tour.steps[tour.i], n = tour.steps.length, last = tour.i === n - 1;
+    els.tour.setAttribute('data-tab', tour.tab);
+    els.tour.setAttribute('data-i', tour.i);
+    els.tour.setAttribute('data-n', n);
+    els.tourCount.textContent = (tour.tab === 1 ? 'Fit a line yourself' : 'How flexible?') + ' · ' + (tour.i + 1) + ' of ' + n;
+    els.tourText.textContent = st.text;
+    els.tourPrev.disabled = tour.i === 0;
+    els.tourNext.textContent = last ? (tour.tab === 1 ? 'On to step 2' : 'Finish') : 'Next';
+    var el = tourEl(st), r = el.getBoundingClientRect(), bh = els.tourBox.offsetHeight || 140;
+    var need = r.height + (isWide() ? 0 : bh + 24), top = r.top;
+    if (top < 60 || r.top + need > window.innerHeight - 16) {   // bring the focus (and the note) into view, instantly
+      var want = need < window.innerHeight - 80 ? (window.innerHeight - need) / 2 : 60;
+      window.scrollTo(window.scrollX, Math.max(0, window.scrollY + top - want));
+    }
+    tourLayout();
+    try { els.tourNext.focus({ preventScroll: true }); } catch (err) { els.tourNext.focus(); }
+  }
+  function place(el, x, y, w, h) {
+    el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px';
+    if (w !== undefined) { el.style.width = Math.max(0, Math.round(w)) + 'px'; el.style.height = Math.max(0, Math.round(h)) + 'px'; }
+  }
+  function tourLayout() {
+    if (!tour.on) return;
+    var st = tour.steps[tour.i], el = st && tourEl(st);
+    if (!el) return;
+    var r = el.getBoundingClientRect(), sx = window.scrollX, sy = window.scrollY, pad = 6, de = document.documentElement;
+    var docW = de.clientWidth, docH = Math.max(de.scrollHeight, sy + window.innerHeight);
+    var hx = Math.max(0, r.left + sx - pad), hy = Math.max(0, r.top + sy - pad);
+    var hw = Math.min(docW - hx, r.width + 2 * pad), hh = r.height + 2 * pad;
+    place(els.veilT, 0, 0, docW, hy);
+    place(els.veilB, 0, hy + hh, docW, docH - hy - hh);
+    place(els.veilL, 0, hy, hx, hh);
+    place(els.veilR, hx + hw, hy, docW - hx - hw, hh);
+    place(els.tourRing, hx, hy, hw, hh);
+    var box = els.tourBox, bw = box.offsetWidth, bh = box.offsetHeight, gap = 14, vw = de.clientWidth, vh = window.innerHeight;
+    var hole = { x: hx, y: hy, w: hw, h: hh }, avoid = [], plot = $(state.step === 1 ? 'plot-1' : 'plot-2');
+    if (plot && plot !== el && !el.contains(plot)) {                // the plot stays visible, also when a part of it is the focus
+      var pr = plot.getBoundingClientRect();
+      if (pr.width) avoid.push({ x: pr.left + sx, y: pr.top + sy, w: pr.width, h: pr.height });   // keep the main plot visible
+    }
+    var hit = function (a, b) { return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h; };
+    var fitY = function (yy) { return clamp(yy, sy + 8, Math.max(sy + 8, sy + vh - bh - 8)); };
+    var xs = [hx, sx + vw - bw - 8, sx + 8], cands = [{ x: hx + hw + gap, y: fitY(hy) }];
+    xs.forEach(function (xx) { cands.push({ x: xx, y: hy + hh + gap }); });                 // below the focus
+    xs.forEach(function (xx) { cands.push({ x: xx, y: hy - gap - bh }); });                 // above it
+    cands.push({ x: hx - gap - bw, y: fitY(hy) });                                           // left of it
+    var free = function (c) {
+      var r = { x: c.x, y: c.y, w: bw, h: bh };
+      if (c.x < sx + 7.5 || c.x + bw > sx + vw - 7.5 || c.y < 0 || hit(r, hole)) return false;
+      return !avoid.some(function (a) { return hit(r, a); });
+    };
+    var inView = function (c) { return c.y >= sy + 4 && c.y + bh <= sy + vh - 4; };
+    var pick = cands.filter(function (c) { return free(c) && inView(c); })[0] || cands.filter(free)[0] ||
+      { x: clamp(hx, sx + 8, sx + vw - bw - 8), y: hy + hh + gap };
+    place(box, pick.x, pick.y);
+    if (pick.y + bh > sy + vh - 8) window.scrollTo(sx, Math.min(hy - 8, pick.y + bh + 8 - vh));
+    else if (pick.y < sy + 8) window.scrollTo(sx, Math.max(0, pick.y - 8));
+  }
+  var tween = null;
+  function stopTween() { if (tween) { cancelAnimationFrame(tween.raf); tween = null; } }
+  function tweenKnobs(k1, k2, ms, done) {
+    stopTween(); stopAnim(); trail = null;
+    var a1 = state.k1, a2 = state.k2, t0 = performance.now();
+    if (reducedMotion()) { state.k1 = k1; state.k2 = k2; update1(false); writeHash(); if (done) done(); return; }
+    tween = { raf: 0 };
+    var frame = function (now) {
+      var u = clamp((now - t0) / ms, 0, 1), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      state.k1 = a1 + (k1 - a1) * e; state.k2 = a2 + (k2 - a2) * e;
+      update1(false);
+      if (u < 1) tween.raf = requestAnimationFrame(frame); else { tween = null; writeHash(); if (done) done(); }
+    };
+    tween.raf = requestAnimationFrame(frame);
+  }
+
+  /* =====================================================================
+     Announcements for screen readers
+     ===================================================================== */
+  var liveTimer = 0;
+  function say(text) { clearTimeout(liveTimer); liveTimer = setTimeout(function () { els.live.textContent = text; }, 700); }
+  function announce1() { say('Total area of the squares ' + plain(area1(state.k1, state.k2)) + ' MPa squared.' + (els.lsMsg.textContent ? ' ' + els.lsMsg.textContent : '')); }
+  function announce2() {
+    var c = last2.curve[state.d], u = last2.syn ? '' : ' MPa';
+    say('Degree ' + state.d + '. Error on the training data ' + errText(c.rTrain, '') + u + '. Error on the new data ' + errText(c.rNew, '') + u + '. ' +
+      els.verdict.textContent + (els.physics.hidden ? '' : ' ' + els.physics.textContent));
+  }
+
+  /* =====================================================================
+     Controls and wiring
+     ===================================================================== */
+  function syncMore() {
+    els.alpha.value = state.a; els.alphaOut.innerHTML = alphaHTML(state.a); els.alpha.setAttribute('aria-valuetext', alphaSpeech(state.a));
+    els.npts.value = state.n; els.nptsOut.textContent = String(state.n); els.npts.setAttribute('aria-valuetext', state.n + ' points');
+    els.sigma.value = state.s; els.sigmaOut.textContent = state.s.toFixed(2); els.sigma.setAttribute('aria-valuetext', state.s.toFixed(2));
+    els.seedOut.textContent = 'Data set ' + state.seed;
+    els.truth.checked = state.truth; els.refits.checked = state.refits; els.rsplit.checked = state.rsplit;
+    els.dataInputs.forEach(function (inp) { inp.checked = inp.value === state.mode; inp.parentNode.classList.toggle('is-on', inp.checked); });
+  }
+  function showStep(step, focus) {
+    state.step = step;
+    [1, 2].forEach(function (s) {
+      var on = s === step, tab = $('tab-' + s);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.tabIndex = on ? 0 : -1;
+      $('panel-' + s).hidden = !on;
+    });
+    if (focus) $('tab-' + step).focus();
+    hoverSel = null;
+    renderAll();
+    pulse();
+    writeHash();
+  }
+  function update2(dataChanged) {
+    if (dataChanged) sel[2] = null;
+    compute2();
+    syncMore();
+    renderLegend2(); renderSide2(); renderPlot2(); renderErrPlot(); renderTables();
+    if (state.step === 2) { renderFlow(); pulse(); }
+    writeHash();
+    if (tour.on) tourLayout();
+  }
+  function set2(patch) {
+    var dataKeys = ['mode', 'n', 's', 'seed', 'rsplit'], changed = false;
+    dataKeys.forEach(function (k) { if (k in patch && patch[k] !== state[k]) changed = true; });
+    Object.assign(state, patch);
+    update2(changed);
+  }
+  function renderAll() {
+    if (!last2) compute2();
+    syncMore();
+    if (state.step === 1) { renderSide1(); renderPlot1(); }
+    else { renderLegend2(); renderSide2(); renderPlot2(); }
+    renderErrPlot(); renderTables(); renderFlow();
+    if (els.more.open) renderMap();
+    if (tour.on) tourLayout();
+  }
+  function rerender() { renderAll(); }
+
+  // pointer: hover shows a sample in the strip, tap or click keeps it
+  function nearest(geom, ev, svg) {
+    if (!geom) return null;
+    var r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, best = null, bd = Infinity;
+    geom.pts.forEach(function (p) { var d = Math.hypot(p.px - x, p.py - y); if (d < bd) { bd = d; best = p; } });
+    return bd <= 32 ? { set: best.set, i: best.i } : null;
+  }
+  function sameSel(a, b) { return a && b && a.set === b.set && a.i === b.i; }
+  function onPlotMove(step, ev) {
+    var p = nearest(step === 1 ? geom1 : geom2, ev, step === 1 ? els.svg1 : els.svg2);
+    if (sameSel(p, hoverSel) || (!p && !hoverSel)) return;
+    hoverSel = p;
+    if (step === 1) renderPlot1(); else renderPlot2();
+    renderFlow();
+    if (p) pulse();
+  }
+  function onPlotDown(step, ev) {
+    var p = nearest(step === 1 ? geom1 : geom2, ev, step === 1 ? els.svg1 : els.svg2);
+    if (!p) return;
+    sel[step] = p; hoverSel = null;
+    if (step === 1) renderPlot1(); else renderPlot2();
+    renderFlow(); pulse();
+  }
+  function onPlotLeave(step) {
+    if (!hoverSel) return;
+    hoverSel = null;
+    if (step === 1) renderPlot1(); else renderPlot2();
+    renderFlow();
+  }
+  var mapDrag = false;
+  function mapSet(ev) {
+    var g = els.mapGeom; if (!g) return;
+    var r = els.svgMap.getBoundingClientRect(), x = clamp(ev.clientX - r.left, g.x0, g.x1), y = clamp(ev.clientY - r.top, g.y1, g.y0);
+    set1(g.sx.inv(x), g.sy.inv(y));
+  }
+  function degAt(ev) {
+    var g = errGeom; if (!g) return null;
+    var r = els.svgErr.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+    if (x < g.x0 - 10 || x > g.x1 + 10 || y < g.y1 - 20 || y > g.y0 + 10) return null;
+    return clamp(Math.round(g.sx.inv(x)), 0, DEG_MAX);
+  }
+  function onErrMove(ev) {
+    var g = errGeom, res = last2, d = degAt(ev);
+    if (!g || !res) return;
+    while (g.hover.firstChild) g.hover.removeChild(g.hover.firstChild);
+    if (d === null) { els.tipErr.hidden = true; return; }
+    var px = Math.round(g.sx(d)) + 0.5, c = res.curve[d], u = res.syn ? '' : NB + 'MPa';
+    S('line', { x1: px, x2: px, y1: g.y1, y2: g.y0, class: 'xhair', 'stroke-width': 1 }, g.hover);
+    els.tipErr.innerHTML = '<div class="row"><strong>Degree ' + d + '</strong><span class="lbl">' + (d + 1) + ' knobs</span></div>' +
+      '<div class="row">' + swatch('etrain') + '<strong>' + errText(c.rTrain, '') + u + '</strong><span class="lbl">training data</span></div>' +
+      '<div class="row">' + swatch('enew') + '<strong>' + errText(c.rNew, '') + u + '</strong><span class="lbl">new data</span></div>' +
+      (d === state.d ? '' : '<div class="row lbl">Click to select</div>');
+    var tip = els.tipErr, box = els.plotErr;
+    tip.hidden = false;
+    var w = tip.offsetWidth, h = tip.offsetHeight, left = px + 14 + w > box.clientWidth ? px - 14 - w : px + 14;
+    var top = clamp(Math.min(g.yOf(c.rTrain), g.yOf(c.rNew)) - h - 14, 0, Math.max(0, box.clientHeight - h));
+    tip.style.transform = 'translate(' + Math.round(clamp(left, 0, Math.max(0, box.clientWidth - w))) + 'px,' + Math.round(top) + 'px)';
+  }
+  function togglePresenter(force) {
+    var on = typeof force === 'boolean' ? force : !document.documentElement.classList.contains('presenter');
+    document.documentElement.classList.toggle('presenter', on);
+    els.pm.setAttribute('aria-pressed', on ? 'true' : 'false');
+    rerender();
+  }
+  function init() {
+    ['k1', 'k2', 'deg', 'alpha', 'npts', 'sigma', 'resample', 'truth', 'refits', 'rsplit', 'live', 'pm', 'flow', 'verdict', 'physics', 'diag', 'more'].forEach(function (id) { els[id] = $(id); });
+    els.physicsOk = $('physics-ok');
+    var ids = { fvIn: 'fv-in', fvModel: 'fv-model', fvModelLab: 'fv-model-lab', fvDials: 'fv-dials', fvPred: 'fv-pred', fvMeas: 'fv-meas', fvMeasLab: 'fv-meas-lab',
+      fvErr: 'fv-err', fnMeas: 'fn-meas', fnModel: 'fn-model', fnErr: 'fn-err', flowOver: 'flow-over', flowCaption: 'flow-caption',
+      plot1: 'plot-1', svg1: 'svg-1', gdWalk: 'gd-walk', fvErr2: 'fv-err2', step2i3: 'step2-i3', areaVal: 'area-val', areaFill: 'area-fill', gdBtn: 'gd-btn', lsMsg: 'ls-msg',
+      map: 'map', svgMap: 'svg-map', plot2: 'plot-2', svg2: 'svg-2', legend2: 'legend-2', cap2: 'cap-2', degOut: 'deg-out', errTrain: 'err-train',
+      errNew: 'err-new', barTrain: 'bar-train', barNew: 'bar-new', trackTrain: 'track-train', trackNew: 'track-new', errAxis: 'err-axis',
+      knobs: 'knobs', svgKnobs: 'svg-knobs', knobsNote: 'knobs-note', plotErr: 'plot-err', svgErr: 'svg-err', tipErr: 'tip-err', errChartTitle: 'errchart-title',
+      tblErr: 'tbl-err', tblData: 'tbl-data', tblDataHead: 'tbl-data-head', alphaOut: 'alpha-out', nptsOut: 'npts-out', sigmaOut: 'sigma-out', seedOut: 'seed-out', legend1: 'legend-1' };
+    for (var k in ids) els[k] = $(ids[k]);
+    ['tour', 'tour-box', 'tour-ring', 'tour-count', 'tour-text', 'tour-prev', 'tour-next', 'tour-end', 'tour-btn', 'veil-t', 'veil-b', 'veil-l', 'veil-r'].forEach(function (id) {
+      els[id.replace(/-(\w)/g, function (m, c) { return c.toUpperCase(); })] = $(id);
+    });
+    buildErrTable(); renderErrAxis(); initPulses();
+    els.legend1.innerHTML = li('train', 'Measurements') + li('model', 'Straight line') + li('square', 'Error squared (one square per point)');
+
+    // step tabs (arrow keys move between them)
+    [1, 2].forEach(function (s) {
+      var tab = $('tab-' + s);
+      tab.addEventListener('click', function () { if (state.step !== s) showStep(s, false); });
+      tab.addEventListener('keydown', function (ev) {
+        var to = null;
+        if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') to = s === 1 ? 2 : 1;
+        if (ev.key === 'Home') to = 1;
+        if (ev.key === 'End') to = 2;
+        if (to !== null) { ev.preventDefault(); showStep(to, true); }
+      });
+    });
+    // step 1
+    els.k1.addEventListener('input', function () { set1(+els.k1.value, state.k2); });
+    els.k2.addEventListener('input', function () { set1(state.k1, +els.k2.value); });
+    els.gdBtn.addEventListener('click', runLS);
+    els.gdWalk.addEventListener('click', function () { if (state.step !== 1) showStep(1, false); runGD(); });
+    els.svgMap.addEventListener('pointerdown', function (ev) { mapDrag = true; try { els.svgMap.setPointerCapture(ev.pointerId); } catch (err) {} mapSet(ev); });
+    els.svgMap.addEventListener('pointermove', function (ev) { if (mapDrag) mapSet(ev); });
+    els.svgMap.addEventListener('pointerup', function () { mapDrag = false; });
+    els.svgMap.addEventListener('pointercancel', function () { mapDrag = false; });
+    // step 2
+    els.deg.addEventListener('input', function () { set2({ d: +els.deg.value }); });
+    els.dataInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="data"]'));
+    els.dataInputs.forEach(function (inp) { inp.addEventListener('change', function () { if (inp.checked) set2({ mode: inp.value }); }); });
+    els.alpha.addEventListener('input', function () { set2({ a: +els.alpha.value }); });
+    els.npts.addEventListener('input', function () { set2({ n: +els.npts.value }); });
+    els.sigma.addEventListener('input', function () { set2({ s: Math.round(+els.sigma.value * 20) / 20 }); });
+    els.resample.addEventListener('click', function () { set2({ seed: state.seed >= 999999 ? 1 : state.seed + 1 }); });
+    els.truth.addEventListener('change', function () { set2({ truth: els.truth.checked }); });
+    els.refits.addEventListener('change', function () { set2({ refits: els.refits.checked }); });
+    els.rsplit.addEventListener('change', function () { set2({ rsplit: els.rsplit.checked }); });
+    els.more.addEventListener('toggle', function () { if (els.more.open) renderMap(); });
+    [1, 2].forEach(function (s) {
+      var svg = s === 1 ? els.svg1 : els.svg2;
+      svg.addEventListener('pointermove', function (ev) { onPlotMove(s, ev); });
+      svg.addEventListener('pointerdown', function (ev) { onPlotDown(s, ev); });
+      svg.addEventListener('pointerleave', function () { onPlotLeave(s); });
+    });
+    els.svgErr.addEventListener('pointermove', onErrMove);
+    els.svgErr.addEventListener('pointerleave', function () { els.tipErr.hidden = true; if (errGeom) while (errGeom.hover.firstChild) errGeom.hover.removeChild(errGeom.hover.firstChild); });
+    els.svgErr.addEventListener('click', function (ev) { var d = degAt(ev); if (d !== null && d !== state.d) set2({ d: d }); });
+    els.pm.addEventListener('click', function () { togglePresenter(); });
+    els.tourBtn.addEventListener('click', function () { startTour(); });
+    els.tourNext.addEventListener('click', nextTour);
+    els.tourPrev.addEventListener('click', prevTour);
+    els.tourEnd.addEventListener('click', endTour);
+    document.addEventListener('keydown', function (ev) {
+      if (ev.defaultPrevented || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      var t = ev.target, onRange = !!(t && t.tagName === 'INPUT' && t.type === 'range');
+      if (tour.on) {
+        if (ev.key === 'Escape') { ev.preventDefault(); endTour(); return; }
+        if (ev.key === 'PageDown' || (!onRange && (ev.key === 'ArrowRight' || ev.key === 'ArrowDown'))) { ev.preventDefault(); nextTour(); return; }
+        if (ev.key === 'PageUp' || (!onRange && (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp'))) { ev.preventDefault(); prevTour(); }
+        return;
+      }
+      var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [contenteditable]'));
+      if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'p' && ev.key !== 'P') return;
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
+      var t = ev.target;
+      if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
+      ev.preventDefault();
+      togglePresenter();
+    });
+    window.addEventListener('hashchange', function () {
+      if (location.hash === hashString()) return;
+      stopAnim(); trail = null;
+      state = readHash(); sel[2] = null; compute2(); showStep(state.step, false);
+    });
+    var lastW = 0, raf = 0, lastH = window.innerHeight;
+    var schedule = function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(rerender); };
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function () {
+        var w = els.flow.clientWidth;
+        if (w === lastW) return;
+        lastW = w; schedule();                  // deferred to the next frame: no resize loop
+      }).observe(els.flow);
+    }
+    window.addEventListener('resize', function () {
+      if (tour.on) tourLayout();
+      if (window.innerHeight !== lastH || !('ResizeObserver' in window)) { lastH = window.innerHeight; schedule(); }
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { schedule(); });
+
+    if (/(^|[#&])shot=slide(&|$)/.test(location.hash)) document.documentElement.classList.add('shot-slide');
+    state = readHash();
+    compute2();
+    showStep(state.step, false);
+    renderAll();                                  // second pass: plot heights from the settled layout
+    document.documentElement.setAttribute('data-ready', '1');
+  }
+
+  // Small API for tests and for slides that script the demo.
+  window.d01 = {
+    fitPoly: function (xs, ys, deg, alpha) { var m = fitPoly(xs, ys, deg, alpha); return { c: Array.from(m.c), method: m.method, theta: monomials(m) }; },
+    predict: function (xs, ys, deg, alpha, at) { var m = fitPoly(xs, ys, deg, alpha); return at.map(m.predict); },
+    treloar: function () { return TRELOAR.map(function (r) { return r.slice(); }); },
+    six: function () { return SIX.map(function (i) { return TRELOAR[i].slice(); }); },
+    leastSquaresLine: function () { return { slope: LS1.k1, height: LS1.k2, pivot: PIVOT, area: LS1.area }; },
+    state: function () { return Object.assign({}, state); },
+    set: function (patch) {
+      stopAnim();
+      if ('k1' in patch || 'k2' in patch) { trail = null; state.k1 = clamp('k1' in patch ? patch.k1 : state.k1, K1.min, K1.max); state.k2 = clamp('k2' in patch ? patch.k2 : state.k2, K2.min, K2.max); }
+      var p2 = Object.assign({}, patch); delete p2.k1; delete p2.k2; delete p2.step;
+      if (Object.keys(p2).length) set2(p2);
+      if (patch.step && patch.step !== state.step) showStep(patch.step, false); else renderAll();
+      writeHash();
+      return Object.assign({}, state);
+    },
+    errors: function () { return last2.curve.map(function (c) { return { d: c.d, train: c.train, val: c.val, rTrain: c.rTrain, rNew: c.rNew, physicsOk: c.physics ? c.physics.ok : null }; }); },
+    physics: function () { return last2.physics ? { ok: last2.physics.ok, segs: last2.physics.segs.slice() } : null; },
+    knobs: function () { return last2.theta.slice(); },
+    animating: function () { return !!anim || !!tween; },
+    tour: function () { return { on: tour.on, tab: tour.tab, i: tour.i, n: tour.steps.length, target: tourTargetId() }; },
+    syntheticSet: syntheticSet
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
