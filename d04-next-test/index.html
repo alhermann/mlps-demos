@@ -294,7 +294,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
         <div class="meter-track" aria-hidden="true"><div class="meter-fill" id="meter-1"></div></div>
         <div class="scale" aria-hidden="true"><span>0 MPa</span><span>15 MPa</span></div>
       </div>
-      <p class="rule" id="rule-1">The spread does not depend on the results, only on where you test.</p>
+      <p class="rule" id="rule-1">With the settings fixed, the spread depends only on where you test, not on the results.</p>
       <button class="btn btn-primary" id="plan-btn" type="button">Let the model plan</button>
       <div class="btn-row" id="btn-row-1"><button class="btn" id="clear-btn" type="button">Clear the plan</button><button class="btn" id="mine-btn" type="button">Back to your plan</button></div>
       <p class="msg" id="msg-1" aria-live="polite"></p>
@@ -352,7 +352,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     <div class="side" id="side-3">
       <ol class="steps" id="steps-3">
         <li>Make the length scale very short: what happens between the tests?</li>
-        <li>Raise the test scatter: why does the band no longer pinch?</li>
+        <li>More test scatter: why does the band stay wide at tests?</li>
         <li>Switch on Abrams' law: what changes outside the tests?</li>
       </ol>
       <div class="field knob" id="ell-field">
@@ -492,7 +492,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
        mean(x*)   = m(x*) + k*^T K^-1 (ys - m(xs))
        spread(x*) = sqrt(s^2 - k*^T K^-1 k*)
      K = L L^T is factorised once (Cholesky); both formulas then need only triangular solves.
-     The spread does not contain ys: it depends only on where the tests are.
+     The spread does not contain ys: with the settings fixed, it depends only on where the tests are.
      ===================================================================== */
   function gpFit(xs, ys, o) {                  // o: { m: number or function, s, ell, sn }; ys may be null (spread only)
     var n = xs.length, m = typeof o.m === 'function' ? o.m : function () { return o.m; };
@@ -829,7 +829,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     var L = largestOf(state.plan);
     svg.querySelector('desc').textContent = 'Strength after 28 days against water / cement. Four tested mixes at ' + listText(TX, function (x) { return x.toFixed(2); }) +
       ' and the prediction with its band, narrow at the tests and wide between and beyond them. ' +
-      (state.plan.length ? 'Planned tests at ' + listText(state.plan, function (x) { return x.toFixed(2); }) + ': the band pinches there, the mean stays. ' : 'No test planned yet. ') +
+      (state.plan.length ? 'Planned tests at ' + listText(state.plan, function (x) { return x.toFixed(2); }) + ': the band narrows there, the mean stays. ' : 'No test planned yet. ') +
       'Largest spread ' + mpa(L.sd) + ' at ' + L.x.toFixed(2) + '.';
   }
   function renderSpread1() {
@@ -1167,7 +1167,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
       return 'Outside the tests the prediction now follows Abrams\' law: ' + mpa(on) + ' at 2.0 instead of ' + mpa(off) + '.';
     }
     if (st.ell <= 0.1) return 'Between the tests the prediction falls back to the first guess, 40 MPa.';
-    if (st.sn >= 3) return 'The band cannot be narrower than the test scatter, even at a test.';
+    if (st.sn >= 3) return 'One test is only as precise as its scatter: the band stays about that wide at a test.';
     if (st.ell >= 0.6) return 'A long length scale: each test informs mixes far away.';
     if (st.ell === LECTURE3.ell && st.sf === LECTURE3.sf && st.sn === LECTURE3.sn) return 'The lecture\'s values: length scale 0.25, first guess 40 ± 15 MPa, test scatter 1 MPa.';
     return '';
@@ -1201,7 +1201,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   var TOUR = {
     1: [
       { el: 'plot-1', text: 'Four tested mixes. The band shows how sure the model is.' },
-      { el: 'plot-1', text: 'A planned test: the band pinches there, before any result.',
+      { el: 'plot-1', text: 'A planned test: the band narrows there, before any result.',
         act: function () { finishAnim1(); if (state.plan.indexOf(0.95) < 0 && state.plan.length < MAX_PLAN) { state.plan.push(0.95); render1(); writeHash(); } } },
       { el: 'spread-box', text: 'Below: the spread. Where it is largest, the model knows least.' },
       { el: 'big-1', text: 'Your goal: five tests that make the largest spread small.' },
@@ -1365,7 +1365,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     }).join('');
     els.how.innerHTML = [
       'The Gaussian process. Two mixes with the ratios <i class="v">x</i> and <i class="v">x</i>′ are similar by <span class="math"><i>k</i>(<i>x</i>, <i>x</i>′) = <i>s</i><sup>2</sup> exp(−(<i>x</i> − <i>x</i>′)<sup>2</sup> / (2<i>ℓ</i><sup>2</sup>))</span>, where <i class="v">s</i> is the spread of the first guess and <i class="v">ℓ</i> the length scale. For tests at <i class="v">x</i><sub>1</sub> to <i class="v">x</i><sub><i>N</i></sub> with the results <b class="math">y</b>, the matrix <b class="math">K</b> holds the similarities of all pairs of tests, with <i class="v">σ</i><sup>2</sup> added on its diagonal (<i class="v">σ</i> is the test scatter), and <b class="math">k</b><sub>*</sub> holds the similarities of a new input <i class="v">x</i><sub>*</sub> to the tests. The prediction is the mean <span class="math"><i>m</i>(<i>x</i><sub>*</sub>) + <b>k</b><sub>*</sub><sup>T</sup> <b>K</b><sup>−1</sup> (<b>y</b> − <b>m</b>)</span> and the spread <span class="math">√(<i>s</i><sup>2</sup> − <b>k</b><sub>*</sub><sup>T</sup> <b>K</b><sup>−1</sup> <b>k</b><sub>*</sub>)</span>, where <i class="v">m</i> is the first guess. The band is the mean ± 2 × spread. The page solves these linear systems exactly, in double precision.',
-      'Step 1. First guess 40 ± 15 MPa, length scale 0.25, test scatter 1 MPa. The spread does not contain the results <b class="math">y</b>: it depends only on where the tests are. A planned test therefore narrows the band before it is cast, while the mean stays as it is (the page predicts each planned test with the current mean, which leaves the mean unchanged). The model\'s plan puts each test at the candidate with the largest spread, from 0.30 to 1.80 in steps of 0.01 (the first of equal candidates wins), adds it and repeats: ' + listText(MODEL_PLAN.plan, function (x) { return x.toFixed(2); }) + '. After the five tests the largest spread is ' + mpa(MODEL_PLAN.after) + '.',
+      'Step 1. First guess 40 ± 15 MPa, length scale 0.25, test scatter 1 MPa. The spread does not contain the results <b class="math">y</b>: with the settings fixed, it depends only on where the tests are. A planned test therefore narrows the band before it is cast, while the mean stays as it is (the page predicts each planned test with the current mean, which leaves the mean unchanged). The model\'s plan puts each test at the candidate with the largest spread, from 0.30 to 1.80 in steps of 0.01 (the first of equal candidates wins), adds it and repeats: ' + listText(MODEL_PLAN.plan, function (x) { return x.toFixed(2); }) + '. After the five tests the largest spread is ' + mpa(MODEL_PLAN.after) + '.',
       'Step 2. The gold line is made up: the grade is <span class="math">1 + 3.5 exp(−((<i>x</i> − 250)/80)<sup>2</sup>) + 6 exp(−((<i>x</i> − 740)/50)<sup>2</sup>)</span> g/t at the position <i class="v">x</i> in metres, a small lens near 250 m and a rich one near 740 m, and every borehole returns this grade exactly. First guess 2 ± 2.5 g/t, length scale 70 m, test scatter 0.1 g/t, start boreholes at 100, 220 and 450 m. The computer tries every position from 0 to 1000 m in steps of 2.5 m and drills where the score of its rule is highest (the first of equal positions wins): least sure, the spread; upper confidence bound, the mean + <i class="v">κ</i> × spread; greedy, the mean alone (<i class="v">κ</i> = 0). It adds the grade found there and repeats, five times, always from the three start boreholes.',
       'Step 3. Abrams\' law <span class="math"><i>S</i> = <i>A</i> / <i>B</i><sup><i>x</i></sup></span>, with <i class="v">x</i> the ratio of water to cement, is fitted to all ' + N + ' mixes tested after 28 days as a straight line through ln <i class="v">S</i> against <i class="v">x</i> (least squares): <i class="v">A</i> = ' + ABRAMS.A.toFixed(1) + ' MPa, <i class="v">B</i> = ' + ABRAMS.B.toFixed(2) + '. With the law as the first guess, the Gaussian process predicts only how the tests deviate from the law, so outside the tests it follows the law instead of 40 MPa.',
       'Every number is computed in this page from these formulas. The numbers were checked against an independent implementation and against the figures of the lecture.'
