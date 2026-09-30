@@ -1436,7 +1436,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
   function tourTrain(step) { return function () { if (!run(step).running && run(step).stop !== 'done') startTraining(step); }; }
   var TOUR = {
     1: [
-      { el: 'plot-1', text: 'The network starts as a random curve. The law is never shown.' },
+      { el: 'plot-1', text: 'A random curve at first; the answer exp(−τ) is never shown.' },
       { el: 'start-field', text: 'The start value θ(0) = 1 goes into the loss.' },
       { el: 'train-row-1', text: 'Train: each step shrinks the residual and the start value term.', act: tourTrain(1) },
       { el: 'resid-box', text: 'The residual shrinks along the whole axis: the law holds.' },
