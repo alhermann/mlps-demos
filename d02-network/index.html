@@ -103,7 +103,7 @@ input[type=range]:focus-visible{outline-offset:3px}
 .panel{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1.75rem;align-items:start}
 .side{display:flex;flex-direction:column;gap:.75rem;min-width:0}
 .steps{list-style:none;padding:0;display:grid;gap:.2rem;counter-reset:st}
-.steps li{counter-increment:st;display:grid;grid-template-columns:1.375rem minmax(0,1fr);gap:.55rem;font-size:.9375rem;line-height:1.38}
+.steps li{counter-increment:st;display:grid;grid-template-columns:1.375rem minmax(0,1fr);gap:.55rem;font-size:.9375rem;line-height:1.38;text-wrap:pretty}
 .steps li::before{content:counter(st);display:grid;place-items:center;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--emph);color:#FFFFFF;font-size:.75rem;font-weight:600;line-height:1}
 .fig{display:flex;flex-direction:column;gap:.4rem;min-width:0}
 .legend{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.2rem 1.1rem;font-size:.8125rem;color:var(--ink)}
@@ -212,6 +212,28 @@ input[type=range]:focus-visible{outline-offset:3px}
 .bdg-c{fill:var(--emph)}
 .netfig .bdg-t{fill:#FFFFFF;font-weight:600}
 .unit-hit{fill:transparent;cursor:pointer}
+/* signal flow (step 2): dots carry values forward, dashed navy pieces carry the corrections back during training */
+.node-unit.flow{fill:var(--canvas);stroke:var(--emph)}
+.node-unit.flow.off{stroke:var(--mute)}
+.unit-level{fill:#B7CBD8}
+.flow-dot{fill:var(--c-model);stroke:var(--canvas);stroke-width:1}
+.flow-gdot{fill:var(--c-model);stroke:var(--canvas);stroke-width:1}
+.flow-back{fill:none;stroke:var(--emph);stroke-linecap:butt}
+.flow-head{fill:var(--emph)}
+.netfig .flow-val{font-weight:600;fill:var(--emph);font-variant-numeric:tabular-nums}
+.flow-guide{fill:none;stroke:var(--c-model);stroke-opacity:.7}
+.flow-marker{fill:var(--c-model);stroke:var(--canvas)}
+.flow-tri{fill:var(--c-model)}
+.ln-unit.emph{stroke:var(--emph)}
+.mk-log{fill:var(--canvas);stroke:var(--c-train)}
+#svg-2.flowing{cursor:ew-resize}
+#plot-2:focus-visible{outline:2px solid var(--emph);outline-offset:2px}
+.flow-cap{font-size:.8125rem;color:var(--ink);min-height:1.5em;text-wrap:pretty}
+.flow-row{display:flex}
+.inline-link{display:inline;padding:.62rem 0;margin:-.62rem 0;border:0;background:none;color:var(--emph);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.inline-link:hover{color:#0B4C87}
+#tiny th{border-bottom:0;padding:.22rem 1rem .22rem 0;vertical-align:top;white-space:nowrap}
+#tiny td{padding-left:0}
 .go .fpulse{animation:fpulse .55s ease-out forwards}
 .go .appear{opacity:0;animation:appear .3s ease-out .42s forwards}
 .go .grad{animation:gflow .9s linear 1}
@@ -261,7 +283,7 @@ tr.is-off td{color:var(--mute)}
 .tour-next:hover{background:#0B4C87}
 .tour-end{margin-left:auto}
 
-html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot-slide .site-foot,html.shot-slide #loss-box,html.shot-slide #status{display:none !important}
+html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot-slide .site-foot,html.shot-slide #loss-box,html.shot-slide #status,html.shot-slide #steps-2,html.shot-slide .flow-row{display:none !important}
 
 /* ---------- phones ---------- */
 @media (max-width:767.98px){
@@ -278,7 +300,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none !important;animation:none !important}
-  .fpulse{display:none}
+  .fpulse,.flow-dot,.flow-back,.flow-head{display:none}
   .go .appear,.go .appear-b{opacity:1}
   .btn:active{transform:none}
   .tour-veil{display:none}
@@ -320,8 +342,8 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     </figure>
     <div class="side" id="side-1">
       <ol class="steps" id="steps-1">
-        <li>Move both knobs until the misses are small.</li>
-        <li>Then let the computer walk downhill (gradient descent).</li>
+        <li>Fit one bent line with the two knobs.</li>
+        <li>Then let the computer do it (gradient descent).</li>
       </ol>
       <div class="net-box" id="mini-box">
         <div class="plot netfig" id="mini"><svg id="svg-mini" role="img" aria-labelledby="svg-mini-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-mini-desc">One neuron between the stretch and the stress</desc></svg></div>
@@ -354,12 +376,15 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     </figure>
     <div class="side" id="side-2">
       <ol class="steps" id="steps-2">
-        <li>Press Train and watch the bent lines add up.</li>
-        <li>Change the number of units, then train again.</li>
+        <li>Add units and press Train: the bent lines add up.</li>
+        <li><span>Then try a much larger <button type="button" class="inline-link" id="lr-link">learning rate</button>.</span></li>
+        <li>Watch the signal flow: see each unit switch on.</li>
       </ol>
       <div class="net-box" id="net-box">
         <div class="plot netfig" id="net-2"><svg id="svg-net2" role="img" aria-labelledby="svg-net2-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-net2-desc">The network: stretch in, units in the middle, stress out</desc></svg></div>
+        <p class="flow-cap" id="flow-cap">Thicker line: larger weight.</p>
         <ul class="legend" id="net-legend-2" aria-label="Legend of the network"></ul>
+        <div class="flow-row"><button class="btn" id="flow-btn" type="button" aria-pressed="false">Watch the signal flow</button></div>
       </div>
       <div class="field" id="units-field">
         <div class="field-row"><label for="units">Number of units (neurons)</label><span class="field-val big" id="units-out" aria-hidden="true">4</span></div>
@@ -392,7 +417,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     </figure>
     <div class="side" id="side-3">
       <ol class="steps" id="steps-3">
-        <li>Tap a measurement in the small plot.</li>
+        <li>Tap one measurement in the small plot.</li>
         <li>Press Forward, then Back, then Update.</li>
       </ol>
       <div class="loss-box" id="pick-box">
@@ -435,13 +460,13 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
         <fieldset class="opt">
           <legend>A trained network</legend>
           <div class="btn-row"><button id="load-trained" class="btn" type="button">Load a trained network</button></div>
-          <p class="note" id="trained-note">Four units, fitted to the same 25 measurements with a faster method (typical error 0.081 MPa).</p>
+          <p class="note" id="trained-note">Four units, trained on the same 25 measurements by plain gradient descent, as in the lecture listing (20 000 steps, typical error 0.081 MPa).</p>
         </fieldset>
       </div>
       <details class="sub" id="tiny-box">
         <summary>The tiny network from the lecture, computed by this page</summary>
         <div class="body table-wrap">
-          <p>Input <span class="math"><i>x</i> = 2</span>, <span class="math"><i>w</i><sub>1</sub> = 0.5</span>, bent line (ReLU), <span class="math"><i>w</i><sub>2</sub> = 3</span>, target <span class="math"><i>y</i> = 1</span>, squared error, learning rate 0.01.</p>
+          <p>Input <span class="math"><i>x</i> = 2</span>, <span class="math"><i>w</i><sub>1</sub> = 3</span>, bent line (ReLU), <span class="math"><i>w</i><sub>2</sub> = 1.5</span>, measured <span class="math"><i>y</i> = 5</span>, squared error <span class="math">(<i>ŷ</i> − <i>y</i>)<sup>2</sup></span>, learning rate 0.01.</p>
           <table><tbody id="tiny"></tbody></table>
         </div>
       </details>
@@ -467,6 +492,8 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
           <p>Training minimises the mean squared error over all 25 measurements by plain gradient descent: every step moves every knob against its gradient, times the learning rate. The typical error shown is the root of the mean squared error (RMSE), in MPa. Training pauses by itself when 1000 more steps improve the typical error by less than 1 %, when every unit is switched off, or after 30 000 steps.</p>
           <p>The gradients come from an explicit backward pass (backpropagation, the chain rule): for one measurement with squared error <span class="math"><i>L</i> = (<i>P̂</i> − <i>P</i>)<sup>2</sup></span>, <span class="math">∂<i>L</i>/∂<i>P̂</i> = 2(<i>P̂</i> − <i>P</i>)</span>, <span class="math">∂<i>L</i>/∂<i>a<sub>j</sub></i> = ∂<i>L</i>/∂<i>P̂</i> · <i>h<sub>j</sub></i></span>, and for a unit that is switched on <span class="math">∂<i>L</i>/∂<i>w<sub>j</sub></i> = ∂<i>L</i>/∂<i>P̂</i> · <i>a<sub>j</sub></i> · <i>s</i></span> and <span class="math">∂<i>L</i>/∂<i>b<sub>j</sub></i> = ∂<i>L</i>/∂<i>P̂</i> · <i>a<sub>j</sub></i></span>; a switched-off unit passes nothing back. Step 3 shows these numbers for one measurement and updates with them (the offsets and the output offset are updated too, but not drawn). Step 2 averages them over all 25 measurements. The page checks the backward pass against finite differences.</p>
           <p>Random start (fixed by its number, so every run is repeatable): each unit opens to the right with a steepness <i class="v">w<sub>j</sub></i> between 2 and 3; unit <i class="v">j</i> bends at a random place in the <i class="v">j</i>-th of <i class="v">H</i> equal slices of the stretch from 1 to about 8.6, so a unit may bend beyond the last measurement; the weights out start as random numbers with spread <span class="math">√(2/<i>H</i>)</span>, the output offset at 0. A unit that is switched off for every measurement gets no gradient and never learns, but it still bends the curve beyond the data.</p>
+          <p>The trained network under More options is the one of the lecture listing (network_rubber.py): the same plain gradient descent with learning rate 0.05, run for 20 000 steps from the listing's own random start (typical error 0.081 MPa). Its units are shown in the order in which they bend, at stretch 0.98, 5.51, 7.01 and 9.67; this only renumbers them. The dots on its error curve are the errors the listing prints every 5000 steps.</p>
+          <p>The signal flow of step 2 computes the network for one stretch at a time: the dots on the first edges are sized by <span class="math"><i>w<sub>j</sub></i> <i>s</i></span>, those on the second edges by <span class="math"><i>a<sub>j</sub></i> <i>h<sub>j</sub></i></span>, the value each unit adds to the stress; a unit fills in proportion to its output <i class="v">h<sub>j</sub></i>, relative to its largest output in the plot, and is hollow while it is switched off. During training, the dots show the forward pass and the dashed pieces the way back, once per 1.4 s; the steps themselves run much faster.</p>
           <p>Step 1 uses a single bent line that is zero before the bend. The button walks downhill on the two knobs (the bend moves with four times the step of the slope) until the steps become tiny; this finds a nearby valley, which need not be the deepest one. The physics check computes the slope of the curve on every straight piece between stretch 1 and 7.6 and fails if any slope is negative.</p>
         </div>
       </details>
@@ -554,7 +581,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   /* The network: stress = c + sum_j a_j relu(w_j s + b_j), s the rescaled stretch.
      Random start (seeded): unit j opens to the right with a random steepness w_j in [2, 3]; its bend sits at a
      random place in the j-th of H equal slices of s in [0, 1.15] (stretch 1 to about 8.6, so a unit may bend
-     beyond the last measurement); output weights a_j ~ N(0, 2/H) (He-style for H inputs); output height c = 0. */
+     beyond the last measurement); output weights a_j ~ N(0, 2/H); output offset c = 0. */
   var BEND_SPAN = 1.15;
   function netInit(H, seed) {
     var net = { w: new Float64Array(H), b: new Float64Array(H), a: new Float64Array(H), c: 0 };
@@ -652,12 +679,13 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     }
     return { ok: segs.length === 0, segs: segs };
   }
-  /* The lecture's tiny network, by hand: x = 2, z = w1 x, h = relu(z), yhat = w2 h, target y, L = (yhat - y)^2 */
+  /* The lecture's tiny network, by hand: z = w1 x, h = relu(z), yhat = w2 h, measured y, L = (yhat - y)^2 */
   function tinyExample(x, w1, w2, y, lr) {
     var net = { w: Float64Array.of(w1), b: Float64Array.of(0), a: Float64Array.of(w2), c: 0 };
-    var f = forward(net, x), g = backward(net, f, y);
-    return { z: f.z[0], h: f.h[0], yhat: f.yhat, loss: g.loss, dLdyhat: g.yhat, dLdw2: g.a[0], dLdw1: g.w[0],
-      w1new: w1 - lr * g.w[0], w2new: w2 - lr * g.a[0] };
+    var f = forward(net, x), g = backward(net, f, y), w1n = w1 - lr * g.w[0], w2n = w2 - lr * g.a[0];
+    var f2 = forward({ w: Float64Array.of(w1n), b: Float64Array.of(0), a: Float64Array.of(w2n), c: 0 }, x);
+    return { z: f.z[0], h: f.h[0], yhat: f.yhat, loss: g.loss, dLdyhat: g.yhat, dLdw2: g.a[0], dLdh: g.h[0], dLdz: g.z[0], dLdw1: g.w[0],
+      w1new: w1n, w2new: w2n, yhatNew: f2.yhat, lossNew: (f2.yhat - y) * (f2.yhat - y) };
   }
 
   /* =====================================================================
@@ -671,13 +699,18 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   var KB = { min: 1, max: 7.6 }, KS = { min: 0, max: 3 }, KB_DEFAULT = 2, KS_DEFAULT = 0.3;
   var GD1_LR_S = 0.04, GD1_LR_B = 0.16, GD1_MAX = 600;
   var DOM = { x: [0.6, 8.0], y: [-1.2, 7.3] }, DOM_BEYOND = { x: [0.6, 10.2], y: [-2, 16] };
-  // the reference network (lectures/L02_networks/data/relu_rubber.json): fitted with L-BFGS, typical error 0.0811 MPa
+  // the reference network (lectures/L02_networks/data/relu_rubber.json): trained by plain gradient descent exactly as the
+  // lecture listing script/code/L02/network_rubber.py (learning rate 0.05, 20 000 steps, numpy default_rng(44));
+  // typical error 0.0811 MPa. Its units are listed here in the order in which they bend (0.981, 5.512, 7.010, 9.666):
+  // the same network, only renumbered.
   var TRAINED = {
-    w: [1.9337092598009389, 4.186036032263039, 2.777907590191881, -0.8280472541967213],
-    b: [0.0363687646560256, -3.8115932086125084, -1.8978015487844953, -0.06255923956584139],
-    a: [1.3819737895202504, 3.7010217500271163, 2.234393081103061, 0.9737230931099177],
-    c: 0.033099344065947695
+    w: [1.6480896217526564, 2.6388966662600226, 3.509076544840144, 0.12382331691423192],
+    b: [0.004784514536094988, -1.8039199587836476, -3.1952240982680915, -0.16258215835207945],
+    a: [1.6213661966821267, 2.3598032155005533, 4.398801430302173, -0.2541585861511418],
+    c: 0.07565561820479526
   };
+  var TRAINED_STEPS = 20000;
+  var TRAINED_LOG = [[0, 2.584], [5000, 0.097], [10000, 0.082], [15000, 0.081]];   // typical errors printed by the listing
   function trainedNet() { return { w: Float64Array.from(TRAINED.w), b: Float64Array.from(TRAINED.b), a: Float64Array.from(TRAINED.a), c: TRAINED.c }; }
 
   /* =====================================================================
@@ -712,7 +745,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   /* =====================================================================
      State and URL hash
      ===================================================================== */
-  var DEFAULTS = { step: 1, kb: KB_DEFAULT, ks: KS_DEFAULT, units: H_DEFAULT, start: 1, lr: LR_DEFAULT, beyond: false, physics: false, sample: SAMPLE_DEFAULT };
+  var DEFAULTS = { step: 1, kb: KB_DEFAULT, ks: KS_DEFAULT, units: H_DEFAULT, start: 1, lr: LR_DEFAULT, beyond: false, physics: false, sample: SAMPLE_DEFAULT, flow: false };
   var state = Object.assign({}, DEFAULTS);
   function clampInt(v, lo, hi, def) { v = parseInt(v, 10); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
   function clampNum(v, lo, hi, def) { v = parseFloat(v); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
@@ -728,6 +761,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     st.sample = clampInt(p.get('sample'), 0, ND - 1, DEFAULTS.sample);
     if (p.has('beyond')) st.beyond = p.get('beyond') === '1';
     if (p.has('physics')) st.physics = p.get('physics') === '1';
+    if (p.has('flow')) st.flow = p.get('flow') === '1';
     boot.train = clampInt(p.get('train'), 0, MAX_STEPS, 0);
     boot.trained = p.get('net') === 'trained';
     boot.shot = p.get('shot') === 'slide';
@@ -736,7 +770,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   }
   function hashString() {
     return '#step=' + state.step + '&kb=' + state.kb.toFixed(2) + '&ks=' + state.ks.toFixed(2) + '&units=' + state.units + '&start=' + state.start +
-      '&lr=' + state.lr + '&beyond=' + (state.beyond ? 1 : 0) + '&physics=' + (state.physics ? 1 : 0) + '&sample=' + state.sample;
+      '&lr=' + state.lr + '&beyond=' + (state.beyond ? 1 : 0) + '&physics=' + (state.physics ? 1 : 0) + '&sample=' + state.sample + '&flow=' + (flow.on ? 1 : 0);
   }
   var hashTimer = 0;
   function writeHash() {
@@ -845,6 +879,8 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     neg: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="edge neg" stroke-width="3"/>'],
     on: ['0 0 16 16', '<circle cx="8" cy="8" r="6" class="node-unit" stroke-width="1.75"/>'],
     off: ['0 0 16 16', '<circle cx="8" cy="8" r="6" class="node-unit off" stroke-width="1.75"/>'],
+    level: ['0 0 16 16', '<circle cx="8" cy="8" r="6" fill="#FFFFFF" stroke="none"/><path d="M2 8A6 6 0 0 0 14 8Z" class="unit-level"/><circle cx="8" cy="8" r="6" fill="none" stroke="#003566" stroke-width="1.75"/>'],
+    dot: ['0 0 14 14', '<circle cx="7" cy="7" r="3.5" class="flow-dot"/>'],
     back: ['0 0 30 14', '<line x1="8" x2="29" y1="7" y2="7" class="grad" stroke-width="2" stroke-dasharray="5 4"/><path d="M1 7L9 2.5V11.5Z" class="grad-head"/>']
   };
   function swatch(kind) {
@@ -871,20 +907,21 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   /* =====================================================================
      The network under training (shared by steps 2 and 3)
      ===================================================================== */
-  var tr = { net: null, ver: 0, steps: 0, hist: [], running: false, raf: 0, acc: 0, last: 0, done: false, armAt: 0, stop: '', ghost: null, loaded: false, single: false };
+  var tr = { net: null, ver: 0, steps: 0, base: 0, logged: null, hist: [], running: false, raf: 0, acc: 0, last: 0, done: false, armAt: 0, stop: '', ghost: null, loaded: false, single: false };
   function resetNet(keepGhost) {
     stopTraining();
     if (!keepGhost) tr.ghost = null;
     tr.net = netInit(state.units, state.start); tr.ver += 1;
-    tr.steps = 0; tr.hist = [netRmse(tr.net)]; tr.done = false; tr.stop = ''; tr.armAt = 0; tr.loaded = false; tr.single = false;
+    tr.steps = 0; tr.base = 0; tr.logged = null; tr.hist = [netRmse(tr.net)]; tr.done = false; tr.stop = ''; tr.armAt = 0; tr.loaded = false; tr.single = false;
     resetInside();
   }
   function loadTrained() {
     stopTraining();
     tr.ghost = null;
     state.units = 4;
-    tr.net = trainedNet(); tr.ver += 1;
-    tr.steps = 0; tr.hist = [netRmse(tr.net)]; tr.done = false; tr.stop = ''; tr.armAt = 0; tr.loaded = true;
+    tr.net = trainedNet(); tr.ver += 1;             // already trained for 20 000 steps: the counter and the error curve go on from there
+    tr.steps = TRAINED_STEPS; tr.base = TRAINED_STEPS; tr.logged = TRAINED_LOG; tr.hist = [netRmse(tr.net)];
+    tr.done = false; tr.stop = ''; tr.armAt = 0; tr.loaded = true; tr.single = false;
     resetInside();
   }
   function allOff(net) { for (var j = 0; j < net.w.length; j++) if (!offForAll(net, j)) return false; return true; }
@@ -912,7 +949,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     var n = tr.hist.length, r = curErr(), big = LRS[state.lr] >= 0.2;
     if (!(r < BLOW)) return 'blew';
     if (tr.steps > 0 && allOff(tr.net)) return 'dead';
-    if (tr.steps === 0) return tr.loaded ? 'loaded' : 'idle';
+    if (tr.hist.length === 1) return tr.loaded ? 'loaded' : 'idle';
     if (n > 6) {
       var from = Math.max(1, n - 40), ups = 0, jump = 0;
       for (var i = from; i < n; i++) if (tr.hist[i] > tr.hist[i - 1]) { ups++; jump = Math.max(jump, tr.hist[i] / tr.hist[i - 1] - 1); }
@@ -926,7 +963,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   }
   var STATUS = {
     idle: ['', ''],
-    loaded: ['A trained network is loaded. Look inside in step 3.', ''],
+    loaded: ['A trained network is loaded (20' + NB + '000 steps, as in the lecture).', ''],
     falls: ['The error falls, step by step.', ''],
     slow: ['Small steps: the error falls, but slowly.', 'slow'],
     done: ['Done: more steps hardly lower the error.', ''],
@@ -958,6 +995,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     if (!tr.running) return;
     tr.running = false; cancelAnimationFrame(tr.raf);
     if (els.trainBtn) { els.trainBtn.textContent = 'Train'; els.trainBtn.setAttribute('aria-pressed', 'false'); }
+    if (typeof flowUpdate === 'function') { flowUpdate(); flowKick(); }
   }
   function trainFrame(now) {
     if (!tr.running) return;
@@ -1066,6 +1104,11 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       });
     }
     geom[2] = { pts: drawData(svg, P, lw), P: P };
+    var fm = S('g', { class: 'flow-mark', visibility: 'hidden' }, svg);
+    mark2 = { g: fm, P: P, emph: undefined,
+      guide: S('line', { class: 'flow-guide', 'stroke-width': 1.5 * lw, 'stroke-dasharray': (4 * lw) + ' ' + (3 * lw) }, fm),
+      tri: S('path', { class: 'flow-tri' }, fm),
+      dot: S('circle', { r: 6.5 * (lw > 1 ? 1.3 : 1), class: 'flow-marker', 'stroke-width': 2 }, fm) };
     var on = 0; for (var q = 0; q < net.w.length; q++) if (!offForAll(net, q)) on++;
     svg.querySelector('desc').textContent = 'The 25 rubber measurements, the bent lines of ' + net.w.length + ' units (' + on + ' of them switched on somewhere in the measured range) and their sum, the network\'s curve. Typical error ' + plain(curErr()) + ' MPa after ' + tr.steps + ' steps.' +
       (state.beyond ? ' Beyond the last measurement the curve continues as a straight line after its last bend.' : '');
@@ -1088,6 +1131,10 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
      the size of the weight, navy positive, orange negative (DESIGN.md, Networks)
      ===================================================================== */
   function edgeWidth(v) { return Math.min(8, 0.75 + 1.25 * Math.abs(v)); }
+  function glyphGeom(w, b, cx, cy, R) {      // where the glyph of a unit sits inside its node
+    var gw = 1.25 * R, gh = 0.62 * R;
+    return { x0: cx - gw / 2, gw: gw, yb: cy + gh / 2, gh: gh, top: Math.max(0, b, w + b) };
+  }
   function glyphPath(w, b, cx, cy, R) {       // the unit's own bent line over the measured range (s from 0 to 1)
     var gw = 1.25 * R, gh = 0.62 * R, x0 = cx - gw / 2, yb = cy + gh / 2, n = 2, pts = [0, 1], k = w !== 0 ? -b / w : null;
     if (k !== null && k > 0 && k < 1) pts = [0, k, 1];
@@ -1103,7 +1150,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   function netGeom(W, Hs, H, mode, fs) {
     var inside = mode === 'inside', mini = mode === 'mini';
     var padT = inside ? 1.5 * fs : 0.5 * fs, padB = (mini ? 1.55 : inside ? 1.9 : 0.5) * fs;
-    var narrow = W < 560, gap = (Hs - padT - padB) / H, R = Math.min(inside ? (narrow ? 1.05 : 1.5) * fs : 1.12 * fs, gap * (inside ? 0.4 : 0.42));
+    var narrow = W < 560, gap = (Hs - padT - padB) / H, R = Math.min(inside ? (narrow ? 1.05 : 1.5) * fs : mini ? 1.12 * fs : 1.3 * fs, gap * (inside ? 0.4 : 0.42));
     var xs = inside ? (narrow ? [0.07, 0.32, 0.555] : [0.075, 0.36, 0.6]) : mini ? [0.12, 0.5, 0.88] : [0.11, 0.5, 0.88];
     var xIn = Math.max(R + 2, xs[0] * W), mid = padT + (Hs - padT - padB) / 2;
     var g = { R: R, xIn: xIn, xHid: xs[1] * W, xOut: xs[2] * W, mid: mid, ys: [], fs: fs, W: W, Hs: Hs, narrow: narrow, gap: gap };
@@ -1140,8 +1187,9 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   }
   /* o: { svg, W, Hs, net, mode: 'train' | 'inside' | 'mini', level, f, g, marks, hi, pulse } */
   function drawNet(o) {
-    var svg = o.svg, net = o.net, H = net.w.length, fs = rootPx(), lw = lineScale(), inside = o.mode === 'inside', mini = o.mode === 'mini';
+    var svg = o.svg, net = o.net, H = net.w.length, fs = rootPx(), lw = lineScale(), inside = o.mode === 'inside', mini = o.mode === 'mini', train = o.mode === 'train';
     clearSvg(svg); sizeSvg(svg, o.W, o.Hs);
+    var defs = train ? S('defs', null, svg) : null, refs = train ? { units: [], fwd1: [], fwd2: [], back1: [], back2: [], lw: lw, fs: fs } : null;
     var G = netGeom(o.W, o.Hs, H, o.mode, fs), R = G.R, lvl = o.level || 0, f = o.f, gr = o.g;
     var root = S('g', { class: o.anim ? 'go' : '' }, svg), gE = S('g', null, root), gA = S('g', null, root), gN = S('g', null, root), gL = S('g', null, root);
     var pIn = [G.xIn, G.mid], pOut = [G.xOut, G.mid], segs1 = [], segs2 = [], j;
@@ -1176,18 +1224,45 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     for (j = 0; j < H; j++) {
       var cy = G.ys[j], off = isOff(j), plainNode = inside && lvl < 2;
       var cls = 'node-unit' + (plainNode ? ' plain' : off ? ' off' : '');
-      S('circle', { cx: G.xHid, cy: cy, r: R, class: cls, 'stroke-width': (o.hi === j ? 3 : 2) * Math.min(lw, 1.3), 'data-unit': j, 'data-state': plainNode ? 'plain' : off ? 'off' : 'on' }, gN);
+      var node = S('circle', { cx: G.xHid, cy: cy, r: R, class: cls, 'stroke-width': (o.hi === j ? 3 : 2) * Math.min(lw, 1.3), 'data-unit': j, 'data-state': plainNode ? 'plain' : off ? 'off' : 'on' }, gN);
+      var level = null;
+      if (train) {                             // the unit fills up with its output while the signal flows
+        var cp = S('clipPath', { id: 'n2clip' + j }, defs);
+        S('circle', { cx: G.xHid, cy: cy, r: Math.max(0, R - 0.75) }, cp);
+        level = S('rect', { x: G.xHid - R, y: cy + R, width: 2 * R, height: 0, class: 'unit-level', 'clip-path': 'url(#n2clip' + j + ')' }, gN);
+      }
       if (inside && lvl >= 2) {
         T(gL, G.xHid, cy + 0.34 * valSize, [nodeText(f.h[j])], { class: 'nval' + (off ? ' off' : '') + (o.anim && lvl === 2 ? ' appear' : ''), 'text-anchor': 'middle', 'font-size': valSize, 'data-unit': j });
       } else {
-        var w = mini ? 1 : net.w[j], b = mini ? -toS(o.bend) : net.b[j];
-        S('path', { d: glyphPath(w, b, G.xHid, cy, R), class: 'glyph' + (plainNode ? ' plain' : off ? ' off' : ''), 'stroke-width': 2 * Math.min(lw, 1.3) }, gN);
+        var w = mini ? 1 : net.w[j], b = mini ? -toS(o.bend) : net.b[j], gcls = 'glyph' + (plainNode ? ' plain' : off ? ' off' : '');
+        var glyph = S('path', { d: glyphPath(w, b, G.xHid, cy, R), class: gcls, 'stroke-width': 2 * Math.min(lw, 1.3) }, gN);
+        if (train) {
+          var sMax = Math.max(1, toS(plotDomain(2).x[1]));
+          refs.units.push({ node: node, level: level, glyph: glyph, cy: cy, R: R, gg: glyphGeom(w, b, G.xHid, cy, R),
+            hmax: Math.max(0, b, w * sMax + b), baseClass: cls, baseState: off ? 'off' : 'on', baseGlyph: gcls, baseStroke: (o.hi === j ? 3 : 2) * Math.min(lw, 1.3),
+            dot: S('circle', { r: 2.6 * Math.min(lw, 1.3), class: 'flow-gdot', visibility: 'hidden' }, gN) });
+        }
       }
       if (!mini) S('circle', { cx: G.xHid, cy: cy, r: R + 4, class: 'unit-hit', 'data-unit': j }, gN);
     }
     if (mini) T(gL, G.xHid, G.ys[0] + R + 1.15 * fs, ['one neuron (unit)'], { class: 'nlab halo', 'text-anchor': 'middle' });
     S('circle', { cx: pOut[0], cy: pOut[1], r: R, class: 'node-io', 'stroke-width': 2 * Math.min(lw, 1.3) }, gN);
-    T(gL, pOut[0], pOut[1] + R + 1.15 * fs, [inside ? (G.narrow ? 'prediction' : 'predicted stress') : 'stress'], { class: 'nlab halo', 'text-anchor': 'middle' });
+    var outLab = T(gL, pOut[0], pOut[1] + R + 1.15 * fs, [inside ? (G.narrow ? 'prediction' : 'predicted stress') : 'stress'], { class: 'nlab halo', 'text-anchor': 'middle' });
+    if (train) {                               // dots on the edges, dashed pieces for the way back, values on the input and output
+      for (j = 0; j < H; j++) {
+        refs.fwd1.push(S('circle', { r: 2, class: 'flow-dot', visibility: 'hidden' }, gA));
+        refs.fwd2.push(S('circle', { r: 2, class: 'flow-dot', visibility: 'hidden' }, gA));
+        [refs.back1, refs.back2].forEach(function (list) {
+          var bg = S('g', { visibility: 'hidden', class: 'flow-backg' }, gA);
+          list.push({ g: bg, line: S('path', { class: 'flow-back', 'stroke-width': 2 * Math.min(lw, 1.3), 'stroke-dasharray': (4 * Math.min(lw, 1.3)).toFixed(1) + ' ' + (3 * Math.min(lw, 1.3)).toFixed(1) }, bg), head: S('path', { class: 'flow-head' }, bg) });
+        });
+      }
+      refs.inVal = T(gL, pIn[0], pIn[1] + 0.34 * valSize, [''], { class: 'flow-val', 'text-anchor': 'middle', 'font-size': valSize, visibility: 'hidden' });
+      refs.outVal = T(gL, pOut[0], pOut[1] + 0.34 * valSize, [''], { class: 'flow-val', 'text-anchor': 'middle', 'font-size': valSize, visibility: 'hidden' });
+      refs.outLab = outLab;
+      refs.segs1 = segs1; refs.segs2 = segs2; refs.G = G;
+      net2 = refs;
+    }
     if (inside && lvl >= 3) T(gL, pOut[0], pOut[1] + 0.34 * valSize, [fixed(f.yhat, 2)], { class: 'nval' + (o.anim && lvl === 3 ? ' appear' : ''), 'text-anchor': 'middle', 'font-size': valSize });
     // forward pulses for the level that is just being revealed
     if (inside && o.anim) {
@@ -1282,13 +1357,16 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   function renderNet2() {
     var W = Math.floor(els.net2.clientWidth);
     if (W < 60 || !tr.net) return;
-    var fs = rootPx(), H = tr.net.w.length, Hs = Math.round(clamp((2.35 * H + 1.0) * fs, 7.2 * fs, 20 * fs));
+    var fs = rootPx(), H = tr.net.w.length, Hs = Math.round(clamp((2.8 * H + 1.2) * fs, 7.6 * fs, 22 * fs));
     drawNet({ svg: els.svgNet2, W: W, Hs: Hs, net: tr.net, mode: 'train', hi: geom.hi });
     var off = 0; for (var j = 0; j < H; j++) if (offForAll(tr.net, j)) off++;
     els.svgNet2.querySelector('desc').textContent = 'The network: the stretch goes in on the left, ' + H + (H === 1 ? ' unit' : ' units') + ' in the middle, the stress comes out on the right. ' +
       'Line width shows the size of each weight, navy positive, orange negative.' + (off ? ' ' + off + (off === 1 ? ' unit is' : ' units are') + ' switched off for every measurement.' : '');
-    var leg = li('pos', 'Positive weight') + li('neg', 'Negative weight') + (off ? li('off', 'Switched off for all data') : '');
+    var flowing = flow.on && !tr.running;
+    var leg = li('pos', 'Positive weight') + li('neg', 'Negative weight') +
+      (flowing ? li('level', 'Fill: the unit\'s output') + li('off', 'Switched off here') : off ? li('off', 'Switched off for all data') : '');
     if (els.netLegend2.innerHTML !== leg) els.netLegend2.innerHTML = leg;
+    flowUpdate();
   }
   function renderLoss() {
     var svg = els.svgLoss, W = Math.floor(els.plotLoss.clientWidth);
@@ -1297,7 +1375,8 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     var M = { l: 2.9 * fs, r: 0.8 * fs, t: 0.5 * fs, b: 1.7 * fs };
     clearSvg(svg); sizeSvg(svg, W, H);
     var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t;
-    var fin = hist.filter(function (v) { return isFinite(v) && v > 0; });
+    var base = tr.base, logged = tr.logged || [];
+    var fin = hist.filter(function (v) { return isFinite(v) && v > 0; }).concat(logged.map(function (q) { return q[1]; }));
     var lo = Math.floor(Math.log10(Math.min.apply(null, fin.concat([0.1])))), hi = Math.ceil(Math.log10(Math.max.apply(null, fin.concat([3]))));
     lo = clamp(lo, -3, 0); hi = clamp(hi, 1, 4);
     var xmax = Math.max(100, tr.steps), mag = Math.pow(10, Math.floor(Math.log10(xmax))), top = Math.ceil(xmax / mag * 2) / 2 * mag;
@@ -1315,11 +1394,12 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       T(gA, px, y0 + 1.2 * fs, [plain(v)], { class: 'tick small', 'text-anchor': 'middle' });
     });
     var stride = Math.max(1, Math.ceil(n / 700)), d = '', yv = function (v) { return clamp(sy(Math.log10(clamp(v, Math.pow(10, lo), Math.pow(10, hi)))), y1, y0); };
-    for (var i = 0; i < n; i += stride) { var v = hist[i]; if (!isFinite(v)) break; d += (d ? 'L' : 'M') + sx(i).toFixed(1) + ',' + yv(v).toFixed(1); }
-    if (isFinite(hist[n - 1])) d += (d ? 'L' : 'M') + sx(n - 1).toFixed(1) + ',' + yv(hist[n - 1]).toFixed(1);
+    for (var i = 0; i < n; i += stride) { var v = hist[i]; if (!isFinite(v)) break; d += (d ? 'L' : 'M') + sx(base + i).toFixed(1) + ',' + yv(v).toFixed(1); }
+    if (isFinite(hist[n - 1])) d += (d ? 'L' : 'M') + sx(base + n - 1).toFixed(1) + ',' + yv(hist[n - 1]).toFixed(1);
     S('path', { d: d, class: 'ln-loss', 'stroke-width': 2 * lw }, svg);
-    if (isFinite(hist[n - 1])) S('circle', { cx: sx(n - 1), cy: yv(hist[n - 1]), r: 4 * (lw > 1 ? 1.3 : 1), class: 'mk-cur', 'stroke-width': 1.5 }, svg);
-    svg.querySelector('desc').textContent = 'Typical error after every step, on a log scale: ' + plain(hist[0]) + ' MPa at the start, ' + plain(hist[n - 1]) + ' MPa after ' + tr.steps + ' steps.';
+    logged.forEach(function (q) { S('circle', { cx: sx(q[0]), cy: yv(q[1]), r: 3 * (lw > 1 ? 1.3 : 1), class: 'mk-log', 'stroke-width': 1.25 }, svg); });
+    if (isFinite(hist[n - 1])) S('circle', { cx: sx(base + n - 1), cy: yv(hist[n - 1]), r: 4 * (lw > 1 ? 1.3 : 1), class: 'mk-cur', 'stroke-width': 1.5 }, svg);
+    svg.querySelector('desc').textContent = 'Typical error after every step, on a log scale: ' + plain(logged.length ? logged[0][1] : hist[0]) + ' MPa at the start, ' + plain(hist[n - 1]) + ' MPa after ' + tr.steps + ' steps.';
   }
   function renderSide2() {
     var r = curErr(), H = tr.net.w.length;
@@ -1346,6 +1426,181 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     renderLegend2(); renderPlot2(); renderNet2(); renderLoss(); renderSide2();
     if (els.more.open) renderKnobTable();
     if (tour.on) tourLayout();
+  }
+
+
+  /* =====================================================================
+     The signal flow (step 2): one stretch value travels through the network.
+     A marker sweeps the stretch from 1 to 7.6 and back (or the student drags it);
+     dots carry w_j s along the first edges and a_j h_j along the second, each unit
+     fills with its output, the output node shows the prediction. While training
+     runs, faint dots go forward and dashed navy pieces come back: one rhythm per
+     1.4 s. Reduced motion: no moving dots, the fills follow the marker.
+     ===================================================================== */
+  var FLOW_PERIOD = 16000, FLOW_T = 1200, TRAIN_T = 1400, FLOW_HOLD = 1500, EMPH_MS = 1600;
+  var flow = { on: false, raf: 0, lam: LAM_LO, phase: 0, last: 0, holdUntil: 0, dragging: false, prev: null, emph: -1, emphUntil: 0, aria: 0 };
+  var net2 = null, mark2 = null;                 // element references of the step 2 diagram and plot, rebuilt with them
+  var CAP = {
+    idle: 'Thicker line: larger weight.',
+    flow: 'Each dot carries a value from the stretch to the stress.',
+    still: 'Drag along the plot: each unit fills past its bend.',
+    train: 'Forward: dots carry values. Back: dashes carry corrections.'
+  };
+  function flowLamAt(phase) { return LAM_LO + (LAM_TOP - LAM_LO) * (1 - Math.cos(2 * Math.PI * phase)) / 2; }
+  function flowPhaseOf(lam, up) {
+    var u = clamp((lam - LAM_LO) / (LAM_TOP - LAM_LO), 0, 1), a = Math.acos(1 - 2 * u) / (2 * Math.PI);
+    return up ? a : 1 - a;
+  }
+  function along(sg, q) { return [sg.a[0] + (sg.b[0] - sg.a[0]) * q, sg.a[1] + (sg.b[1] - sg.a[1]) * q]; }
+  function showEl(el, on) { if (on) el.removeAttribute('visibility'); else el.setAttribute('visibility', 'hidden'); }
+  function dotR(v, lw) { return clamp(2.5 + 1.0 * Math.abs(v), 2.5, 6.5) * (lw > 1 ? 1.35 : 1); }
+  function setDot(c, sg, q, r, op) {
+    var pt = along(sg, q);
+    c.setAttribute('cx', pt[0].toFixed(1)); c.setAttribute('cy', pt[1].toFixed(1));
+    c.setAttribute('r', r.toFixed(2)); c.setAttribute('opacity', op.toFixed(2)); showEl(c, true);
+  }
+  function setBack(bk, sg, prog, lw, fs) {    // a short dashed navy piece next to the edge, moving from right to left
+    var k = Math.min(lw, 1.3), n = upNormal(sg), off = 0.42 * fs, len = 16 * k, frac = Math.min(0.9, len / Math.max(sg.L, 1));
+    var q = (1 - prog) * (1 - frac), p0 = along(sg, q), p1 = along(sg, q + frac), hl = 6 * k, hw = 3.5 * k;
+    var tip = [p0[0] + n.nx * off, p0[1] + n.ny * off], end = [p1[0] + n.nx * off, p1[1] + n.ny * off], base = [tip[0] + sg.ux * hl, tip[1] + sg.uy * hl];
+    bk.line.setAttribute('d', 'M' + base[0].toFixed(1) + ',' + base[1].toFixed(1) + 'L' + end[0].toFixed(1) + ',' + end[1].toFixed(1));
+    bk.head.setAttribute('d', 'M' + tip[0].toFixed(1) + ',' + tip[1].toFixed(1) + 'L' + (base[0] + n.nx * hw).toFixed(1) + ',' + (base[1] + n.ny * hw).toFixed(1) +
+      'L' + (base[0] - n.nx * hw).toFixed(1) + ',' + (base[1] - n.ny * hw).toFixed(1) + 'Z');
+    showEl(bk.g, true);
+  }
+  function flowUpdate(now) {
+    if (!net2 || state.step !== 2 || !tr.net) return;
+    now = now || performance.now();
+    var rm = reducedMotion(), R2 = net2, net = tr.net, H = net.w.length, lw = R2.lw, fs = R2.fs, j;
+    if (R2.units.length !== H) return;
+    var flowing = flow.on && !tr.running, training = tr.running && !rm, s = toS(flow.lam), f = forward(net, s);
+    if (flowing) {                             // a unit that just switched on: emphasise its bent line for a moment
+      if (flow.prev && flow.prev.length === H) for (j = 0; j < H; j++) if (f.h[j] > 0 && !(flow.prev[j] > 0)) { flow.emph = j; flow.emphUntil = now + EMPH_MS; }
+      flow.prev = Array.from(f.h);
+    } else flow.prev = null;
+    var emph = flowing && now < flow.emphUntil ? flow.emph : -1;
+    R2.units.forEach(function (u, q) {
+      if (flowing) {
+        var on = f.h[q] > 0, level = on ? clamp(f.h[q] / Math.max(u.hmax, 1e-12), 0.06, 1) : 0;
+        u.node.setAttribute('class', 'node-unit flow' + (on ? '' : ' off'));
+        u.node.setAttribute('data-state', on ? 'on' : 'off');
+        u.node.setAttribute('stroke-width', ((emph === q ? 3.4 : 2) * Math.min(lw, 1.3)).toFixed(2));
+        u.level.setAttribute('y', (u.cy + u.R - 2 * u.R * level).toFixed(2)); u.level.setAttribute('height', (2 * u.R * level).toFixed(2));
+        u.glyph.setAttribute('class', 'glyph' + (on ? '' : ' off'));
+        if (s >= 0 && s <= 1 + 1e-9) {
+          var gg = u.gg, gy = gg.top > 1e-12 ? gg.yb - gg.gh * Math.min(1, f.h[q] / gg.top) : gg.yb;
+          u.dot.setAttribute('cx', (gg.x0 + gg.gw * s).toFixed(1)); u.dot.setAttribute('cy', gy.toFixed(1)); showEl(u.dot, true);
+        } else showEl(u.dot, false);
+      } else {
+        u.node.setAttribute('class', u.baseClass); u.node.setAttribute('data-state', u.baseState);
+        u.node.setAttribute('stroke-width', u.baseStroke); u.level.setAttribute('height', 0);
+        u.glyph.setAttribute('class', u.baseGlyph); showEl(u.dot, false);
+      }
+    });
+    showEl(R2.inVal, flowing); showEl(R2.outVal, flowing);
+    if (flowing) { R2.inVal.textContent = fixed(flow.lam, 2); R2.outVal.textContent = fixed(f.yhat, 2); }
+    var outName = flowing ? 'stress [MPa]' : 'stress';
+    if (R2.outLab.textContent !== outName) R2.outLab.textContent = outName;
+    // moving dots and dashes
+    var offAll = training ? R2.units.map(function (u, q) { return offForAll(net, q); }) : null;
+    for (j = 0; j < H; j++) {
+      var d1 = R2.fwd1[j], d2 = R2.fwd2[j], b1 = R2.back1[j], b2 = R2.back2[j], sg1 = R2.segs1[j], sg2 = R2.segs2[j];
+      if (flowing && !rm) {
+        var ph = (now % FLOW_T) / FLOW_T, op = 0.95 * clamp(Math.min(ph, 1 - ph) / 0.1, 0, 1), v2 = net.a[j] * f.h[j];
+        setDot(d1, sg1, ph, dotR(net.w[j] * s, lw), op);
+        if (Math.abs(v2) > 1e-9) setDot(d2, sg2, ph, dotR(v2, lw), op); else showEl(d2, false);
+        showEl(b1.g, false); showEl(b2.g, false);
+      } else if (training) {                   // the rhythm of training: forward, then back
+        var tp = (now % TRAIN_T) / TRAIN_T, r = 3 * (lw > 1 ? 1.35 : 1);
+        if (tp < 0.25) setDot(d1, sg1, tp / 0.25, r, 0.75); else showEl(d1, false);
+        if (tp >= 0.25 && tp < 0.5 && !offAll[j]) setDot(d2, sg2, (tp - 0.25) / 0.25, r, 0.75); else showEl(d2, false);
+        if (tp >= 0.5 && tp < 0.75 && !offAll[j]) setBack(b2, sg2, (tp - 0.5) / 0.25, lw, fs); else showEl(b2.g, false);
+        if (tp >= 0.75 && !offAll[j]) setBack(b1, sg1, (tp - 0.75) / 0.25, lw, fs); else showEl(b1.g, false);
+      } else { showEl(d1, false); showEl(d2, false); showEl(b1.g, false); showEl(b2.g, false); }
+    }
+    // the marker in the plot: input on the stretch axis, output on the curve
+    if (mark2) {
+      var P = mark2.P, x = P.sx(flow.lam), yv = P.sy(f.yhat), inPlot = yv >= P.y1 - 0.5 && yv <= P.y0 + 0.5;
+      showEl(mark2.g, flowing);
+      if (flowing) {
+        var yc = clamp(yv, P.y1, P.y0), k = lw > 1 ? 1.35 : 1;
+        mark2.guide.setAttribute('x1', x.toFixed(1)); mark2.guide.setAttribute('x2', x.toFixed(1));
+        mark2.guide.setAttribute('y1', P.y0); mark2.guide.setAttribute('y2', yc.toFixed(1));
+        mark2.dot.setAttribute('cx', x.toFixed(1)); mark2.dot.setAttribute('cy', yc.toFixed(1)); showEl(mark2.dot, inPlot);
+        mark2.tri.setAttribute('d', 'M' + x.toFixed(1) + ',' + P.y0 + 'l' + (-6 * k).toFixed(1) + ',' + (10 * k).toFixed(1) + 'h' + (12 * k).toFixed(1) + 'Z');
+      }
+      if (mark2.emph !== emph) {
+        mark2.emph = emph;
+        Array.prototype.forEach.call(els.svg2.querySelectorAll('path.ln-unit'), function (el) {
+          var q = +el.getAttribute('data-unit'), e = q === emph;
+          el.classList.toggle('emph', e);
+          el.setAttribute('stroke-width', ((e ? 3.4 : geom.hi === q ? 3 : 1.5) * lw).toFixed(2));
+        });
+      }
+    }
+    var cap = flowing ? (rm ? CAP.still : CAP.flow) : training ? CAP.train : CAP.idle;
+    if (els.flowCap.textContent !== cap) els.flowCap.textContent = cap;
+    if (flowing && now - flow.aria > 300) {    // the stretch as a slider value for screen readers, a few times a second
+      flow.aria = now;
+      els.plot2.setAttribute('aria-valuenow', flow.lam.toFixed(2));
+      els.plot2.setAttribute('aria-valuetext', 'stretch ' + fixed(flow.lam, 2) + ', stress ' + fixed(f.yhat, 2) + ' MPa');
+    }
+  }
+  function flowLoop(now) {
+    flow.raf = 0;
+    if (state.step !== 2 || !flow.on || reducedMotion()) return;
+    var dt = flow.last ? clamp(now - flow.last, 0, 60) : 0;
+    flow.last = now;
+    if (!tr.running) {                         // while training runs, its own frames draw the diagram
+      if (!flow.dragging && now >= flow.holdUntil) {
+        if (flow.lam > LAM_TOP + 1e-9) {       // coming back from beyond the data: glide down to the last measurement
+          flow.lam = Math.max(LAM_TOP, flow.lam - 1.2 * dt / 1000);
+          if (flow.lam <= LAM_TOP) flow.phase = 0.5;
+        } else {
+          flow.phase = (flow.phase + dt / FLOW_PERIOD) % 1;
+          flow.lam = flowLamAt(flow.phase);
+        }
+      }
+      flowUpdate(now);
+    }
+    flow.raf = requestAnimationFrame(flowLoop);
+  }
+  function flowKick() { if (flow.on && !flow.raf && state.step === 2 && !reducedMotion()) { flow.last = 0; flow.raf = requestAnimationFrame(flowLoop); } }
+  function flowSetPlotAttrs() {
+    var on = flow.on;
+    if (on) {
+      els.plot2.setAttribute('tabindex', '0'); els.plot2.setAttribute('role', 'slider');
+      els.plot2.setAttribute('aria-label', 'Stretch of the signal flow: left and right arrow keys');
+      els.plot2.setAttribute('aria-valuemin', String(LAM_LO)); els.plot2.setAttribute('aria-valuemax', String(plotDomain(2).x[1]));
+    } else ['tabindex', 'role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow', 'aria-valuetext'].forEach(function (a) { els.plot2.removeAttribute(a); });
+    els.svg2.classList.toggle('flowing', on);
+    els.flowBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function flowStart() {
+    if (flow.on) return;
+    flow.on = true; flow.prev = null; flow.emph = -1; flow.holdUntil = 0; flow.dragging = false;
+    if (flow.lam > LAM_TOP) flow.lam = LAM_TOP;
+    flow.phase = flowPhaseOf(flow.lam, flow.lam < LAM_TOP - 1e-9);
+    flowSetPlotAttrs(); if (state.step === 2) render2(); flowKick(); writeHash();
+    say('Signal flow on: a stretch value travels through the network.');
+  }
+  function flowStop() {
+    if (!flow.on) return;
+    flow.on = false; if (flow.raf) cancelAnimationFrame(flow.raf); flow.raf = 0; flow.dragging = false;
+    flowSetPlotAttrs(); if (state.step === 2) render2(); writeHash();
+  }
+  function flowSet(lam, holdMs) {             // move the marker by hand (drag, keys, tests); the sweep goes on from there later
+    var up = flow.phase < 0.5;
+    flow.lam = clamp(lam, LAM_LO, plotDomain(2).x[1]);
+    if (flow.lam <= LAM_TOP) flow.phase = flowPhaseOf(flow.lam, up);
+    flow.holdUntil = performance.now() + (holdMs === undefined ? FLOW_HOLD : holdMs);
+    flow.aria = 0;                               // a move by hand is announced at once
+    flowUpdate();
+  }
+  function flowFromPointer(ev) {
+    var P = geom[2] && geom[2].P; if (!P) return;
+    var r = els.svg2.getBoundingClientRect();
+    flowSet(P.sx.inv(ev.clientX - r.left), 60000);
   }
 
   /* =====================================================================
@@ -1487,7 +1742,8 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       { el: 'plot-2', text: 'Thin lines: the units. Petrol: their sum, the network.' },
       { el: 'train-row', text: 'Train: every step moves all weights a little downhill.', act: function () { if (!tr.running && tr.steps < 200) startTraining(); } },
       { el: 'loss-box', text: 'The typical error falls, step by step.' },
-      { el: 'plot-2', text: 'Every unit that switches on adds stiffness.' }
+      { el: 'net-box', text: 'Watch the signal flow: each unit lights up past its bend.', act: function () { if (tr.running) stopTraining(); flowStart(); } },
+      { el: 'plot-2', text: 'Every unit that switches on adds stiffness.', act: function () { flowStart(); } }
     ],
     3: [
       { el: 'plot-3', text: 'One measurement flows forward: stretch in, prediction out.', act: function () { if (in3.level < 4) forward3(); } },
@@ -1635,18 +1891,26 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
         (net.w[j] < 0 ? ' (opens left)' : '') + '</td><td>' + fixed(net.a[j], 3) + '</td><td class="txt">' + (off ? 'switched off everywhere' : 'switched on somewhere') + '</td></tr>';
     }
     els.tblKnobs.innerHTML = h;
-    els.tblKnobsC.textContent = 'Output height c = ' + fixed(net.c, 3) + ' MPa.';
+    els.tblKnobsC.textContent = 'Output offset c = ' + fixed(net.c, 3) + ' MPa.';
   }
-  function renderTiny() {
-    var t = tinyExample(2, 0.5, 3, 1, 0.01), rows = [
-      ['Forward: z = w1 x, h = ReLU(z), prediction w2 h', fixed(t.z, 2) + ', ' + fixed(t.h, 2) + ', ' + fixed(t.yhat, 2)],
-      ['Squared error L', plain(t.loss)],
-      ['dL/d(prediction) = 2 (prediction − target)', plain(t.dLdyhat)],
-      ['dL/dw2 (the weight out)', plain(t.dLdw2)],
-      ['dL/dw1 (the weight in)', plain(t.dLdw1)],
-      ['After one step: w1, w2', fixed(t.w1new, 2) + ', ' + fixed(t.w2new, 2)]
+  var TINY = { x: 2, w1: 3, w2: 1.5, y: 5, lr: 0.01 };
+  function renderTiny() {                     // every product written out; all numbers computed by forward() and backward()
+    var q = TINY, t = tinyExample(q.x, q.w1, q.w2, q.y, q.lr), P = function (v) { return plain(v, 3); }, X = ' · ';
+    var rows = [
+      ['Forward', 'z = w1' + X + 'x = ' + P(q.w1) + X + P(q.x) + ' = ' + P(t.z)],
+      ['', 'h = ReLU(z) = ' + P(t.h)],
+      ['', 'prediction = w2' + X + 'h = ' + P(q.w2) + X + P(t.h) + ' = ' + P(t.yhat)],
+      ['Squared error', 'L = (' + P(t.yhat) + ' − ' + P(q.y) + ')² = ' + P(t.loss)],
+      ['Back', 'dL/d(prediction) = 2' + X + '(' + P(t.yhat) + ' − ' + P(q.y) + ') = ' + P(t.dLdyhat)],
+      ['', 'dL/dw2 = ' + P(t.dLdyhat) + X + 'h = ' + P(t.dLdyhat) + X + P(t.h) + ' = ' + P(t.dLdw2)],
+      ['', 'dL/dh = ' + P(t.dLdyhat) + X + 'w2 = ' + P(t.dLdyhat) + X + P(q.w2) + ' = ' + P(t.dLdh)],
+      ['', 'dL/dz = ' + P(t.dLdh) + X + '1 = ' + P(t.dLdz) + ' (switched on: slope 1)'],
+      ['', 'dL/dw1 = ' + P(t.dLdz) + X + 'x = ' + P(t.dLdz) + X + P(q.x) + ' = ' + P(t.dLdw1)],
+      ['Update', 'w1 = ' + P(q.w1) + ' − ' + P(q.lr) + X + P(t.dLdw1) + ' = ' + fixed(t.w1new, 2)],
+      ['', 'w2 = ' + P(q.w2) + ' − ' + P(q.lr) + X + P(t.dLdw2) + ' = ' + fixed(t.w2new, 2)],
+      ['After the step', 'prediction = ' + fixed(t.w2new, 2) + X + fixed(t.w1new, 2) + X + P(q.x) + ' = ' + fixed(t.yhatNew, 2) + ', squared error ' + fixed(t.lossNew, 2)]
     ];
-    els.tiny.innerHTML = rows.map(function (r) { return '<tr><td class="txt">' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('');
+    els.tiny.innerHTML = rows.map(function (r) { return '<tr><th scope="row" class="txt">' + r[0] + '</th><td class="txt">' + r[1] + '</td></tr>'; }).join('');
   }
   function renderDataTable() {
     els.tblData.innerHTML = RUBBER.map(function (r) { return '<tr><td>' + fixed(r[0], 3) + '</td><td>' + fixed(r[1], 3) + '</td></tr>'; }).join('');
@@ -1667,6 +1931,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     });
     if (focus) $('tab-' + step).focus();
     renderAll();
+    if (step === 2) flowKick();
     writeHash();
   }
   function renderAll() {
@@ -1725,7 +1990,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     var ids = { physicsOk: 'physics-ok', plot1: 'plot-1', svg1: 'svg-1', legend1: 'legend-1', svgMini: 'svg-mini', err1Val: 'err1-val', err1Fill: 'err1-fill',
       gdBtn: 'gd-btn', msg1: 'msg-1', plot2: 'plot-2', svg2: 'svg-2', legend2: 'legend-2', cap2: 'cap-2', net2: 'net-2', svgNet2: 'svg-net2', netLegend2: 'net-legend-2',
       unitsOut: 'units-out', trainBtn: 'train-btn', stepBtn: 'step-btn', err2Val: 'err2-val', stepsVal: 'steps-val', plotLoss: 'plot-loss', svgLoss: 'svg-loss',
-      plot3: 'plot-3', svg3: 'svg-3', legend3: 'legend-3', cap3: 'cap-3', plotPick: 'plot-pick', svgPick: 'svg-pick', fwdBtn: 'fwd-btn', backBtn: 'back-btn', updBtn: 'upd-btn',
+      plot3: 'plot-3', svg3: 'svg-3', legend3: 'legend-3', cap3: 'cap-3', flowBtn: 'flow-btn', flowCap: 'flow-cap', lrLink: 'lr-link', plotPick: 'plot-pick', svgPick: 'svg-pick', fwdBtn: 'fwd-btn', backBtn: 'back-btn', updBtn: 'upd-btn',
       lrOut: 'lr-out', lrScale: 'lr-scale', newStart: 'new-start', startOut: 'start-out', loadTrained: 'load-trained', tblKnobs: 'tbl-knobs', tblKnobsC: 'tbl-knobs-c', tblData: 'tbl-data' };
     for (var k in ids) els[k] = $(ids[k]);
     ['tour', 'tour-box', 'tour-ring', 'tour-count', 'tour-text', 'tour-prev', 'tour-next', 'tour-end', 'tour-btn', 'veil-t', 'veil-b', 'veil-l', 'veil-r'].forEach(function (id) {
@@ -1759,8 +2024,33 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       if (why === 'blew' || why === 'dead') { render2(); return; }
       oneStep(); tr.stop = ''; tr.single = true; render2(); announce2();
     });
-    els.svg2.addEventListener('pointermove', function (ev) { setHi(unitNearPointer(ev)); });
-    els.svg2.addEventListener('pointerleave', function () { setHi(-1); });
+    els.svg2.addEventListener('pointerdown', function (ev) {
+      if (!flow.on) return;
+      flow.dragging = true;
+      try { els.svg2.setPointerCapture(ev.pointerId); } catch (err) { /* not capturable: the drag still works inside the plot */ }
+      flowFromPointer(ev);
+    });
+    els.svg2.addEventListener('pointermove', function (ev) { if (flow.dragging) flowFromPointer(ev); else setHi(unitNearPointer(ev)); });
+    var endDrag = function () { if (!flow.dragging) return; flow.dragging = false; flow.holdUntil = performance.now() + FLOW_HOLD; flowKick(); };
+    els.svg2.addEventListener('pointerup', endDrag);
+    els.svg2.addEventListener('pointercancel', endDrag);
+    els.svg2.addEventListener('pointerleave', function () { if (!flow.dragging) setHi(-1); });
+    els.plot2.addEventListener('keydown', function (ev) {
+      if (!flow.on) return;
+      var d = { ArrowRight: 0.1, ArrowUp: 0.1, ArrowLeft: -0.1, ArrowDown: -0.1, PageUp: 1, PageDown: -1 }[ev.key];
+      if (ev.key === 'Home') flowSet(LAM_LO, 2500);
+      else if (ev.key === 'End') flowSet(LAM_TOP, 2500);
+      else if (d) flowSet(flow.lam + d, 2500);
+      else return;
+      ev.preventDefault(); ev.stopPropagation();
+    });
+    els.flowBtn.addEventListener('click', function () { if (flow.on) flowStop(); else flowStart(); });
+    els.lrLink.addEventListener('click', function () {   // the learning rate lives under More options
+      els.more.open = true;
+      renderKnobTable();
+      try { els.lr.scrollIntoView({ block: 'center' }); } catch (err) { els.lr.scrollIntoView(); }
+      els.lr.focus({ preventScroll: true });
+    });
     els.svgNet2.addEventListener('pointermove', function (ev) { var t = ev.target.getAttribute && ev.target.getAttribute('data-unit'); setHi(t === null || t === undefined ? -1 : +t); });
     els.svgNet2.addEventListener('pointerleave', function () { setHi(-1); });
     // step 3
@@ -1793,7 +2083,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
         if (ev.key === 'PageUp' || (!onRange && (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp'))) { ev.preventDefault(); prevTour(); }
         return;
       }
-      var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [contenteditable], #plot-pick'));
+      var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [contenteditable], #plot-pick, #plot-2[role=slider]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
     document.addEventListener('keydown', function (ev) {
@@ -1834,6 +2124,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
     if (boot.train) trainSync(boot.train);
     showStep(state.step, false);
     renderAll();                                  // second pass: plot heights from the settled layout
+    if (state.flow) flowStart();
     document.documentElement.setAttribute('data-ready', '1');
   }
 
@@ -1843,7 +2134,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
   window.d02 = {
     rubber: function () { return RUBBER.map(function (r) { return r.slice(); }); },
     toS: toS,
-    state: function () { return Object.assign({}, state, { steps: tr.steps, error: curErr(), running: tr.running, lrValue: LRS[state.lr], units: tr.net.w.length, stop: tr.stop, loaded: tr.loaded }); },
+    state: function () { return Object.assign({}, state, { steps: tr.steps, error: curErr(), running: tr.running, lrValue: LRS[state.lr], units: tr.net.w.length, stop: tr.stop, loaded: tr.loaded, flow: flow.on }); },
     net: function () { return netOut(tr.net); },
     setNet: function (o) { stopTraining(); tr.net = netIn(o); tr.ver += 1; tr.steps = 0; tr.hist = [netRmse(tr.net)]; tr.stop = ''; tr.loaded = false; resetInside(); renderAll(); return netRmse(tr.net); },
     initNet: function (H, seed) { return netOut(netInit(H, seed)); },
@@ -1878,6 +2169,18 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       return Object.assign({}, state);
     },
     status: function () { return els.status.getAttribute('data-status'); },
+    flow: function () {
+      var f = forward(tr.net, toS(flow.lam)), R2 = net2, vis = function (el) { return !!el && el.getAttribute('visibility') !== 'hidden'; };
+      return { on: flow.on, lam: flow.lam, yhat: f.yhat, h: Array.from(f.h), emph: flow.emph, caption: els.flowCap.textContent,
+        states: R2 ? R2.units.map(function (u) { return u.node.getAttribute('data-state'); }) : [],
+        levels: R2 ? R2.units.map(function (u) { return +u.level.getAttribute('height') / (2 * u.R); }) : [],
+        inText: R2 ? R2.inVal.textContent : '', outText: R2 ? R2.outVal.textContent : '', outShown: R2 ? vis(R2.outVal) : false,
+        dots: R2 ? R2.fwd1.concat(R2.fwd2).filter(vis).length : 0,
+        backs: R2 ? R2.back1.concat(R2.back2).filter(function (b) { return vis(b.g); }).length : 0,
+        marker: mark2 ? { x: +mark2.dot.getAttribute('cx'), y: +mark2.dot.getAttribute('cy'), shown: vis(mark2.g) } : null };
+    },
+    flowAt: function (lam, hold) { if (!flow.on) flowStart(); flowSet(lam, hold === false ? FLOW_HOLD : 1e9); return window.d02.flow(); },
+    setFlow: function (on) { if (on) flowStart(); else flowStop(); return flow.on; },
     inside: function () { return { level: in3.level, f: in3.f && { h: Array.from(in3.f.h), z: Array.from(in3.f.z), yhat: in3.f.yhat }, g: in3.g && { w: Array.from(in3.g.w), a: Array.from(in3.g.a), b: Array.from(in3.g.b), c: in3.g.c, yhat: in3.g.yhat }, marks: in3.marks, change: in3.change }; },
     animating: function () { return !!gd1 || tr.running || in3.timers.length > 0 && in3.anim; },
     tour: function () { return { on: tour.on, tab: tour.tab, i: tour.i, n: tour.steps.length, target: tourTargetId() }; }
