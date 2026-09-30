@@ -8,6 +8,7 @@ Each demo is a single self-contained HTML file that works offline. Short links o
 |---|---|---|
 | [Fit or overfit?](d01-overfit/) | 1 | https://alhermann.github.io/mlps-demos/go/d01 |
 | [Watch a network learn](d02-network/) | 2 | https://alhermann.github.io/mlps-demos/go/d02 |
+| [Be the tree](d03-trees/) | 3 | https://alhermann.github.io/mlps-demos/go/d03 |
 
 © 2026 Alexander Hermann, Institute for Artificial Intelligence and Simulation in Mechanics, TUHH. The Poppins font embedded in the pages is licensed under the SIL Open Font Licence 1.1 (Copyright 2020 The Poppins Project Authors). Data sources are credited inside each demo.
 
