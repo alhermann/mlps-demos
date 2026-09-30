@@ -164,6 +164,8 @@ input[type=range]:focus-visible{outline-offset:3px}
 .plot .dlab{font-size:.875rem;font-weight:600}
 .plot .dlab.train{fill:var(--c-train)}
 .plot .dlab.new{fill:var(--c-new-text)}
+.plot .dlab.single{fill:var(--mute)}
+.plot .dlab.forest{fill:var(--c-new-text)}
 .plot .halo{paint-order:stroke;stroke:var(--canvas);stroke-width:4px;stroke-linejoin:round}
 .axis{stroke:var(--ink);fill:none;shape-rendering:crispEdges}
 .gridline{stroke:var(--grid);fill:none;shape-rendering:crispEdges}
@@ -190,6 +192,7 @@ input[type=range]:focus-visible{outline-offset:3px}
 .best-line{stroke:var(--c-model);fill:none}
 .best-mk{fill:var(--c-model);stroke:var(--canvas)}
 .cur-band{fill:var(--soft)}
+.mk-single{fill:var(--mute);fill-opacity:.4;stroke:none}
 
 /* ---------- more options ---------- */
 .more{border-top:1px solid var(--struct);border-bottom:1px solid var(--struct)}
@@ -331,7 +334,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     </figure>
     <div class="side" id="side-2">
       <ol class="steps" id="steps-2">
-        <li>Grow the tree. When does the error on new mixes stop falling?</li>
+        <li>Grow the tree. When does the error on new recipes stop falling?</li>
         <li>Which threshold wins the first question? See the small plot.</li>
       </ol>
       <div class="field" id="depth-field">
@@ -360,7 +363,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     </figure>
     <div class="side" id="side-3">
       <ol class="steps" id="steps-3">
-        <li>Add trees. Why is the forest smoother than one tree?</li>
+        <li>Add trees. Does the forest beat one tree on new recipes?</li>
         <li>What happens where there is no data?</li>
         <li>Show Abrams' law: which curve continues outside the data?</li>
       </ol>
@@ -371,11 +374,11 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
       </div>
       <div class="nums" id="nums-3" role="group" aria-label="Typical error of the forest">
         <div><span class="num-lab" id="lab-forest"></span><span class="num-val new" id="err-forest" data-value=""></span></div>
-        <div><span class="num-lab">One tree alone, new mixes</span><span class="num-val new dim" id="err-one" data-value=""></span></div>
+        <div><span class="num-lab">One tree alone, new recipes</span><span class="num-val new dim" id="err-one" data-value=""></span></div>
       </div>
       <div class="chart-box" id="err-box-3">
-        <p class="box-title">Typical error on new mixes [MPa] for every number of trees</p>
-        <div class="plot" id="plot-err3"><svg id="svg-err3" role="img" aria-labelledby="svg-err3-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-err3-desc">Typical error on new mixes for every number of trees</desc></svg></div>
+        <p class="box-title">Typical error on new recipes [MPa] for every number of trees</p>
+        <div class="plot" id="plot-err3"><svg id="svg-err3" role="img" aria-labelledby="svg-err3-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-err3-desc">Typical error on new recipes for every number of trees</desc></svg></div>
       </div>
       <label class="check" id="abrams-row"><input id="abrams" type="checkbox"><span id="abrams-sw"></span>Show Abrams' law (physics)</label>
       <p class="physics" id="abrams-note" hidden></p>
@@ -391,9 +394,9 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
       <p class="note">These options change steps 2 and 3.</p>
       <div class="opts">
         <fieldset class="opt">
-          <legend>New mixes</legend>
-          <div class="btn-row"><button id="new-split" class="btn" type="button">New random split</button><span id="split-out" class="note">Split 2</span></div>
-          <p class="note" id="split-note">A random quarter of the 425 mixes is kept aside as new mixes; the tree never sees them.</p>
+          <legend>New recipes</legend>
+          <div class="btn-row"><button id="new-split" class="btn" type="button">New random split</button><span id="split-out" class="note">Split 1</span></div>
+          <p class="note" id="split-note">A random quarter of the recipes is kept aside; the tree never sees their tests.</p>
         </fieldset>
         <fieldset class="opt">
           <legend>Forest</legend>
@@ -423,12 +426,12 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
         <summary>Table: typical error for every depth</summary>
         <div class="body table-wrap">
           <table>
-            <thead><tr><th scope="col">Depth</th><th scope="col">Leaves</th><th scope="col">Training mixes [MPa]</th><th scope="col">New mixes [MPa]</th></tr></thead>
+            <thead><tr><th scope="col">Depth</th><th scope="col">Leaves</th><th scope="col">Training mixes [MPa]</th><th scope="col">New recipes [MPa]</th></tr></thead>
             <tbody id="tbl-depth"></tbody>
           </table>
         </div>
       </details>
-      <p class="note" id="source">Data source: I-C. Yeh (1998), <i>Cement and Concrete Research</i> 28, 1797–1808; 1030 concrete mixes from several laboratories (UCI Machine Learning Repository). Steps 2 and 3 use the 425 mixes tested after 28 days. The eight mixes of step 1 come from these, rounded to whole kg/m³ and 0.1 MPa as in the lecture.</p>
+      <p class="note" id="source">Data source: I-C. Yeh (1998), <i>Cement and Concrete Research</i> 28, 1797-1808; 1030 tests of 428 concrete recipes from several laboratories (UCI Machine Learning Repository). Steps 2 and 3 use the 425 mixes tested after 28 days, which come from 417 recipes. The eight mixes of step 1 come from these, rounded to whole kg/m³ and 0.1 MPa as in the lecture.</p>
       <details class="sub">
         <summary>How it is computed</summary>
         <div class="body" id="how"></div>
@@ -464,7 +467,11 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
      Step 1: the eight mixes of the lecture (Chapter 3, table of eight mixes; Yeh 1998, tested after 28 days),
      amounts in kg/m³ rounded to whole kilograms and strength to 0.1 MPa, as in the lecture.
      Steps 2 and 3: the 425 mixes of assets/data/concrete_yeh1998.csv tested after 28 days, in file order:
-     cement [kg/m³], water [kg/m³], strength [MPa], written exactly as in the file.
+     cement [kg/m³], water [kg/m³], strength [MPa], written exactly as in the file, and the recipe id.
+     A recipe is one composition, a distinct row of the seven amounts (cement, slag, fly ash, water, superplasticiser,
+     coarse and fine aggregate) rounded to 0.01 kg/m³. The id numbers the 428 recipes of all 1030 tests in sorted order
+     (numpy.unique(X[:, :7].round(2), axis=0, return_inverse=True)). The 425 mixes come from 417 recipes; 5 recipes
+     were tested two to four times after 28 days (13 tests).
      ===================================================================== */
   var EIGHT = [
     { cement: 425, water: 154, fly: 0, strength: 60.3 },
@@ -477,10 +484,13 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     { cement: 164, water: 197, fly: 128, strength: 27.2 }
   ];
   var STRONG_AT = 30;                          // MPa after 28 days: "strong" means at least 30 MPa
-  var PACKED = '540,162,79.9861;540,162,61.8874;380,228,36.4478;266,228,45.8543;475,228,39.2898;198.6,192,28.0217;304,228,47.8138;139.6,192,28.2375;427.5,228,37.4275;237.5,228,30.0798;332.5,228,33.019;190,228,40.857;485,146,71.9882;374,170.1,61.0945;313.3,175.5,59.7983;425,153.5,60.2947;425,151.4,61.7977;375,126.6,56.6956;475,181.1,68.2995;469,137.8,66.8999;425,153.5,60.2947;388.6,157.9,50.6972;531.3,141.8,56.3991;425,153.5,60.2947;318.8,155.7,55.4959;401.8,147.4,68.4994;362.6,164.9,71.2987;323.7,183.8,74.6978;379.5,153.9,52.2002;362.6,164.9,71.2987;286.3,144.7,67.6996;362.6,164.9,71.2987;439,186,65.9966;389.9,145.9,74.4979;362.6,164.9,71.2987;337.9,174.9,49.8974;222.36,189.29,24.8901;233.81,197.89,22.8354;194.68,165.62,25.7243;190.68,162.14,26.4;212.07,180.31,24.9039;229.97,195.47,24.4833;190.34,161.85,28.4685;166.09,176.46,21.5392;167.95,121.75,24.242;213.72,181.71,45.7054;213.76,181.74,40.2309;229.68,195.23,24.5385;238.05,186.66,30.2335;250,187.42,29.22;212.52,159.32,31.6401;212.57,159.35,37.4041;212,159,38.5003;231.75,173.96,33.7292;251.37,188.45,29.6544;251.37,188.45,32.6605;181.38,169.59,27.7721;182.04,170.21,31.2677;168.88,158.33,31.1161;290.35,168.08,34.7358;277.05,160.6,48.284;295.71,171.54,39.9413;251.81,146.14,33.9429;249.1,158.11,30.8472;252.31,146.25,50.6006;246.83,143.3,52.5036;275.07,159.48,51.3315;297.16,174.8,47.4015;213.74,154.79,40.1482;213.5,154.61,45.9398;277.19,160.7,63.1422;218.23,140.75,55.5097;214.9,155.63,52.2002;218.85,158.49,30.2197;376,214.6,31.971;500,140,67.5686;475,142,57.2265;315,145,81.7512;505,195,64.0178;451,165,78.8002;516,162,41.3686;520,170,60.2809;528,185,56.8335;520,175,51.0212;385,158,55.5511;500.1,200,44.1334;450.1,200,39.376;397,167,55.6476;333,167,47.2774;334,189,44.3264;405,175,52.3036;200,190,49.2493;516,162,41.3686;145,184,29.1579;160,182,39.3967;234,189,39.3001;250,159,67.8651;475,162,58.5227;285,163,53.5792;356,160,58.9985;275,162,76.2354;500,151,69.837;165,163.81,26.2001;165,175.06,46.3879;178.03,179.94,39.1622;167.35,175.46,41.2031;172.38,156.76,33.6878;173.54,164.77,38.2039;167,164.03,41.4099;173.81,172.34,37.8109;190.34,166.61,24.8487;250,191.84,27.2205;213.5,159.21,44.6367;194.68,170.17,37.2662;251.37,192.94,33.2741;446,162,57.0266;446,162,44.4229;446,162,51.0212;446,162,53.3861;387,157,50.2352;387,157,46.6844;387,157,46.6844;355,145,44.0299;355,145,55.4546;491,210,55.5511;491,201,57.916;424,178,62.0528;424,168,72.0985;202,206,21.9667;284,179,43.7335;359,154,62.9354;359,154,59.4949;436,218,23.849;393,192,39.6049;480,192,43.9424;255,192,18.7462;333,192,31.9669;289,192,25.5734;181.9,185.7,27.9355;193.5,185.7,32.6267;239.6,185.7,39.4353;220.8,185.7,25.745;397,185.7,33.0824;158.8,185.7,21.0662;255.5,185.7,32.0517;381.4,185.7,22.4893;295.8,185.7,25.2169;228,185.7,39.6993;316.1,185.7,38.7003;238.1,185.7,17.5761;135.7,185.7,18.1987;203.5,185.7,22.63;170.3,185.7,25.7264;210.7,185.7,37.8136;290.2,185.7,33.0431;238.2,185.7,26.9137;339.2,185.7,31.9;252.5,185.7,19.7652;382.5,185.7,37.4379;186.2,185.7,17.5968;272.8,185.7,31.3815;339,197,32.0399;236,194,18.4159;277,191,25.9657;307,193,27.5308;200,180,12.2451;225,181,17.3403;325,184,30.5714;275,183,24.4971;300,184,26.8482;375,186,38.2108;400,187,43.699;250,182,20.8704;350,186,34.2945;141.3,203.5,29.8922;122.6,203.5,24.2909;166.8,203.5,33.9477;108.3,203.5,20.594;157,192,33.6644;133,192,27.8748;192,192,39.3215;305.3,203.5,43.377;288,192,38.8044;212,203.5,33.0038;102,192,17.2755;173,192,24.282;183.9,203.5,24.0462;153,192,17.9643;236,192,32.8846;116,192,22.348;203.5,203.5,41.6843;200,192,30.4397;250.2,203.5,36.9642;310,192,27.8273;331,192,31.7435;349,192,33.6051;238,186,17.5403;296,186,25.1797;480,192,43.892;397,186,36.9352;281,185,22.4355;500,200,44.092;540,173,67.3066;350,203,27.3377;385,186,31.3505;382,186,37.4248;281,186,22.4355;339,185,31.84;295,185,25.1797;238,185,17.5403;296,192,21.6495;331,192,31.447;349,192,32.7225;252,185,19.6914;339,185,31.6469;393,192,39.5828;382,185,37.4248;252,185,19.6914;310,192,27.9238;525,189,55.9441;322,203,25.1797;302,203,21.753;397,185,39.0933;522,146,74.9874;273,210,37.1697;162,179,33.7567;154,220,16.4992;147,202,19.9879;152,168,36.3492;310,168,33.6878;144,158,15.4167;304,214,33.4189;374,190,39.0519;159,175,27.6756;153,200,26.8551;310,168,45.2986;305,196,30.1232;151,167,15.5684;142,174,44.6091;298,201,53.524;321,190,57.2127;366,191,65.907;280,172,52.8208;252,194,33.3982;165,182,18.0298;156,180,37.3627;160,203,32.8397;298,186,42.6372;318,210,40.0586;287,188,41.9408;326,174,61.2324;356,193,40.8652;132,179,33.3017;322,186,52.4209;164,181,15.0857;314,170,38.459;321,182,37.2593;140,237,35.2253;288,177,42.1339;298,210,31.8745;265,195,41.5409;160,168,39.4518;166,183,37.9143;276,180,44.2781;322,196,31.1781;149,193,23.6904;159,176,32.7639;261,201,32.3985;237,247,28.627;313,178,36.8042;155,193,18.2849;146,202,33.0604;296,221,31.4194;133,196,31.0264;313,178,44.3885;152,184,12.1761;153,178,25.5589;140,200,36.4388;149,176,32.957;300,212,23.8352;153,178,26.2277;148,158,17.954;326,199,40.6791;153,178,19.0089;262,195,33.7154;158,220,8.53571;151,167,13.4586;273,199,32.2399;149,183,23.518;143,191,29.7233;260,171,49.7733;313,178,52.4415;284,168,40.9342;336,182,44.8642;145,181,13.1966;150,174,37.4317;144,192,29.8681;331,195,56.6129;155,193,12.4588;155,193,23.7869;135,180,13.2931;266,178,39.4173;314,179,46.2294;313,127,44.5195;146,182,23.7387;144,178,26.1449;148,181,15.5201;277,191,43.5749;298,164,35.8596;313,178,41.0514;155,194,28.9856;289,195,46.2432;148,171,26.9171;145,202,10.5352;313,178,25.0969;136,172,29.0683;155,193,9.7354;255,189,33.7981;162,216,39.8448;136,199,26.9654;164,197,27.2343;162,202,30.6472;157,200,33.0535;149,192,24.5798;135,196,21.9115;159,201,30.8816;144,176,15.3408;154,228,24.3385;167,185,23.8903;184,213,22.932;156,221,29.413;236.9,246.9,28.6298;313.3,178.5,36.8049;154.8,193.3,18.2877;145.9,202.5,32.7205;296,221.4,31.4201;133.1,195.7,28.938;313.3,178.5,40.9252;151.6,184.4,12.181;153.1,178.5,25.5596;139.9,200.3,36.4436;149.5,175.8,32.9638;299.8,211.5,23.8359;153.1,178.5,26.2332;148.1,158.1,17.9595;326.5,199,38.6307;152.7,178.1,19.0095;261.9,195.4,33.7188;158.4,219.7,8.5364;150.7,166.7,13.4613;272.6,198.7,32.2454;149,182.9,23.5242;143,190.7,29.7261;259.9,170.6,49.7733;312.9,177.6,52.4464;284,168.3,40.9349;336.5,181.9,44.8683;144.8,180.8,13.2021;150,173.8,37.4317;143.7,191.6,29.8709;330.5,194.9,56.6191;154.8,193.3,12.4595;154.8,193.3,23.7869;134.7,180.2,13.2938;266.2,177.9,39.4215;314,178.9,46.2342;312.7,127.3,44.5236;145.7,181.9,23.7442;143.8,178.1,26.1477;148.1,181.4,15.5263;277,190.6,43.5783;298.1,163.6,35.8659;313.3,178.5,41.0535;155.2,193.8,28.9911;289,194.9,46.2473;147.8,171.2,26.9227;145.4,201.7,10.5359;312.7,178.1,25.1038;136.4,171.6,29.0731;154.8,193.3,9.73816;255.3,188.6,33.7988;272.8,209.7,37.171;162,178.8,33.7623;153.6,220.1,16.504;146.5,201.9,19.9879;151.8,167.5,36.3499;309.9,167.8,38.2156;143.6,158.4,15.4236;303.6,213.5,33.4196;374.3,190.2,39.0561;158.6,175.1,27.6811;152.6,200,26.8599;310,167.9,45.3048;304.8,196,30.1232;150.9,166.6,15.5697;141.9,173.5,44.6119;297.8,201.3,53.5247;321.3,190.5,57.2182;366,191.3,65.9091;279.8,172.4,52.827;252.1,193.8,33.3996;164.6,181.6,18.0339;155.6,180.3,37.3634;160.2,203.2,35.3143;298.1,186.4,42.6441;317.9,209.7,40.062;287.3,187.6,43.7983;325.6,174,61.2358;355.9,193.3,40.8687;132,178.9,33.3065;322.5,185.8,52.4264;164.2,181.2,15.0913;313.8,169.9,38.461;321.4,182.5,37.2655;139.7,236.7,35.2253;288.4,177.4,42.1401;298.2,209.7,31.8752;264.5,195.5,41.5423;159.8,168.4,39.456;166,183.2,37.917;276.4,179.6,44.2844;322.2,196,31.1788;148.5,192.7,23.6966;159.1,175.6,32.768;260.9,200.6,32.4012';
-  var MIX = PACKED.split(';').map(function (r) { var v = r.split(','); return { cement: Number(v[0]), water: Number(v[1]), strength: Number(v[2]) }; });
+  var PACKED = '540,162,79.9861,425;540,162,61.8874,426;380,228,36.4478,367;266,228,45.8543,220;475,228,39.2898,404;198.6,192,28.0217,147;304,228,47.8138,278;139.6,192,28.2375,16;427.5,228,37.4275,394;237.5,228,30.0798,182;332.5,228,33.019,333;190,228,40.857,139;485,146,71.9882,409;374,170.1,61.0945,360;313.3,175.5,59.7983,303;425,153.5,60.2947,393;425,151.4,61.7977,392;375,126.6,56.6956,363;475,181.1,68.2995,406;469,137.8,66.8999,402;425,153.5,60.2947,393;388.6,157.9,50.6972,378;531.3,141.8,56.3991,424;425,153.5,60.2947,393;318.8,155.7,55.4959,312;401.8,147.4,68.4994,387;362.6,164.9,71.2987,356;323.7,183.8,74.6978,322;379.5,153.9,52.2002,365;362.6,164.9,71.2987,356;286.3,144.7,67.6996,245;362.6,164.9,71.2987,356;439,186,65.9966,396;389.9,145.9,74.4979,379;362.6,164.9,71.2987,356;337.9,174.9,49.8974,339;222.36,189.29,24.8901,169;233.81,197.89,22.8354,175;194.68,165.62,25.7243,145;190.68,162.14,26.4,142;212.07,180.31,24.9039,157;229.97,195.47,24.4833,173;190.34,161.85,28.4685,140;166.09,176.46,21.5392,120;167.95,121.75,24.242,125;213.72,181.71,45.7054,162;213.76,181.74,40.2309,164;229.68,195.23,24.5385,172;238.05,186.66,30.2335,185;250,187.42,29.22,192;212.52,159.32,31.6401,158;212.57,159.35,37.4041,159;212,159,38.5003,155;231.75,173.96,33.7292,174;251.37,188.45,29.6544,196;251.37,188.45,32.6605,197;181.38,169.59,27.7721,133;182.04,170.21,31.2677,135;168.88,158.33,31.1161,126;290.35,168.08,34.7358,255;277.05,160.6,48.284,235;295.71,171.54,39.9413,257;251.81,146.14,33.9429,199;249.1,158.11,30.8472,190;252.31,146.25,50.6006,204;246.83,143.3,52.5036,189;275.07,159.48,51.3315,229;297.16,174.8,47.4015,264;213.74,154.79,40.1482,163;213.5,154.61,45.9398,160;277.19,160.7,63.1422,236;218.23,140.75,55.5097,166;214.9,155.63,52.2002,165;218.85,158.49,30.2197,167;376,214.6,31.971,364;500,140,67.5686,412;475,142,57.2265,405;315,145,81.7512,308;505,195,64.0178,416;451,165,78.8002,401;516,162,41.3686,417;520,170,60.2809,419;528,185,56.8335,423;520,175,51.0212,420;385,158,55.5511,374;500.1,200,44.1334,415;450.1,200,39.376,400;397,167,55.6476,385;333,167,47.2774,335;334,189,44.3264,336;405,175,52.3036,388;200,190,49.2493,150;516,162,41.3686,418;145,184,29.1579,36;160,182,39.3967,103;234,189,39.3001,176;250,159,67.8651,194;475,162,58.5227,403;285,163,53.5792,244;356,160,58.9985,354;275,162,76.2354,228;500,151,69.837,413;165,163.81,26.2001,116;165,175.06,46.3879,117;178.03,179.94,39.1622,132;167.35,175.46,41.2031,124;172.38,156.76,33.6878,128;173.54,164.77,38.2039,130;167,164.03,41.4099,122;173.81,172.34,37.8109,131;190.34,166.61,24.8487,141;250,191.84,27.2205,193;213.5,159.21,44.6367,161;194.68,170.17,37.2662,146;251.37,192.94,33.2741,198;446,162,57.0266,398;446,162,44.4229,399;446,162,51.0212,399;446,162,53.3861,397;387,157,50.2352,377;387,157,46.6844,376;387,157,46.6844,375;355,145,44.0299,351;355,145,55.4546,350;491,210,55.5511,411;491,201,57.916,410;424,178,62.0528,390;424,168,72.0985,389;202,206,21.9667,151;284,179,43.7335,241;359,154,62.9354,355;359,154,59.4949,355;436,218,23.849,395;393,192,39.6049,381;480,192,43.9424,408;255,192,18.7462,207;333,192,31.9669,334;289,192,25.5734,251;181.9,185.7,27.9355,134;193.5,185.7,32.6267,144;239.6,185.7,39.4353,188;220.8,185.7,25.745,168;397,185.7,33.0824,383;158.8,185.7,21.0662,97;255.5,185.7,32.0517,210;381.4,185.7,22.4893,368;295.8,185.7,25.2169,258;228,185.7,39.6993,171;316.1,185.7,38.7003,309;238.1,185.7,17.5761,186;135.7,185.7,18.1987,12;203.5,185.7,22.63,152;170.3,185.7,25.7264,127;210.7,185.7,37.8136,154;290.2,185.7,33.0431,254;238.2,185.7,26.9137,187;339.2,185.7,31.9,343;252.5,185.7,19.7652,205;382.5,185.7,37.4379,372;186.2,185.7,17.5968,138;272.8,185.7,31.3815,224;339,197,32.0399,342;236,194,18.4159,178;277,191,25.9657,232;307,193,27.5308,283;200,180,12.2451,148;225,181,17.3403,170;325,184,30.5714,323;275,183,24.4971,227;300,184,26.8482,274;375,186,38.2108,362;400,187,43.699,386;250,182,20.8704,191;350,186,34.2945,348;141.3,203.5,29.8922,21;122.6,203.5,24.2909,3;166.8,203.5,33.9477,121;108.3,203.5,20.594,1;157,192,33.6644,93;133,192,27.8748,6;192,192,39.3215,143;305.3,203.5,43.377,282;288,192,38.8044,249;212,203.5,33.0038,156;102,192,17.2755,0;173,192,24.282,129;183.9,203.5,24.0462,136;153,192,17.9643,69;236,192,32.8846,179;116,192,22.348,2;203.5,203.5,41.6843,153;200,192,30.4397,149;250.2,203.5,36.9642,195;310,192,27.8273,287;331,192,31.7435,331;349,192,33.6051,347;238,186,17.5403,184;296,186,25.1797,259;480,192,43.892,407;397,186,36.9352,384;281,185,22.4355,239;500,200,44.092,414;540,173,67.3066,427;350,203,27.3377,349;385,186,31.3505,373;382,186,37.4248,370;281,186,22.4355,240;339,185,31.84,341;295,185,25.1797,256;238,185,17.5403,183;296,192,21.6495,260;331,192,31.447,330;349,192,32.7225,345;252,185,19.6914,200;339,185,31.6469,340;393,192,39.5828,380;382,185,37.4248,369;252,185,19.6914,200;310,192,27.9238,285;525,189,55.9441,422;322,203,25.1797,317;302,203,21.753,276;397,185,39.0933,382;522,146,74.9874,421;273,210,37.1697,226;162,179,33.7567,107;154,220,16.4992,77;147,202,19.9879,43;152,168,36.3492,66;310,168,33.6878,290;144,158,15.4167,29;304,214,33.4189,279;374,190,39.0519,359;159,175,27.6756,98;153,200,26.8551,73;310,168,45.2986,289;305,196,30.1232,281;151,167,15.5684,61;142,174,44.6091,23;298,201,53.524,269;321,190,57.2127,314;366,191,65.907,357;280,172,52.8208,238;252,194,33.3982,202;165,182,18.0298,115;156,180,37.3627,91;160,203,32.8397,104;298,186,42.6372,267;318,210,40.0586,311;287,188,41.9408,246;326,174,61.2324,326;356,193,40.8652,353;132,179,33.3017,5;322,186,52.4209,319;164,181,15.0857,111;314,170,38.459,305;321,182,37.2593,313;140,237,35.2253,20;288,177,42.1339,248;298,210,31.8745,268;265,195,41.5409,218;160,168,39.4518,105;166,183,37.9143,119;276,180,44.2781,230;322,196,31.1781,318;149,193,23.6904,53;159,176,32.7639,99;261,201,32.3985,214;237,247,28.627,181;313,178,36.8042,295;155,193,18.2849,86;146,202,33.0604,41;296,221,31.4194,262;133,196,31.0264,7;313,178,44.3885,297;152,184,12.1761,65;153,178,25.5589,72;140,200,36.4388,19;149,176,32.957,55;300,212,23.8352,275;153,178,26.2277,71;148,158,17.954,45;326,199,40.6791,325;153,178,19.0089,70;262,195,33.7154,216;158,220,8.53571,94;151,167,13.4586,62;273,199,32.2399,225;149,183,23.518,52;143,191,29.7233,24;260,171,49.7733,212;313,178,52.4415,299;284,168,40.9342,243;336,182,44.8642,337;145,181,13.1966,34;150,174,37.4317,58;144,192,29.8681,32;331,195,56.6129,332;155,193,12.4588,84;155,193,23.7869,85;135,180,13.2931,10;266,178,39.4173,219;314,179,46.2294,306;313,127,44.5195,296;146,182,23.7387,40;144,178,26.1449,31;148,181,15.5201,46;277,191,43.5749,234;298,164,35.8596,266;313,178,41.0514,298;155,194,28.9856,87;289,195,46.2432,253;148,171,26.9171,47;145,202,10.5352,35;313,178,25.0969,294;136,172,29.0683,13;155,193,9.7354,83;255,189,33.7981,208;162,216,39.8448,109;136,199,26.9654,14;164,197,27.2343,112;162,202,30.6472,110;157,200,33.0535,92;149,192,24.5798,54;135,196,21.9115,11;159,201,30.8816,100;144,176,15.3408,30;154,228,24.3385,78;167,185,23.8903,123;184,213,22.932,137;156,221,29.413,90;236.9,246.9,28.6298,180;313.3,178.5,36.8049,300;154.8,193.3,18.2877,82;145.9,202.5,32.7205,39;296,221.4,31.4201,261;133.1,195.7,28.938,8;313.3,178.5,40.9252,301;151.6,184.4,12.181,63;153.1,178.5,25.5596,75;139.9,200.3,36.4436,18;149.5,175.8,32.9638,56;299.8,211.5,23.8359,273;153.1,178.5,26.2332,74;148.1,158.1,17.9595,48;326.5,199,38.6307,327;152.7,178.1,19.0095,68;261.9,195.4,33.7188,215;158.4,219.7,8.5364,95;150.7,166.7,13.4613,59;272.6,198.7,32.2454,222;149,182.9,23.5242,51;143,190.7,29.7261,25;259.9,170.6,49.7733,211;312.9,177.6,52.4464,293;284,168.3,40.9349,242;336.5,181.9,44.8683,338;144.8,180.8,13.2021,33;150,173.8,37.4317,57;143.7,191.6,29.8709,27;330.5,194.9,56.6191,328;154.8,193.3,12.4595,80;154.8,193.3,23.7869,81;134.7,180.2,13.2938,9;266.2,177.9,39.4215,221;314,178.9,46.2342,307;312.7,127.3,44.5236,292;145.7,181.9,23.7442,38;143.8,178.1,26.1477,28;148.1,181.4,15.5263,49;277,190.6,43.5783,233;298.1,163.6,35.8659,271;313.3,178.5,41.0535,302;155.2,193.8,28.9911,88;289,194.9,46.2473,252;147.8,171.2,26.9227,44;145.4,201.7,10.5359,37;312.7,178.1,25.1038,291;136.4,171.6,29.0731,15;154.8,193.3,9.73816,79;255.3,188.6,33.7988,209;272.8,209.7,37.171,223;162,178.8,33.7623,108;153.6,220.1,16.504,76;146.5,201.9,19.9879,42;151.8,167.5,36.3499,64;309.9,167.8,38.2156,284;143.6,158.4,15.4236,26;303.6,213.5,33.4196,277;374.3,190.2,39.0561,361;158.6,175.1,27.6811,96;152.6,200,26.8599,67;310,167.9,45.3048,288;304.8,196,30.1232,280;150.9,166.6,15.5697,60;141.9,173.5,44.6119,22;297.8,201.3,53.5247,265;321.3,190.5,57.2182,315;366,191.3,65.9091,358;279.8,172.4,52.827,237;252.1,193.8,33.3996,203;164.6,181.6,18.0339,114;155.6,180.3,37.3634,89;160.2,203.2,35.3143,106;298.1,186.4,42.6441,270;317.9,209.7,40.062,310;287.3,187.6,43.7983,247;325.6,174,61.2358,324;355.9,193.3,40.8687,352;132,178.9,33.3065,4;322.5,185.8,52.4264,321;164.2,181.2,15.0913,113;313.8,169.9,38.461,304;321.4,182.5,37.2655,316;139.7,236.7,35.2253,17;288.4,177.4,42.1401,250;298.2,209.7,31.8752,272;264.5,195.5,41.5423,217;159.8,168.4,39.456,102;166,183.2,37.917,118;276.4,179.6,44.2844,231;322.2,196,31.1788,320;148.5,192.7,23.6966,50;159.1,175.6,32.768,101;260.9,200.6,32.4012,213';
+  var MIX = PACKED.split(';').map(function (r) { var v = r.split(','); return { cement: Number(v[0]), water: Number(v[1]), strength: Number(v[2]), recipe: Number(v[3]) }; });
   var N = MIX.length;
   var WC = MIX.map(function (m) { return m.water / m.cement; }), STR = MIX.map(function (m) { return m.strength; });
+  var REC = MIX.map(function (m) { return m.recipe; });
+  var RECIPES = REC.filter(function (r, i) { return REC.indexOf(r) === i; }).sort(function (a, b) { return a - b; });   // the distinct recipes, by id
+  var REPEATED = RECIPES.filter(function (r) { return REC.indexOf(r) !== REC.lastIndexOf(r); });                       // recipes tested more than once
 
   /* seeded random numbers (mulberry32 and the seed mixer of d01 and d02) */
   function mulberry32(a) {
@@ -573,27 +583,28 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   function questionPhrase(p, t) { return p.noun + ' below ' + thrText(p, t) + unitAfter(p); }
 
   /* =====================================================================
-     Steps 2 and 3: the split into training mixes and new mixes, trees for numbers, the forest, Abrams' law.
+     Steps 2 and 3: the split into training mixes and new recipes, trees for numbers, the forest, Abrams' law.
      A tree for numbers asks "is water / cement below t?" and, in each group, the next question.
      Each question is chosen greedily: every threshold halfway between two neighbouring ratios that leaves at
      least MIN_LEAF mixes on each side is tried, and the one that reduces the sum of squared errors around the
      group averages the most is kept (the first one, from small to large ratios, if two are equally good:
      a later threshold must be better by more than TIE). A leaf predicts the average strength of its mixes.
      ===================================================================== */
-  var MIN_LEAF = 3, TIE = 1e-6, DEPTH_MAX = 8, N_NEW = Math.round(N / 4), K_MAX = 200;
-  var SPLIT_DEFAULT = 2;                        // the first split whose training mixes include the smallest and the largest ratio
+  var MIN_LEAF = 3, TIE = 1e-6, DEPTH_MAX = 8, N_NEW_REC = Math.round(RECIPES.length / 4), K_MAX = 200;
+  var SPLIT_DEFAULT = 1;                        // split 1 keeps the smallest and the largest ratio among the training mixes
+  var STEADY = 0.3;                             // MPa: a smaller change of the error on new recipes counts as hardly any change
   var TREE_STEPS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 80, 100, 120, 150, 200];
   var DOM2 = { x: [0.2, 1.95], y: [0, 90] }, DOM3 = { x: [0.15, 2.3], y: [0, 90] };
 
-  /* A fixed random order of the 425 mixes (Fisher-Yates with mulberry32): the first quarter are the new mixes */
+  /* The recipes in a fixed random order (ascending ids, then Fisher-Yates with mulberry32): the first quarter are the
+     new recipes. All tests of a new recipe are kept aside, so that no recipe is on both sides of the split. */
   function splitMixes(seed) {
-    var rng = mulberry32(mixSeed(seed, 0)), order = [], i;
-    for (i = 0; i < N; i++) order.push(i);
-    for (i = N - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)), tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
-    var isNew = new Uint8Array(N), train = [], fresh = [];
-    for (i = 0; i < N_NEW; i++) isNew[order[i]] = 1;
-    for (i = 0; i < N; i++) (isNew[i] ? fresh : train).push(i);
-    return { train: train, fresh: fresh };
+    var rng = mulberry32(mixSeed(seed, 0)), order = RECIPES.slice(), i;
+    for (i = order.length - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)), tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
+    var isNew = {}, train = [], fresh = [];
+    for (i = 0; i < N_NEW_REC; i++) isNew[order[i]] = true;
+    for (i = 0; i < N; i++) (isNew[REC[i]] ? fresh : train).push(i);
+    return { train: train, fresh: fresh, newRecipes: order.slice(0, N_NEW_REC).sort(function (a, b) { return a - b; }) };
   }
   /* mixes (repeats allowed) sorted by their ratio; equal ratios keep their order */
   function sortedXY(list) {
@@ -666,7 +677,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
 
   /* The trees of step 2 and the forest of step 3 for the current split (computed when needed, then kept) */
   var model = { split: null, train: null, fresh: null, xs: null, ys: null, trees: [], errs: [], first: null, xmin: 0, xmax: 0,
-    fKey: '', forest: [], ferr: [], fcache: {} };
+    fKey: '', forest: [], ferr: [], single: [], fcache: {} };
   function ensureSplit() {
     if (model.split === state.split) return;
     var sp = splitMixes(state.split), s = sortedXY(sp.train);
@@ -703,6 +714,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
       }
       errs.push(Math.sqrt(q / nf));
     }
+    model.single = trees.map(function (t) { return rmseOf(function (x) { return treeAt(t, x); }, model.fresh); });   // each tree alone
     model.forest = trees; model.ferr = errs; model.fcache = {}; model.fKey = key;
   }
   function forestAt(k, x) { var s = 0; for (var j = 0; j < k; j++) s += treeAt(model.forest[j], x); return s / k; }
@@ -1020,7 +1032,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   }
 
   /* =====================================================================
-     Step 2: grow a tree on the training mixes, check it on the new mixes
+     Step 2: grow a tree on the training mixes, check it on the new recipes
      ===================================================================== */
   function drawMixes(P, lw, faint) {
     var g = S('g', { class: faint ? 'faint' : '' }, P.gm), r = 3.2 * (lw > 1 ? 1.35 : 1), a = 3 * (lw > 1 ? 1.35 : 1);
@@ -1046,9 +1058,9 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   var AX_WC = ['Water / cement [kg/kg]'];
   function axS(H) { return H - 3.9 * rootPx() > 17 * rootPx() ? ['Strength after 28 days [MPa]'] : ['Strength [MPa]']; }   // the short label on small plots
   function renderLegend2() {
-    var h = li('train', 'Training mixes') + li('fresh', 'New mixes (kept aside)') + li('model', 'Tree: average strength of each leaf');
+    var h = li('train', 'Training mixes') + li('fresh', 'New recipes (kept aside)') + li('model', 'Tree: average strength of each leaf');
     if (els.legend2.innerHTML !== h) els.legend2.innerHTML = h;
-    els.cap2.textContent = 'The ' + N + ' mixes tested after 28 days: ' + model.train.length + ' training mixes grow the tree, ' + model.fresh.length + ' new mixes check it. Each question tries all thresholds and keeps the best.';
+    els.cap2.textContent = 'The ' + N + ' mixes tested after 28 days come from ' + RECIPES.length + ' recipes: ' + model.train.length + ' training mixes grow the tree, ' + N_NEW_REC + ' new recipes (' + model.fresh.length + ' mixes) check it. Each question tries all thresholds and keeps the best.';
   }
   function renderPlot2() {
     var svg = els.svg2, W = Math.floor(els.plot2.clientWidth);
@@ -1059,9 +1071,9 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     var tree = model.trees[state.depth - 1];
     S('path', { d: stepPath(treeSteps(tree, DOM2.x[0], DOM2.x[1]), P.sx, P.sy), class: 'ln-model', 'stroke-width': 3 * lw, 'data-leaves': tree.values.length }, P.g);
     var e = model.errs[state.depth - 1];
-    svg.querySelector('desc').textContent = 'Strength against water / cement for ' + model.train.length + ' training mixes (navy dots) and ' + model.fresh.length +
-      ' new mixes (orange squares), and the prediction of a tree with ' + state.depth + (state.depth === 1 ? ' question' : ' questions in a row') + ': ' +
-      tree.values.length + ' leaves, a staircase. Typical error ' + mpa(e[0]) + ' on the training mixes, ' + mpa(e[1]) + ' on the new mixes.';
+    svg.querySelector('desc').textContent = 'Strength against water / cement for ' + model.train.length + ' training mixes (navy dots) and the ' + model.fresh.length +
+      ' mixes of ' + N_NEW_REC + ' new recipes (orange squares), and the prediction of a tree with ' + state.depth + (state.depth === 1 ? ' question' : ' questions in a row') + ': ' +
+      tree.values.length + ' leaves, a staircase. Typical error ' + mpa(e[0]) + ' on the training mixes, ' + mpa(e[1]) + ' on the new recipes.';
   }
   function renderRed() {
     var svg = els.svgRed, W = Math.floor(els.plotRed.clientWidth);
@@ -1093,7 +1105,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   function renderErr2() {
     var svg = els.svgErr2, W = Math.floor(els.plotErr2.clientWidth);
     if (W < 60) return;
-    var fs = rootPx(), lw = lineScale(), H = Math.round(clamp(W * 0.4, 8.4 * fs, 10.5 * fs)), M = { l: 2.4 * fs, r: 4.6 * fs, t: 0.7 * fs, b: 1.9 * fs };
+    var fs = rootPx(), lw = lineScale(), H = Math.round(clamp(W * 0.4, 8.4 * fs, 10.5 * fs)), M = { l: 2.4 * fs, r: 6.9 * fs, t: 0.7 * fs, b: 1.9 * fs };
     clearSvg(svg); sizeSvg(svg, W, H);
     var top = 0; model.errs.forEach(function (e) { top = Math.max(top, e[0], e[1]); });
     var ymax = Math.ceil(top / 5) * 5, x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sx = lin(0.6, DEPTH_MAX + 0.4, x0, x1), sy = lin(0, ymax, y0, y1);
@@ -1115,17 +1127,19 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     var last = shown[shown.length - 1], lx = sx(shown.length) + 0.7 * fs, ya = sy(last[0]), yn = sy(last[1]), sep = 0.95 * fs;
     if (Math.abs(ya - yn) < sep) { var m = (ya + yn) / 2, up = last[1] >= last[0]; yn = m + (up ? -sep / 2 : sep / 2); ya = m + (up ? sep / 2 : -sep / 2); }
     T(svg, lx, ya + 0.3 * fs, ['training'], { class: 'dlab train halo' });
-    T(svg, lx, yn + 0.3 * fs, ['new mixes'], { class: 'dlab new halo' });
+    T(svg, lx, yn + 0.3 * fs, ['new recipes'], { class: 'dlab new halo' });
     svg.querySelector('desc').textContent = 'Typical error for depth 1 to ' + state.depth + ': on the training mixes ' + shown.map(function (e) { return fixed(e[0], 1); }).join(', ') +
-      ' MPa; on the new mixes ' + shown.map(function (e) { return fixed(e[1], 1); }).join(', ') + ' MPa.';
+      ' MPa; on the new recipes ' + shown.map(function (e) { return fixed(e[1], 1); }).join(', ') + ' MPa.';
   }
   function setNum(el, v) { el.textContent = mpa(v); el.setAttribute('data-value', String(v)); }
   function status2() {
     var d = state.depth, e = model.errs;
     if (d === 1) return 'One question: two groups, two predictions.';
     var bestBefore = Infinity; for (var i = 0; i < d - 1; i++) bestBefore = Math.min(bestBefore, e[i][1]);
-    if (e[d - 1][1] < bestBefore - 0.02) return 'Both errors fall: the new questions help on new mixes too.';
-    return 'The training error falls, the error on new mixes does not: the tree memorises.';
+    var change = e[d - 1][1] - bestBefore;    // against the best depth so far; with about 100 new tests, small changes are chance
+    if (change < -STEADY) return 'Both errors fall: the new questions help on new recipes too.';
+    if (change > STEADY) return 'The training error falls, the error on new recipes rises: the tree memorises.';
+    return 'The training error falls, the error on new recipes hardly changes: the tree memorises.';
   }
   function renderSide2() {
     var d = state.depth, tree = model.trees[d - 1], e = model.errs[d - 1];
@@ -1133,7 +1147,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     els.depthOut.innerHTML = d + ' <small>(' + tree.values.length + ' leaves)</small>';
     els.depth.setAttribute('aria-valuetext', d + (d === 1 ? ' question, ' : ' questions in a row, ') + tree.values.length + ' leaves');
     els.labTrain.innerHTML = swatch('train') + '<span>Typical error, training mixes</span>';
-    els.labNew.innerHTML = swatch('fresh') + '<span>Typical error, new mixes</span>';
+    els.labNew.innerHTML = swatch('fresh') + '<span>Typical error, new recipes</span>';
     setNum(els.errTrain, e[0]); setNum(els.errNew, e[1]);
     var st = status2();
     els.status2.textContent = st;
@@ -1177,7 +1191,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     });
   }
   function renderLegend3() {
-    var k = state.trees, h = li('train', 'Training mixes') + li('fresh', 'New mixes');
+    var k = state.trees, h = li('train', 'Training mixes') + li('fresh', 'New recipes');
     if (k > 1) h += li('tree', 'Single trees (' + Math.min(3, k) + ' shown)');
     h += li('model', k === 1 ? 'Forest of one tree' : 'Forest: average of ' + k + ' trees');
     if (state.abrams) h += li('physics', 'Abrams\' law (physics)');
@@ -1207,32 +1221,44 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   function renderErr3() {
     var svg = els.svgErr3, W = Math.floor(els.plotErr3.clientWidth);
     if (W < 60) return;
-    var fs = rootPx(), lw = lineScale(), H = Math.round(clamp(W * 0.4, 8.4 * fs, 10.5 * fs)), M = { l: 2.4 * fs, r: 1.2 * fs, t: 0.7 * fs, b: 1.9 * fs };
+    var fs = rootPx(), lw = lineScale(), H = Math.round(clamp(W * 0.42, 8.8 * fs, 11 * fs)), M = { l: 2.4 * fs, r: 1.2 * fs, t: 0.9 * fs, b: 1.9 * fs };
     clearSvg(svg); sizeSvg(svg, W, H);
-    var top = 0; model.ferr.forEach(function (e) { top = Math.max(top, e); });
+    var top = 0; model.ferr.concat(model.single).forEach(function (e) { top = Math.max(top, e); });
     var ymax = Math.ceil(top / 5) * 5, L = function (k) { return Math.log10(k); };
-    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sxl = lin(0, L(K_MAX), x0, x1), sx = function (k) { return sxl(L(k)); }, sy = lin(0, ymax, y0, y1);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sxl = lin(L(0.7), L(K_MAX), x0, x1), sx = function (k) { return sxl(L(k)); }, sy = lin(0, ymax, y0, y1);
     var xt = W < 330 ? [1, 10, 100, 200] : [1, 2, 5, 10, 20, 50, 100, 200];
     axes(S('g', null, svg), { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, fs: fs, W: W, H: H, xt: xt, yt: niceTicks(0, ymax, 3), small: true });
-    var k = state.trees, d = '';
+    // each of the trees alone: one grey dot per tree, spread a little around "1 tree"
+    var k = state.trees, kk = lw > 1 ? 1.35 : 1, c1 = sx(1), jw = Math.min(1.1 * fs, (sx(1.6) - sx(1)) * 0.9), gs = S('g', null, svg), hi = 0;
+    model.single.forEach(function (e, j) {
+      hi = Math.max(hi, e);
+      S('circle', { cx: (c1 + ((j * 0.6180339887) % 1 - 0.5) * jw).toFixed(1), cy: sy(e).toFixed(1), r: 2.1 * kk, class: 'mk-single', 'data-tree': j + 1 }, gs);
+    });
+    T(svg, c1 + jw / 2 + 0.45 * fs, sy(hi) + 0.35 * fs, ['single trees'], { class: 'dlab single halo' });
+    // the forest of the first k trees
+    var d = '';
     for (var i = 1; i <= k; i++) d += (d ? 'L' : 'M') + sx(i).toFixed(1) + ',' + sy(model.ferr[i - 1]).toFixed(1);
     if (k > 1) S('path', { d: d, class: 'ln-new', 'stroke-width': 2 * lw, 'stroke-dasharray': (5 * lw) + ' ' + (3.5 * lw) }, svg);
-    var s = 3.6 * (lw > 1 ? 1.35 : 1), cx = sx(k), cy = sy(model.ferr[k - 1]);
+    var s = 3.6 * kk, cx = sx(k), cy = sy(model.ferr[k - 1]);
     S('rect', { x: cx - s, y: cy - s, width: 2 * s, height: 2 * s, class: 'mk-new', 'stroke-width': 2, 'data-trees': k }, svg);
-    svg.querySelector('desc').textContent = 'Typical error on new mixes for 1 to ' + k + ' trees: ' + mpa(model.ferr[0]) + ' with one tree, ' + mpa(model.ferr[k - 1]) + ' with ' + k + '.';
+    T(svg, k >= 60 ? cx + s : k <= 2 ? cx - s : cx, cy + s + 1.1 * fs, ['forest'], { class: 'dlab forest halo', 'text-anchor': k >= 60 ? 'end' : k <= 2 ? 'start' : 'middle' });
+    var lo = Math.min.apply(null, model.single);
+    svg.querySelector('desc').textContent = 'Typical error on new recipes for 1 to ' + k + ' trees: ' + mpa(model.ferr[0]) + ' with one tree, ' + mpa(model.ferr[k - 1]) + ' with ' + k +
+      '. Grey dots: each of the ' + K_MAX + ' trees alone, from ' + mpa(lo) + ' to ' + mpa(hi) + '.';
   }
   function status3() {
     var k = state.trees;
     if (k === 1) return 'One deep tree: jagged, it chases single mixes.';
-    if (k < 20) return 'The average of a few trees is already smoother than any one of them.';
-    return 'More trees hardly change the forest now: the error has flattened.';
+    if (k < 20) return 'The average of a few trees: their errors already partly cancel.';
+    var e = model.ferr[k - 1], wins = model.single.filter(function (v) { return v > e; }).length;
+    return 'Flattened: the forest is better than ' + wins + ' of the ' + K_MAX + ' single trees.';
   }
   function renderSide3() {
     var k = state.trees;
     els.trees.value = String(TREE_STEPS.indexOf(k));
     els.treesOut.textContent = k + (k === 1 ? ' tree' : ' trees');
     els.trees.setAttribute('aria-valuetext', k + (k === 1 ? ' tree' : ' trees'));
-    els.labForest.innerHTML = swatch('fresh') + '<span>Typical error, new mixes</span>';
+    els.labForest.innerHTML = swatch('fresh') + '<span>Typical error, new recipes</span>';
     setNum(els.errForest, model.ferr[k - 1]); setNum(els.errOne, model.ferr[0]);
     els.abrams.checked = state.abrams;
     els.abramsNote.hidden = !state.abrams;
@@ -1267,16 +1293,16 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
       { el: 'best-btn', text: 'The best question leaves two pure groups: 1 bit.', act: function () { reveal(); } }
     ],
     2: [
-      { el: 'plot-2', text: 'Orange: new mixes, kept aside to check the tree.' },
+      { el: 'plot-2', text: 'Orange: new recipes, kept aside to check the tree.' },
       { el: 'red-box', text: 'First question: try every threshold, keep the best.' },
       { el: 'depth-field', text: 'Each extra question splits every group again.', act: function () { setDepth(3); } },
       { el: 'nums-2', text: 'Deeper: the training error keeps falling.', act: function () { setDepth(8); } },
-      { el: 'err-box-2', text: 'The error on new mixes stops falling after a few questions.' }
+      { el: 'err-box-2', text: 'The error on new recipes stops falling after a few questions.' }
     ],
     3: [
       { el: 'plot-3', text: 'Grey: single trees, each grown on a random resample.', act: function () { if (state.trees < 3) setTrees(3); } },
-      { el: 'trees-field', text: 'More trees: their average, the forest, gets smoother.', act: function () { setTrees(100); } },
-      { el: 'err-box-3', text: 'The error on new mixes falls, then flattens.' },
+      { el: 'trees-field', text: 'More trees: in their average, errors of single trees partly cancel.', act: function () { setTrees(100); } },
+      { el: 'err-box-3', text: 'Grey dots: each tree alone. The forest is better than almost all.' },
       { el: 'abrams-row', text: 'Outside the data the forest stays flat. Abrams\' law continues.', act: function () { setAbrams(true); } }
     ]
   };
@@ -1386,8 +1412,8 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
   var liveTimer = 0;
   function say(text) { clearTimeout(liveTimer); liveTimer = setTimeout(function () { els.live.textContent = text; }, 700); }
   function announce1() { var p = curInput(), q = ask(p.key, curT()); say(questionText(p, curT()) + ' Information gain ' + bitsText(q.gain) + '.'); }
-  function announce2() { var e = model.errs[state.depth - 1]; say('Depth ' + state.depth + ': typical error ' + mpa(e[0]) + ' on the training mixes, ' + mpa(e[1]) + ' on the new mixes.'); }
-  function announce3() { say(state.trees + (state.trees === 1 ? ' tree' : ' trees') + ': typical error on new mixes ' + mpa(model.ferr[state.trees - 1]) + '.'); }
+  function announce2() { var e = model.errs[state.depth - 1]; say('Depth ' + state.depth + ': typical error ' + mpa(e[0]) + ' on the training mixes, ' + mpa(e[1]) + ' on the new recipes.'); }
+  function announce3() { say(state.trees + (state.trees === 1 ? ' tree' : ' trees') + ': typical error on new recipes ' + mpa(model.ferr[state.trees - 1]) + '.'); }
 
   /* =====================================================================
      More options: tables and how it is computed
@@ -1419,8 +1445,8 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     }).join('');
     els.how.innerHTML = [
       'Step 1. A group with the share <i class="v">p</i> of strong mixes has the entropy <span class="math"><i>H</i> = −<i>p</i> log<sub>2</sub> <i>p</i> − (1 − <i>p</i>) log<sub>2</sub>(1 − <i>p</i>)</span>, in bits: 0 for a pure group, 1 bit for half and half. A question sends <i class="v">n</i><sub>yes</sub> of the <i class="v">n</i> = 8 mixes to the yes group and <i class="v">n</i><sub>no</sub> to the no group; its information gain is <span class="math"><i>H</i><sub>before</sub> − (<i>n</i><sub>yes</sub>/<i>n</i> · <i>H</i><sub>yes</sub> + <i>n</i><sub>no</sub>/<i>n</i> · <i>H</i><sub>no</sub>)</span>. Between two neighbouring values of an input the page offers one threshold, the roundest number in the middle of the gap. The best question is found by trying every input and every threshold; of equally good questions the first in the list wins (water / cement comes before cement).',
-      'Step 2. The ' + N + ' mixes tested after 28 days are put in a fixed random order; the first quarter, ' + N_NEW + ' mixes, are the new mixes, the other ' + (N - N_NEW) + ' the training mixes. Split ' + SPLIT_DEFAULT + ' is the first split whose training mixes include the smallest and the largest ratio of water to cement, so that no new mix lies outside the measured range. The tree has one input, water / cement. For a group of training mixes, the page tries every threshold halfway between two neighbouring ratios that leaves at least ' + MIN_LEAF + ' mixes on each side, and keeps the one that reduces the sum of squared errors around the two group averages the most (from small to large ratios, a later threshold must be better, not just as good). It repeats this in both groups until the depth is reached or no group can be split. Each leaf predicts the average strength of its training mixes. The typical error is the root of the mean squared error, in MPa.',
-      'Step 3. The forest has ' + K_MAX + ' trees. Each tree gets its own random resample of the training mixes: ' + (N - N_NEW) + ' draws, where a mix can be drawn several times or not at all. Each tree is grown with the rule of step 2, without a depth limit, until a group can no longer be split into two groups of at least ' + MIN_LEAF + ' draws. The forest predicts the average of its trees. Outside the range of the training mixes every tree repeats its outermost leaf, so the forest is flat there.',
+      'Step 2. The ' + N + ' mixes tested after 28 days come from ' + RECIPES.length + ' recipes; a recipe is one composition, the amounts of the seven ingredients, and ' + REPEATED.length + ' recipes were tested two to four times. The recipes are put in a fixed random order; the first quarter, ' + N_NEW_REC + ' recipes, are the new recipes, and all their tests are kept aside, so that no recipe is on both sides. The tests of the other recipes are the training mixes. In split ' + SPLIT_DEFAULT + ', the default, the training mixes include the smallest and the largest ratio of water to cement, so that no new recipe lies outside the measured range. The tree has one input, water / cement. For a group of training mixes, the page tries every threshold halfway between two neighbouring ratios that leaves at least ' + MIN_LEAF + ' mixes on each side, and keeps the one that reduces the sum of squared errors around the two group averages the most (from small to large ratios, a later threshold must be better, not just as good). It repeats this in both groups until the depth is reached or no group can be split. Each leaf predicts the average strength of its training mixes. The typical error is the root of the mean squared error, in MPa. With about 100 new tests, a change of the error on new recipes below ' + STEADY + ' MPa is within chance: the page says it hardly changes.',
+      'Step 3. The forest has ' + K_MAX + ' trees. Each tree gets its own random resample of the training mixes: as many draws as there are training mixes, where a mix can be drawn several times or not at all. Each tree is grown with the rule of step 2, without a depth limit, until a group can no longer be split into two groups of at least ' + MIN_LEAF + ' draws. The forest predicts the average of its trees; the grey dots in the small chart show the error of each tree alone. Outside the range of the training mixes every tree repeats its prediction at the edge, so the forest is flat there.',
       'Abrams\' law <span class="math"><i>S</i> = <i>A</i> / <i>B</i><sup><i>x</i></sup></span>, with <i class="v">x</i> the ratio of water to cement, is fitted to all ' + N + ' mixes as a straight line through ln <i class="v">S</i> against <i class="v">x</i> (least squares): <i class="v">A</i> = ' + ABRAMS.A.toFixed(1) + ' MPa, <i class="v">B</i> = ' + ABRAMS.B.toFixed(2) + ', typical error ' + ABRAMS.rmse.toFixed(1) + ' MPa.',
       'Every number is computed in this page from the data, with a fixed random-number generator (mulberry32), so the same settings always grow the same trees. The numbers were checked against an independent implementation.'
     ].map(function (t) { return '<p>' + t + '</p>'; }).join('');
@@ -1602,6 +1628,9 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
     ask: function (key, t) { return ask(key, t); },
     best: function () { return JSON.parse(JSON.stringify(BEST)); },
     split: function () { ensureSplit(); return { train: model.train.slice(), fresh: model.fresh.slice() }; },
+    recipes: function () { return REC.slice(); },
+    newRecipes: function () { return splitMixes(state.split).newRecipes; },
+    singleErrors: function () { ensureForest(); return model.single.slice(); },
     trainRange: function () { ensureSplit(); return [model.xmin, model.xmax]; },
     tree: function (depth) { ensureSplit(); return treeOut(model.trees[depth - 1]); },
     treeErrors: function () { ensureSplit(); return model.errs.map(function (e) { return e.slice(); }); },

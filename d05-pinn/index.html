@@ -1,0 +1,1879 @@
+<!doctype html>
+<html lang="en" class="no-anim">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Physics in the loss · MLPS</title>
+<meta name="description" content="Lecture 5 demo for Machine Learning for Physical Systems (TUHH): a network learns how a part cools and how a mass swings by checking the law in its loss; with readings it also learns the cooling constant and the damping.">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23003566'/%3E%3Cpath d='M4 7C9 7 11 25 28 25' fill='none' stroke='%2300C1D4' stroke-width='3.5'/%3E%3C/svg%3E">
+<style id="fonts">
+/* Poppins, Copyright 2020 The Poppins Project Authors, SIL Open Font License 1.1.
+   Subset (Latin-1 and a few symbols) of Regular and SemiBold, embedded as WOFF. */
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url(data:font/woff;base64,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) format("woff")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url(data:font/woff;base64,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) format("woff")}
+</style>
+<style>
+/* ---------- design tokens (DESIGN.md, lecture figure colours; same as demos d01 to d03) ---------- */
+:root{
+  --canvas:#FFFFFF; --soft:#F2F4F5; --ink:#265D71; --emph:#003566; --struct:#00C1D4; --mute:#6B757D; --line:#C9D3D8;
+  --c-train:#003566; --c-new:#D55E00; --c-new-text:#B24E00; --c-model:#007A85; --c-truth:#265D71;
+  --c-physics:#7300FE; --c-warn:#D93636; --grid:#E3E8EA; --light:#E1ECF0;
+  --font:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --math:"Cambria","STIX Two Text","Times New Roman","Cambria Math","STIX Two Math",serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html.no-anim *,html.no-anim *::before,html.no-anim *::after{transition:none !important}
+html{font-size:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.presenter{font-size:150%}
+body{margin:0;background:var(--canvas);color:var(--ink);font:400 1rem/1.5 var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ol,ul,figure,fieldset{margin:0}
+button,input{font:inherit;color:inherit}
+strong,b{font-weight:600}
+.vh{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--emph);outline-offset:2px}
+.v{font-family:var(--math);font-style:italic;font-size:1.06em}
+.math{font-family:var(--math);font-size:1.06em;white-space:nowrap}
+.math i{font-style:italic}
+sub,sup{font-size:.72em;line-height:0}
+sup{vertical-align:.45em}
+.nowrap{white-space:nowrap}
+kbd{font:inherit;font-size:.8125rem;font-weight:600;color:var(--emph);border:1px solid var(--ink);padding:0 .35em;line-height:1.4}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- frame ---------- */
+.wrap{max-width:75rem;margin:0 auto;padding-left:1.5rem;padding-right:1.5rem}
+.site-head{border-bottom:1px solid var(--struct)}
+.head{padding-top:.8rem;padding-bottom:.7rem}
+.head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:.5rem 2rem}
+.course{font-size:.8125rem;color:var(--mute)}
+h1{font-size:1.625rem;line-height:1.2;font-weight:600;color:var(--emph);margin-top:.1rem}
+.context{margin-top:.3rem;text-wrap:pretty}
+.head-actions{display:flex;align-items:center;gap:.75rem;flex:none}
+.pm-hint{display:flex;align-items:center;gap:.625rem;font-size:.8125rem;color:var(--mute);flex:none}
+.page{display:flex;flex-direction:column;gap:.875rem;padding-top:.875rem;padding-bottom:1.5rem}
+.site-foot{border-top:1px solid var(--struct)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1.5rem;padding-top:.875rem;padding-bottom:1.25rem;font-size:.8125rem;color:var(--mute)}
+
+/* ---------- buttons, sliders, checkboxes (radius 0) ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.5rem;padding:.4rem .9rem;border:1px solid var(--emph);border-radius:0;background:var(--canvas);color:var(--emph);font-size:.875rem;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer;transition:background-color .12s ease}
+.btn:hover{background:var(--soft)}
+.btn:active{transform:translateY(1px)}
+.btn[aria-pressed=true]{background:var(--emph);color:#FFFFFF}
+.btn-primary{background:var(--emph);color:#FFFFFF;font-size:.9375rem;min-height:2.75rem;width:100%}
+.btn-primary:hover{background:#0B4C87}
+.btn-primary:disabled{background:var(--mute);border-color:var(--mute);cursor:default;transform:none}
+.btn:disabled{color:var(--mute);border-color:var(--line);cursor:default;background:var(--canvas);transform:none}
+input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:2rem;margin:0;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:1.125rem;height:1.125rem;margin-top:calc(1px - .5625rem);background:var(--emph);border:0;border-radius:0}
+input[type=range]::-moz-range-track{height:2px;background:var(--ink);border:0}
+input[type=range]::-moz-range-thumb{width:1.125rem;height:1.125rem;background:var(--emph);border:0;border-radius:0}
+input[type=range]:hover::-webkit-slider-thumb{background:#0B4C87}
+input[type=range]:focus-visible{outline-offset:3px}
+.check{display:flex;align-items:center;gap:.625rem;min-height:2rem;font-size:.9375rem;cursor:pointer}
+.check input{-webkit-appearance:none;appearance:none;flex:none;width:1.125rem;height:1.125rem;margin:0;border:1.5px solid var(--emph);border-radius:0;background:var(--canvas) center/78% no-repeat;cursor:pointer}
+.check input:checked{background-color:var(--emph);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.2l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E")}
+.check:hover input{background-color:var(--soft)}
+.check:hover input:checked{background-color:#0B4C87}
+.field{display:flex;flex-direction:column}
+.field-row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+.field-row label{font-size:.9375rem;color:var(--ink)}
+.field-val{font-weight:600;color:var(--emph);white-space:nowrap}
+.field-val.big{font-size:1.375rem;line-height:1.2}
+.field-val small{font-size:.875rem;font-weight:400;color:var(--ink)}
+.scale{display:flex;justify-content:space-between;font-size:.875rem;color:var(--mute);margin-top:-.2rem}
+.hint{font-size:.875rem;color:var(--mute);line-height:1.4;text-wrap:pretty}
+.note{font-size:.8125rem;color:var(--mute);text-wrap:pretty}
+
+/* ---------- step tabs ---------- */
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--emph)}
+.tab{display:flex;align-items:center;gap:.75rem;min-height:2.9rem;padding:.45rem 1rem;border:0;border-radius:0;background:var(--canvas);color:var(--emph);font-size:1.0625rem;font-weight:600;text-align:left;cursor:pointer;transition:background-color .12s ease}
+.tab+.tab{border-left:1px solid var(--emph)}
+.tab:hover{background:var(--soft)}
+.tab[aria-selected=true]{background:var(--emph);color:#FFFFFF}
+.tab .badge{flex:none;display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;border:1.5px solid currentColor;font-size:.9375rem;line-height:1}
+.tab[aria-selected=true] .badge{background:#FFFFFF;color:var(--emph);border-color:#FFFFFF}
+.tab:focus-visible{outline-offset:-5px}
+.tab[aria-selected=true]:focus-visible{outline-color:#FFFFFF}
+.tab .short{display:none}
+
+/* ---------- step panels ---------- */
+.panel{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1.75rem;align-items:start}
+.side{display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.steps{list-style:none;padding:0;display:grid;gap:.2rem;counter-reset:st}
+.steps li{counter-increment:st;display:grid;grid-template-columns:1.375rem minmax(0,1fr);gap:.55rem;font-size:.9375rem;line-height:1.38;text-wrap:pretty}
+.steps li::before{content:counter(st);display:grid;place-items:center;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--emph);color:#FFFFFF;font-size:.75rem;font-weight:600;line-height:1}
+.fig{display:flex;flex-direction:column;gap:.4rem;min-width:0}
+.legend{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.2rem 1.1rem;font-size:.875rem;color:var(--ink)}
+.legend li{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.sw{flex:none;display:block}
+.plot{position:relative;min-width:0}
+.plot svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+.cap{font-size:.875rem;color:var(--mute);line-height:1.5;text-wrap:pretty}
+.box-title{font-size:.875rem;color:var(--ink)}
+.chart-box{display:flex;flex-direction:column;gap:.15rem}
+
+/* segmented choices (two or three options side by side) */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);border:1px solid var(--emph);margin-top:.3rem}
+.seg-opt{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:2.75rem;padding:.35rem .6rem;cursor:pointer;color:var(--emph);background:var(--canvas);font-weight:600;font-size:.9375rem;line-height:1.2;transition:background-color .12s ease}
+.seg-opt+.seg-opt{border-left:1px solid var(--emph)}
+.seg-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.seg-opt:hover{background:var(--soft)}
+.seg-opt.is-on{background:var(--emph);color:#FFFFFF}
+.seg-opt:has(input:focus-visible){outline:2px solid var(--emph);outline-offset:2px;z-index:1}
+
+/* training: buttons, numbers, status */
+.train-row{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:.6rem}
+.train-row .btn-primary{width:auto}
+.btn-wide{width:100%;min-height:2.75rem;font-size:.9375rem}
+.nums{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem 1rem}
+.nums>div{display:flex;flex-direction:column;justify-content:flex-end}
+.num-lab{display:flex;align-items:center;gap:.4rem;font-size:.875rem;color:var(--ink);line-height:1.35}
+.num-lab small{font-size:inherit;color:var(--mute)}
+.num-val{font-size:1.625rem;line-height:1.2;font-weight:600;color:var(--c-model);white-space:nowrap;font-variant-numeric:tabular-nums}
+.num-val.law{color:var(--c-physics)}
+.num-val small{font-size:.875rem;font-weight:400;color:var(--ink)}
+.status{min-height:1.5em;font-weight:600;font-size:.9375rem;color:var(--c-model);text-wrap:pretty}
+.status.warn{color:var(--c-warn)}
+.status.slow{color:var(--ink)}
+.physics{padding:.25rem .45rem;border:1px solid var(--c-physics);background:rgba(115,0,254,.07);color:var(--c-physics);font-size:.875rem;font-weight:600;line-height:1.4;text-wrap:pretty}
+.loss-eq{font-size:.9375rem;line-height:1.45;color:var(--ink);border-left:3px solid var(--light);padding-left:.55rem;text-wrap:pretty}
+.loss-eq .t-law{color:var(--c-physics);font-weight:600}
+.loss-eq .t-known{color:var(--c-train);font-weight:600}
+.energy-check{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .5rem}
+.energy-check .ans{font-size:1.0625rem}
+
+/* svg furniture */
+.plot text{font-family:var(--font);fill:var(--ink)}
+.plot .v{font-family:var(--math);font-style:italic}
+.plot .tick{font-size:.875rem;fill:var(--mute)}
+.plot .ax-label{font-size:.9375rem;fill:var(--ink)}
+.plot .nodata-lab{font-size:.875rem;fill:var(--mute)}
+.plot .colloc-lab{font-size:.875rem;font-weight:600;fill:var(--c-physics)}
+.plot .room-lab{font-size:.875rem;fill:var(--mute)}
+.plot .start-lab{font-size:.875rem;font-weight:600;fill:var(--c-train)}
+.plot .pred-lab{font-size:.9375rem;font-weight:600;fill:var(--c-model)}
+.plot .truth-lab{font-size:.875rem;fill:var(--c-truth)}
+.plot .dlab{font-size:.875rem;font-weight:600}
+.plot .dlab.law{fill:var(--c-physics)}
+.plot .dlab.known{fill:var(--c-train)}
+.plot .note-lab{font-size:.875rem;fill:var(--mute)}
+.plot .halo{paint-order:stroke;stroke:var(--canvas);stroke-width:4px;stroke-linejoin:round}
+.axis{stroke:var(--ink);fill:none;shape-rendering:crispEdges}
+.gridline{stroke:var(--grid);fill:none;shape-rendering:crispEdges}
+.zero{stroke:var(--mute);stroke-opacity:.55;fill:none}
+.nodata{fill:var(--light)}
+.nodata-edge{stroke:var(--mute);stroke-opacity:.5;fill:none}
+.room{stroke:var(--mute);fill:none}
+.ln-model{stroke:var(--c-model);fill:none;stroke-linejoin:round;stroke-linecap:round}
+.ln-truth{stroke:var(--c-truth);fill:none;stroke-linecap:butt}
+.ln-physics{stroke:var(--c-physics);fill:none;stroke-linejoin:round}
+.ln-law{stroke:var(--c-physics);fill:none;stroke-linejoin:round}
+.ln-known{stroke:var(--c-train);fill:none;stroke-linejoin:round}
+.colloc{stroke:var(--c-physics);fill:none}
+.mk-colloc{fill:var(--c-physics);stroke:var(--canvas)}
+.mk-read{fill:var(--c-train);stroke:var(--canvas)}
+.mk-start{fill:var(--c-train);stroke:var(--canvas)}
+.mk-model{fill:var(--c-model);stroke:var(--canvas)}
+.mk-law{fill:var(--c-physics);stroke:var(--canvas)}
+
+/* ---------- more options ---------- */
+.more{border-top:1px solid var(--struct);border-bottom:1px solid var(--struct)}
+.more>summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.75rem 0;cursor:pointer;font-weight:600;font-size:1rem;color:var(--emph);list-style:none}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"+";font-weight:400;font-size:1.25rem;line-height:1}
+.more[open]>summary::after{content:"\2212"}
+.more-body{display:flex;flex-direction:column;gap:1.25rem;padding-bottom:1.25rem}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem 2rem;max-width:52rem}
+.opt{border:0;padding:0;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.opt>legend{font-size:.875rem;font-weight:600;color:var(--emph);padding:0;margin-bottom:.35rem}
+.btn-row{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap}
+.sub{border-top:1px solid var(--grid)}
+.sub>summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.6rem 0;cursor:pointer;font-weight:600;font-size:.9375rem;color:var(--emph);list-style:none}
+.sub>summary::after{content:"+";font-weight:400;font-size:1.125rem;line-height:1}
+.sub[open]>summary::after{content:"\2212"}
+.sub .body{padding:0 0 .9rem;display:flex;flex-direction:column;gap:.6rem;max-width:72ch}
+.sub .body p{font-size:.9375rem;text-wrap:pretty}
+.table-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.8125rem;font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--emph);text-align:right;padding:.35rem .6rem;border-bottom:1px solid var(--ink);white-space:nowrap}
+td{text-align:right;padding:.22rem .6rem;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+th.txt,td.txt{text-align:left}
+caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color:var(--emph);padding-bottom:.3rem}
+
+/* ---------- guided tour: one focus at a time (as in d01 to d03) ---------- */
+.tour{position:absolute;left:0;top:0;width:0;height:0;z-index:20}
+.tour-veil{position:absolute;background:rgba(255,255,255,.86);transition:opacity .16s ease}
+.tour-ring{position:absolute;border:3px solid var(--emph);pointer-events:none;transition:opacity .16s ease}
+.tour-box{position:absolute;width:min(21rem,calc(100vw - 2rem));background:var(--canvas);border:1px solid var(--emph);padding:.65rem .85rem .75rem;display:flex;flex-direction:column;gap:.4rem;transition:opacity .16s ease}
+.tour.fading .tour-veil,.tour.fading .tour-ring,.tour.fading .tour-box{opacity:0}
+.tour-count{font-size:.875rem;color:var(--mute)}
+.tour-text{font-size:1.0625rem;font-weight:600;color:var(--emph);line-height:1.35;text-wrap:pretty}
+.tour-nav{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.tour-nav .btn{min-height:2.25rem;padding:.3rem .75rem}
+.tour-next{background:var(--emph);color:#FFFFFF}
+.tour-next:hover{background:#0B4C87}
+.tour-end{margin-left:auto}
+
+/* ---------- phones ---------- */
+@media (max-width:767.98px){
+  .wrap{padding-left:1rem;padding-right:1rem}
+  .pm-hint{display:none}
+  h1{font-size:1.5rem}
+  .panel{grid-template-columns:minmax(0,1fr);gap:1.25rem}
+  .opts{grid-template-columns:minmax(0,1fr)}
+  .tab{font-size:.9375rem;padding:.4rem .5rem;gap:.4rem;min-height:2.75rem}
+  .tab .badge{width:1.5rem;height:1.5rem;font-size:.8125rem}
+  .tab .long{display:none}
+  .tab .short{display:inline}
+  .seg-opt{padding:.35rem .35rem}
+  .num-val{font-size:1.375rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  .btn:active{transform:none}
+  .tour-veil{display:none}
+}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap head">
+    <div class="head-row">
+      <div>
+        <p class="course">Machine Learning for Physical Systems · Lecture 5</p>
+        <h1>Physics in the loss</h1>
+      </div>
+      <div class="head-actions">
+        <button id="tour-btn" class="btn" type="button">Guide me</button>
+        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Shortcut: <kbd>P</kbd></span></p>
+      </div>
+    </div>
+    <p class="context">A network learns how a hot part cools and how a mass swings by checking the law of physics, not by copying answers.</p>
+  </div>
+</header>
+
+<main class="wrap page" id="main">
+  <noscript><p>This demo needs JavaScript to train the networks.</p></noscript>
+
+  <div class="tabs" role="tablist" aria-label="Steps">
+    <button class="tab" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" type="button"><span class="badge" aria-hidden="true">1</span><span class="long">The law, not the answer</span><span class="short">The law</span></button>
+    <button class="tab" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" type="button"><span class="badge" aria-hidden="true">2</span><span class="long">Readings and the law</span><span class="short">Readings</span></button>
+    <button class="tab" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" type="button"><span class="badge" aria-hidden="true">3</span><span class="long">The swinging mass</span><span class="short">Mass</span></button>
+  </div>
+
+  <!-- step 1: the law, not the answer -->
+  <section class="panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">
+    <figure class="fig" id="fig-1" aria-labelledby="cap-1">
+      <ul class="legend" id="legend-1" aria-label="Legend"></ul>
+      <div class="plot" id="plot-1"><svg id="svg-1" role="img" aria-labelledby="svg-1-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-1-desc">The network's curve for the cooling law</desc></svg></div>
+      <div class="chart-box" id="resid-box">
+        <p class="box-title" id="resid-title">Residual <span class="math"><i>r</i> = <i>θ</i>′ + <i>θ</i></span> of the network: zero where the law holds</p>
+        <div class="plot" id="plot-resid"><svg id="svg-resid" role="img" aria-labelledby="svg-resid-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-resid-desc">The residual along the time axis</desc></svg></div>
+      </div>
+      <figcaption class="cap" id="cap-1">The cooling law in scaled form: <span class="math"><i>θ</i>′ + <i>θ</i> = 0</span>, with <span class="math"><i>θ</i> = 1</span> at the start and <span class="math"><i>θ</i> = 0</span> at room temperature. Collocation points: points where the law is checked; nothing is measured there.</figcaption>
+    </figure>
+    <div class="side" id="side-1">
+      <ol class="steps" id="steps-1">
+        <li>Train with the start value in the loss.</li>
+        <li>Now choose none: which curve does it find, and why?</li>
+        <li>Use only 4 collocation points: where does the residual stay large?</li>
+      </ol>
+      <div class="field" id="start-field">
+        <p class="box-title" id="start-lab">The start value <span class="math"><i>θ</i>(0) = 1</span></p>
+        <div class="seg" id="seg-start" role="radiogroup" aria-labelledby="start-lab">
+          <label class="seg-opt" data-key="loss"><input type="radio" name="start" value="loss">In the loss</label>
+          <label class="seg-opt" data-key="built"><input type="radio" name="start" value="built">Built in</label>
+          <label class="seg-opt" data-key="none"><input type="radio" name="start" value="none">None</label>
+        </div>
+      </div>
+      <div class="field" id="n-field">
+        <div class="field-row"><label for="ncol">Collocation points</label><span class="field-val big" id="ncol-out" aria-hidden="true"></span></div>
+        <input id="ncol" type="range" min="4" max="64" step="1" value="32">
+        <p class="hint">Points where the law is checked; nothing is measured there.</p>
+      </div>
+      <div class="train-row" id="train-row-1">
+        <button class="btn btn-primary" id="train-1" type="button" aria-pressed="false">Train</button>
+        <button class="btn" id="reset-1" type="button">Reset</button>
+      </div>
+      <div class="nums" id="nums-1" role="group" aria-label="The network after training">
+        <div><span class="num-lab" id="lab-err-1">Largest error</span><span class="num-val" id="err-1" data-value=""></span></div>
+        <div><span class="num-lab"><span><span class="math"><i>θ</i>(0)</span> of the network</span></span><span class="num-val" id="th0-1" data-value=""></span></div>
+      </div>
+      <p class="status" id="status-1" aria-live="polite"></p>
+      <div class="chart-box" id="loss-box-1">
+        <p class="box-title">Loss over the training steps (log scale)</p>
+        <div class="plot" id="plot-loss-1"><svg id="svg-loss-1" role="img" aria-labelledby="svg-loss-1-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-loss-1-desc">The terms of the loss after every training step</desc></svg></div>
+      </div>
+      <p class="loss-eq" id="eq-1"></p>
+      <label class="check" id="exact-row-1"><input id="exact-1" type="checkbox"><span class="sw-slot"></span>Show the exact solution</label>
+    </div>
+  </section>
+
+  <!-- step 2: readings and the law -->
+  <section class="panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+    <figure class="fig" id="fig-2" aria-labelledby="cap-2">
+      <ul class="legend" id="legend-2" aria-label="Legend"></ul>
+      <div class="plot" id="plot-2"><svg id="svg-2" role="img" aria-labelledby="svg-2-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-2-desc">Temperature of the steel part over 16 minutes</desc></svg></div>
+      <figcaption class="cap" id="cap-2">A hot steel part cools in a 20 °C room (Lecture 4). Five readings in the first eight minutes. The law: <span class="math"><i>T</i>′ = −<i>k</i> (<i>T</i> − 20 °C)</span>, with the cooling constant <i class="v">k</i> unknown.</figcaption>
+    </figure>
+    <div class="side" id="side-2">
+      <ol class="steps" id="steps-2">
+        <li>Train with the law: which cooling constant does it learn?</li>
+        <li>Switch the law off and train: what happens after 8 min?</li>
+        <li>Show the true cooling: does 16 min match?</li>
+      </ol>
+      <label class="check" id="law-row"><input id="law" type="checkbox"><span class="sw-slot"></span>Use the law in the loss</label>
+      <div class="train-row" id="train-row-2">
+        <button class="btn btn-primary" id="train-2" type="button" aria-pressed="false">Train</button>
+        <button class="btn" id="reset-2" type="button">Reset</button>
+      </div>
+      <div class="nums" id="nums-2" role="group" aria-label="What the network learned">
+        <div><span class="num-lab">Cooling constant <i class="v">k</i></span><span class="num-val law" id="k-2" data-value=""></span></div>
+        <div><span class="num-lab" id="lab-t16">At 16 min</span><span class="num-val" id="t16-2" data-value=""></span></div>
+      </div>
+      <p class="status" id="status-2" aria-live="polite"></p>
+      <div class="chart-box" id="k-box">
+        <p class="box-title">Learned <i class="v">k</i> [1/min] over the training steps</p>
+        <div class="plot" id="plot-k"><svg id="svg-k" role="img" aria-labelledby="svg-k-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-k-desc">The cooling constant after every training step</desc></svg></div>
+      </div>
+      <p class="loss-eq" id="eq-2"></p>
+      <label class="check" id="truth-row"><input id="truth" type="checkbox"><span class="sw-slot"></span>Show the true cooling</label>
+    </div>
+  </section>
+
+  <!-- step 3: the swinging mass -->
+  <section class="panel" id="panel-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+    <figure class="fig" id="fig-3" aria-labelledby="cap-3">
+      <ul class="legend" id="legend-3" aria-label="Legend"></ul>
+      <div class="plot" id="plot-3"><svg id="svg-3" role="img" aria-labelledby="svg-3-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-3-desc">Position of the mass over time</desc></svg></div>
+      <div class="chart-box" id="energy-box">
+        <p class="box-title energy-check"><span>Energy <span class="math"><i>E</i> = <i>x</i>′²/2 + <i>x</i>²/2</span> of the network.</span><span class="physics" id="energy-ok" data-ok=""></span></p>
+        <div class="plot" id="plot-energy"><svg id="svg-energy" role="img" aria-labelledby="svg-energy-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-energy-desc">The energy of the network's motion</desc></svg></div>
+      </div>
+      <figcaption class="cap" id="cap-3"></figcaption>
+    </figure>
+    <div class="side" id="side-3">
+      <ol class="steps" id="steps-3">
+        <li>Train over 2 periods, then over 10 periods.</li>
+        <li>Press Equation only: why does the mass stay at rest?</li>
+        <li>Find the damping: which value do the readings give?</li>
+      </ol>
+      <div class="field" id="mode-field">
+        <div class="seg" id="seg-mode" role="radiogroup" aria-label="What the network does">
+          <label class="seg-opt" data-key="forward"><input type="radio" name="mode" value="forward">Solve the law</label>
+          <label class="seg-opt" data-key="find"><input type="radio" name="mode" value="find">Find the damping</label>
+        </div>
+      </div>
+      <div class="field" id="zeta-field">
+        <div class="field-row"><label for="zeta">Damping <i class="v">ζ</i></label><span class="field-val big" id="zeta-out" aria-hidden="true"></span></div>
+        <input id="zeta" type="range" min="0" max="0.5" step="0.05" value="0.1">
+      </div>
+      <div class="field" id="span-field">
+        <div class="seg" id="seg-span" role="radiogroup" aria-label="Time span">
+          <label class="seg-opt" data-key="2"><input type="radio" name="span" value="2">2 periods</label>
+          <label class="seg-opt" data-key="10"><input type="radio" name="span" value="10">10 periods</label>
+        </div>
+      </div>
+      <div class="field" id="noise-field">
+        <div class="field-row"><label for="noise">Noise of the readings</label><span class="field-val big" id="noise-out" aria-hidden="true"></span></div>
+        <input id="noise" type="range" min="0" max="0.05" step="0.005" value="0.02">
+      </div>
+      <div class="train-row" id="train-row-3">
+        <button class="btn btn-primary" id="train-3" type="button" aria-pressed="false">Train</button>
+        <button class="btn" id="reset-3" type="button">Reset</button>
+      </div>
+      <button class="btn btn-wide" id="eq-btn" type="button" aria-pressed="false">Equation only (no start values)</button>
+      <div class="nums" id="nums-3" role="group" aria-label="The network after training">
+        <div id="num-a-3"><span class="num-lab" id="lab-a-3"></span><span class="num-val" id="a-3" data-value=""></span></div>
+        <div id="num-b-3"><span class="num-lab" id="lab-b-3"></span><span class="num-val" id="b-3" data-value=""></span></div>
+      </div>
+      <p class="status" id="status-3" aria-live="polite"></p>
+      <div class="chart-box" id="chart-box-3">
+        <p class="box-title" id="chart-title-3"></p>
+        <div class="plot" id="plot-c3"><svg id="svg-c3" role="img" aria-labelledby="svg-c3-desc" xmlns="http://www.w3.org/2000/svg"><desc id="svg-c3-desc">Training progress</desc></svg></div>
+      </div>
+      <p class="loss-eq" id="eq-3"></p>
+      <label class="check" id="exact-row-3"><input id="exact-3" type="checkbox"><span class="sw-slot"></span>Show the exact motion</label>
+    </div>
+  </section>
+
+  <p id="live" class="vh" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <details class="more" id="more">
+    <summary>More options</summary>
+    <div class="more-body">
+      <p class="note">These options change all three steps.</p>
+      <div class="opts">
+        <fieldset class="opt">
+          <legend>Random start</legend>
+          <div class="btn-row"><button id="new-start" class="btn" type="button">New random start</button><span id="start-out" class="note">Random start 1</span></div>
+          <p class="note">Every random start is repeatable: the same number always gives the same knobs.</p>
+        </fieldset>
+        <fieldset class="opt">
+          <legend>Check the exact derivatives</legend>
+          <div class="btn-row"><button id="self-check" class="btn" type="button">Compare with finite differences</button></div>
+          <p class="note" id="check-out">Compares the derivatives of the current network, and the gradient of its loss, with finite differences.</p>
+        </fieldset>
+      </div>
+      <details class="sub" id="read-box">
+        <summary>Table: the readings</summary>
+        <div class="body table-wrap">
+          <table>
+            <caption>The steel part (step 2)</caption>
+            <thead><tr><th scope="col">Time [min]</th><th scope="col">Reading [°C]</th><th scope="col">True law [°C]</th></tr></thead>
+            <tbody id="tbl-steel"></tbody>
+          </table>
+          <table>
+            <caption id="tbl-mass-cap">The swinging mass (step 3)</caption>
+            <thead><tr><th scope="col">Time <i class="v">τ</i></th><th scope="col">Reading <i class="v">x</i></th><th scope="col">Exact <i class="v">x</i> (<i class="v">ζ</i> = 0.1)</th></tr></thead>
+            <tbody id="tbl-mass"></tbody>
+          </table>
+        </div>
+      </details>
+      <details class="sub">
+        <summary>How it is computed</summary>
+        <div class="body" id="how"></div>
+      </details>
+      <p class="note" id="source">The readings are made in this page: the steel part from the true law <span class="math"><i>T</i> = 20 + 180 e<sup>−0.25 <i>t</i></sup></span> °C plus fixed deviations of up to 2.5 °C, as in Lectures 4 and 5; the swinging mass from the exact motion for <span class="math"><i>ζ</i> = 0.1</span> plus noise.</p>
+    </div>
+  </details>
+</main>
+
+<div class="tour" id="tour" hidden>
+  <div class="tour-veil" id="veil-t"></div><div class="tour-veil" id="veil-b"></div><div class="tour-veil" id="veil-l"></div><div class="tour-veil" id="veil-r"></div>
+  <div class="tour-ring" id="tour-ring"></div>
+  <div class="tour-box" id="tour-box" role="dialog" aria-label="Guided tour" aria-describedby="tour-text">
+    <p class="tour-count" id="tour-count"></p>
+    <p class="tour-text" id="tour-text" aria-live="polite"></p>
+    <div class="tour-nav"><button id="tour-prev" class="btn" type="button">Back</button><button id="tour-next" class="btn tour-next" type="button">Next</button><button id="tour-end" class="btn tour-end" type="button">End tour</button></div>
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap foot">
+    <p>Every network is trained in this page, from a repeatable random start</p>
+    <p>MLPS · TUHH</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var NB = String.fromCharCode(160), MINUS = '−';
+
+  /* =====================================================================
+     Random numbers (mulberry32 and the seed mixer of d01 to d03)
+     ===================================================================== */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function mixSeed(seed, k) {
+    var h = (seed >>> 0) ^ Math.imul(k + 1, 0x9E3779B1);
+    h = Math.imul(h ^ (h >>> 16), 0x85EBCA6B);
+    h = Math.imul(h ^ (h >>> 13), 0xC2B2AE35);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+
+  /* =====================================================================
+     The network u(t): the time t enters as x = a t + c, two hidden layers of H tanh units, one output.
+     All knobs sit in one Float64Array P, one extra knob of the law (k or zeta) after them:
+       [ w1 (H) | b1 (H) | W2 (H x H, row i feeds unit i of layer 2) | b2 (H) | w3 (H) | b3 | extra ]
+     The exact derivatives u' = du/dt and u'' are carried forward through the layers with the network
+     itself (the chain rule, taken with respect to the input); the backward pass then runs through this
+     extended computation to give the change of the loss with every knob.
+     ===================================================================== */
+  function layout(H) {
+    return { H: H, w1: 0, b1: H, W2: 2 * H, b2: 2 * H + H * H, w3: 3 * H + H * H, b3: 4 * H + H * H, n: 4 * H + H * H + 1 };
+  }
+  /* Random start as PyTorch's default for a linear layer: weights and offsets uniform in +-1/sqrt(number of inputs) */
+  function initKnobs(H, extra, seed, stream) {
+    var L = layout(H), P = new Float64Array(L.n + extra), r = mulberry32(mixSeed(seed, stream)), q = 1 / Math.sqrt(H), i;
+    var u = function (b) { return (2 * r() - 1) * b; };
+    for (i = 0; i < H; i++) P[L.w1 + i] = u(1);
+    for (i = 0; i < H; i++) P[L.b1 + i] = u(1);
+    for (i = 0; i < H * H; i++) P[L.W2 + i] = u(q);
+    for (i = 0; i < H; i++) P[L.b2 + i] = u(q);
+    for (i = 0; i < H; i++) P[L.w3 + i] = u(q);
+    P[L.b3] = u(q);
+    return P;
+  }
+  function Work(H) {
+    this.h1 = new Float64Array(H); this.d1 = new Float64Array(H); this.e1 = new Float64Array(H);
+    this.h2 = new Float64Array(H); this.d2 = new Float64Array(H); this.e2 = new Float64Array(H);
+    this.s2 = new Float64Array(H); this.p2 = new Float64Array(H); this.q2 = new Float64Array(H);
+    this.a1 = new Float64Array(H); this.b1 = new Float64Array(H); this.c1 = new Float64Array(H);
+    this.u = 0; this.u1 = 0; this.u2 = 0;
+  }
+  /* Forward pass at one time t with the exact input derivatives (order 0: u; 1: u and u'; 2: u, u' and u'').
+     For every unit h = tanh(z):  h' = (1 - h^2) z',   h'' = (1 - h^2) z'' - 2 h (1 - h^2) z'^2. */
+  function pointForward(P, L, a, c, t, order, W) {
+    var H = L.H, x = a * t + c, i, j, z, zp, zpp, h, s, w, row;
+    var h1 = W.h1, d1 = W.d1, e1 = W.e1, h2 = W.h2, d2 = W.d2, e2 = W.e2, s2 = W.s2, p2 = W.p2, q2 = W.q2;
+    for (j = 0; j < H; j++) {                              // layer 1: z = w1 x + b1, z' = w1 a, z'' = 0
+      h = Math.tanh(P[L.w1 + j] * x + P[L.b1 + j]); s = 1 - h * h; zp = P[L.w1 + j] * a;
+      h1[j] = h; d1[j] = s * zp; e1[j] = -2 * h * s * zp * zp;
+    }
+    var u = P[L.b3], u1 = 0, u2 = 0;
+    for (i = 0; i < H; i++) {                              // layer 2: z = W2 h1 + b2, z' = W2 h1', z'' = W2 h1''
+      row = L.W2 + i * H; z = P[L.b2 + i]; zp = 0; zpp = 0;
+      if (order === 0) { for (j = 0; j < H; j++) z += P[row + j] * h1[j]; }
+      else if (order === 1) { for (j = 0; j < H; j++) { w = P[row + j]; z += w * h1[j]; zp += w * d1[j]; } }
+      else { for (j = 0; j < H; j++) { w = P[row + j]; z += w * h1[j]; zp += w * d1[j]; zpp += w * e1[j]; } }
+      h = Math.tanh(z); s = 1 - h * h;
+      h2[i] = h; s2[i] = s; p2[i] = zp; q2[i] = zpp;
+      d2[i] = s * zp; e2[i] = s * zpp - 2 * h * s * zp * zp;
+      w = P[L.w3 + i]; u += w * h; u1 += w * d2[i]; u2 += w * e2[i];   // output: u = w3 h2 + b3, u' = w3 h2', u'' = w3 h2''
+    }
+    W.u = u; W.u1 = u1; W.u2 = u2;
+  }
+  /* Backward pass at the same time t, right after pointForward: gu, gu1, gu2 say how the loss changes with u, u'
+     and u''; the change with every knob is added to G. For h = tanh(z), s = 1 - h^2 (the chain rule through
+     the extended computation):  dh/dz = s;  dh'/dz = -2 h s z',  dh'/dz' = s;
+     dh''/dz = 2 s (3 h^2 - 1) z'^2 - 2 h s z'',  dh''/dz' = -4 h s z',  dh''/dz'' = s. */
+  function pointBackward(P, L, a, c, t, order, W, gu, gu1, gu2, G) {
+    var H = L.H, x = a * t + c, i, j, h, s, zp, zpp, A, B, C, gz, gzp, gzpp, w, row;
+    var h1 = W.h1, d1 = W.d1, e1 = W.e1, h2 = W.h2, d2 = W.d2, e2 = W.e2, s2 = W.s2, p2 = W.p2, q2 = W.q2, a1 = W.a1, b1 = W.b1, c1 = W.c1;
+    for (j = 0; j < H; j++) { a1[j] = 0; b1[j] = 0; c1[j] = 0; }
+    G[L.b3] += gu;
+    for (i = 0; i < H; i++) {
+      w = P[L.w3 + i];
+      G[L.w3 + i] += gu * h2[i] + gu1 * d2[i] + gu2 * e2[i];
+      A = gu * w; B = gu1 * w; C = gu2 * w;                // the loss through h2, h2' and h2''
+      h = h2[i]; s = s2[i]; zp = p2[i]; zpp = q2[i];
+      gz = A * s + B * (-2 * h * s * zp) + C * (2 * s * (3 * h * h - 1) * zp * zp - 2 * h * s * zpp);
+      gzp = B * s + C * (-4 * h * s * zp);
+      gzpp = C * s;
+      G[L.b2 + i] += gz;
+      row = L.W2 + i * H;
+      if (order === 0) {
+        for (j = 0; j < H; j++) { G[row + j] += gz * h1[j]; a1[j] += P[row + j] * gz; }
+      } else if (order === 1) {
+        for (j = 0; j < H; j++) { w = P[row + j]; G[row + j] += gz * h1[j] + gzp * d1[j]; a1[j] += w * gz; b1[j] += w * gzp; }
+      } else {
+        for (j = 0; j < H; j++) { w = P[row + j]; G[row + j] += gz * h1[j] + gzp * d1[j] + gzpp * e1[j]; a1[j] += w * gz; b1[j] += w * gzp; c1[j] += w * gzpp; }
+      }
+    }
+    for (j = 0; j < H; j++) {                              // layer 1 (z'' = 0)
+      h = h1[j]; s = 1 - h * h; zp = P[L.w1 + j] * a;
+      gz = a1[j] * s + b1[j] * (-2 * h * s * zp) + c1[j] * (2 * s * (3 * h * h - 1) * zp * zp);
+      gzp = b1[j] * s + c1[j] * (-4 * h * s * zp);
+      G[L.w1 + j] += gz * x + gzp * a;
+      G[L.b1 + j] += gz;
+    }
+  }
+  /* Adam, as in PyTorch: beta1 = 0.9, beta2 = 0.999, eps = 1e-8 */
+  function Adam(n) { this.m = new Float64Array(n); this.v = new Float64Array(n); this.t = 0; }
+  Adam.prototype.step = function (P, G, lr) {
+    this.t += 1;
+    var m = this.m, v = this.v, n = P.length, i, g, c1 = 1 - Math.pow(0.9, this.t), c2 = Math.sqrt(1 - Math.pow(0.999, this.t)), size = lr / c1;
+    for (i = 0; i < n; i++) {
+      g = G[i];
+      m[i] = 0.9 * m[i] + 0.1 * g;
+      v[i] = 0.999 * v[i] + 0.001 * g * g;
+      P[i] -= size * m[i] / (Math.sqrt(v[i]) / c2 + 1e-8);
+    }
+  };
+  function softplus(r) { return r > 30 ? r : Math.log1p(Math.exp(r)); }
+  function sigmoid(r) { return 1 / (1 + Math.exp(-r)); }
+  function linspace(a, b, n) { var out = new Float64Array(n); for (var i = 0; i < n; i++) out[i] = n === 1 ? a : a + (b - a) * i / (n - 1); return out; }
+
+  /* =====================================================================
+     The three problems. Each has its points, the terms of its loss, its step size and its run length.
+     Step 1: theta' + theta = 0 on [0, 5], theta(0) = 1 (the scaled cooling law, exact solution e^-tau).
+     Step 2: the steel part of Lecture 4, readings at 0, 2, 4, 6, 8 min; the law dT/dt = -k (T - 20 C) on
+             [0, 16] min, trained in scaled units theta = (T - 20 C) / 180 C, tau = t / 4 min, so that
+             d theta / d tau + 4 k theta = 0 (k in 1/min); k = softplus(rho) stays positive.
+     Step 3: x'' + 2 zeta x' + x = 0, x(0) = 1, x'(0) = 0 (time tau: one period of the undamped mass is 2 pi);
+             finding the damping: 12 noisy readings on [0, 2 pi], zeta = softplus(rho), start 0.3.
+     ===================================================================== */
+  var STEEL = { t: [0, 2, 4, 6, 8], dev: [0, 2.5, -2, 1.5, -1], room: 20, span: 180, k: 0.25, tEnd: 16, scale: 4 };
+  STEEL.T = STEEL.t.map(function (t, i) { return STEEL.room + STEEL.span * Math.exp(-STEEL.k * t) + STEEL.dev[i]; });
+  function steelTrue(t) { return STEEL.room + STEEL.span * Math.exp(-STEEL.k * t); }
+  /* the 12 reading times and the noise pattern of the lecture's example (lectures/L05_pinns/compute.py, inverse):
+     reading = exact motion for zeta = 0.1 + noise size x these standard normal numbers */
+  var MASS = {
+    t: [0.15, 0.30635373165265484, 0.3388565968102988, 1.4734710535155595, 1.7957430321414596, 2.4087777189814505,
+      2.5665128426714845, 3.237885993554064, 4.098956016787445, 5.057982542713582, 5.076441699143409, 6.278008685461637],
+    n: [-0.9582652054360874, 1.6000190889991106, 0.20288244050860604, -1.7321348424395853, -0.083696192817026, -1.163225973444748,
+      -0.6292880940615531, -0.4880058232768547, -0.7133133716322432, 0.5533784703532898, -0.06308597192528909, -0.5894312580326022]
+  };
+  var ZETA_TRUE = 0.1, ZETA_START = 0.3, TWO_PI = 2 * Math.PI;
+  function massExact(z, t) { var w = Math.sqrt(1 - z * z); return Math.exp(-z * t) * (Math.cos(w * t) + z / w * Math.sin(w * t)); }
+  function massExactV(z, t) { var w = Math.sqrt(1 - z * z); return -Math.exp(-z * t) / w * Math.sin(w * t); }
+  function massReadings(noise) { return MASS.t.map(function (t, i) { return massExact(ZETA_TRUE, t) + noise * MASS.n[i]; }); }
+  var RUN = { 1: 3000, 2: 4000, 3: 6000 }, WIDTH = { 1: 20, 2: 20, 3: 24 };
+
+  function coolingProblem(st) {
+    var H = WIDTH[1], L = layout(H), tc = linspace(0, 5, st.n), hard = st.start === 'built', soft = st.start === 'loss';
+    var p = { step: 1, H: H, L: L, a: 1, c: 0, extra: 0, K: -1, rho0: 0, colloc: tc, T: 5, run: RUN[1], hard: hard, soft: soft,
+      keys: soft ? ['law', 'start'] : ['law'], lr: function () { return 0.01; } };
+    p.out = function (P, t, order, W) {
+      pointForward(P, L, 1, 0, t, order, W);
+      if (hard) { var N = W.u, N1 = W.u1, N2 = W.u2; W.u = 1 + t * N; W.u1 = N + t * N1; W.u2 = 2 * N1 + t * N2; }   // theta = 1 + tau N(tau)
+    };
+    p.lossGrad = function (P, G, W) {
+      var n = tc.length, law = 0, i, t, r, g;
+      for (i = 0; i < n; i++) {
+        t = tc[i]; p.out(P, t, 1, W);
+        r = W.u1 + W.u; law += r * r / n;
+        if (G) {
+          g = 2 * r / n;                                   // the loss changes with theta and with theta' by 2 r / n
+          if (hard) pointBackward(P, L, 1, 0, t, 1, W, t * g + g, t * g, 0, G);   // through theta = 1 + tau N: N gets tau g + g, N' gets tau g
+          else pointBackward(P, L, 1, 0, t, 1, W, g, g, 0, G);
+        }
+      }
+      var start = 0;
+      if (soft) {
+        pointForward(P, L, 1, 0, 0, 0, W);
+        var e = W.u - 1; start = e * e;
+        if (G) pointBackward(P, L, 1, 0, 0, 0, W, 2 * e, 0, 0, G);
+      }
+      return { law: law, start: start, data: 0, total: law + start };
+    };
+    p.par = function () { return null; };
+    return p;
+  }
+  function steelProblem(st) {
+    var H = WIDTH[2], L = layout(H), K = L.n, s4 = STEEL.scale, tc = linspace(0, STEEL.tEnd / s4, 64);
+    var td = STEEL.t.map(function (t) { return t / s4; }), yd = STEEL.T.map(function (T) { return (T - STEEL.room) / STEEL.span; });
+    var p = { step: 2, H: H, L: L, a: 1, c: 0, extra: 1, K: K, rho0: 0, colloc: tc, T: STEEL.tEnd / s4, run: RUN[2], law: !!st.law,
+      keys: st.law ? ['data', 'law'] : ['data'], lr: function () { return 0.01; }, td: td, yd: yd };
+    p.out = function (P, t, order, W) { pointForward(P, L, 1, 0, t, order, W); };
+    p.lossGrad = function (P, G, W) {
+      var nd = td.length, data = 0, law = 0, i, t, e, r, g;
+      for (i = 0; i < nd; i++) {
+        t = td[i]; pointForward(P, L, 1, 0, t, 0, W);
+        e = W.u - yd[i]; data += e * e / nd;
+        if (G) pointBackward(P, L, 1, 0, t, 0, W, 2 * e / nd, 0, 0, G);
+      }
+      if (st.law) {
+        var k = softplus(P[K]), n = tc.length, gk = 0;
+        for (i = 0; i < n; i++) {
+          t = tc[i]; pointForward(P, L, 1, 0, t, 1, W);
+          r = W.u1 + s4 * k * W.u; law += r * r / n;       // d theta / d tau + (4 min) k theta
+          if (G) { g = 2 * r / n; pointBackward(P, L, 1, 0, t, 1, W, g * s4 * k, g, 0, G); gk += g * s4 * W.u; }
+        }
+        if (G) G[K] += gk * sigmoid(P[K]);                  // dk/drho = sigmoid(rho)
+      }
+      return { law: law, start: 0, data: data, total: data + law };
+    };
+    p.par = function (P) { return softplus(P[K]); };
+    return p;
+  }
+  function massProblem(st) {
+    var H = WIDTH[3], L = layout(H), K = L.n, find = st.mode === 'find', periods = find ? 2 : st.periods, T = TWO_PI * periods;
+    var n = periods > 2 ? 256 : 128, tc = linspace(0, T, n), a = 2 / T, c = -1, starts = find || !st.eq;
+    var xd = massReadings(st.noise);
+    var p = { step: 3, H: H, L: L, a: a, c: c, extra: 1, K: K, rho0: find ? Math.log(Math.expm1(ZETA_START)) : 0, colloc: tc, T: T, run: RUN[3],
+      find: find, starts: starts, periods: periods, readings: find ? xd : null,
+      keys: find ? ['data', 'law', 'start'] : starts ? ['law', 'start'] : ['law'],
+      lr: function (s) { return s <= 4000 ? 0.01 : 0.01 * Math.pow(0.1, Math.min(1, (s - 4000) / 2000)); } };
+    function zeta(P) { return find ? softplus(P[K]) : st.zeta; }
+    p.out = function (P, t, order, W) { pointForward(P, L, a, c, t, order, W); };
+    p.lossGrad = function (P, G, W) {
+      var z = zeta(P), law = 0, gz = 0, i, t, r, g;
+      for (i = 0; i < n; i++) {
+        t = tc[i]; pointForward(P, L, a, c, t, 2, W);
+        r = W.u2 + 2 * z * W.u1 + W.u; law += r * r / n;
+        if (G) { g = 2 * r / n; pointBackward(P, L, a, c, t, 2, W, g, 2 * z * g, g, G); gz += g * 2 * W.u1; }
+      }
+      var start = 0, data = 0;
+      if (starts) {
+        pointForward(P, L, a, c, 0, 1, W);
+        var e0 = W.u - 1, e1 = W.u1; start = e0 * e0 + e1 * e1;
+        if (G) pointBackward(P, L, a, c, 0, 1, W, 2 * e0, 2 * e1, 0, G);
+      }
+      if (find) {
+        var nd = MASS.t.length, e;
+        for (i = 0; i < nd; i++) {
+          t = MASS.t[i]; pointForward(P, L, a, c, t, 0, W);
+          e = W.u - xd[i]; data += e * e / nd;
+          if (G) pointBackward(P, L, a, c, t, 0, W, 2 * e / nd, 0, 0, G);
+        }
+        if (G) G[K] += gz * sigmoid(P[K]);
+      }
+      return { law: law, start: start, data: data, total: law + start + data };
+    };
+    p.par = function (P) { return find ? softplus(P[K]) : null; };
+    p.zeta = zeta;
+    return p;
+  }
+  function makeProblem(step, st) { return step === 1 ? coolingProblem(st) : step === 2 ? steelProblem(st) : massProblem(st); }
+
+  /* =====================================================================
+     State and URL hash
+     ===================================================================== */
+  var DEFAULTS = { step: 1, start: 'loss', n: 32, exact: true, law: true, truth: false, mode: 'forward', zeta: 0.1, periods: 2, noise: 0.02, eq: false, seed: 1 };
+  var state = Object.assign({}, DEFAULTS), boot = { train: 0 };
+  function settingsOf(step) {
+    if (step === 1) return { start: state.start, n: state.n };
+    if (step === 2) return { law: state.law };
+    return { mode: state.mode, zeta: state.zeta, periods: state.periods, noise: state.noise, eq: state.eq };
+  }
+  function clampInt(v, lo, hi, def) { v = parseInt(v, 10); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
+  function clampNum(v, lo, hi, def) { v = parseFloat(v); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
+  function snap(v, stepSize) { return Math.round(v / stepSize) * stepSize; }
+  function readHash() {
+    var p = new URLSearchParams(location.hash.replace(/^#/, '')), st = Object.assign({}, DEFAULTS);
+    st.step = clampInt(p.get('step'), 1, 3, DEFAULTS.step);
+    if (['loss', 'built', 'none'].indexOf(p.get('start')) >= 0) st.start = p.get('start');
+    st.n = clampInt(p.get('n'), 4, 64, DEFAULTS.n);
+    if (p.has('exact')) st.exact = p.get('exact') !== '0';
+    if (p.has('law')) st.law = p.get('law') !== '0';
+    if (p.has('truth')) st.truth = p.get('truth') === '1';
+    if (['forward', 'find'].indexOf(p.get('mode')) >= 0) st.mode = p.get('mode');
+    st.zeta = +snap(clampNum(p.get('zeta'), 0, 0.5, DEFAULTS.zeta), 0.05).toFixed(2);
+    st.periods = p.get('periods') === '10' ? 10 : 2;
+    st.noise = +snap(clampNum(p.get('noise'), 0, 0.05, DEFAULTS.noise), 0.005).toFixed(3);
+    if (p.has('eq')) st.eq = p.get('eq') === '1';
+    st.seed = clampInt(p.get('seed'), 1, 999999, DEFAULTS.seed);
+    boot.train = clampInt(p.get('train'), 0, 20000, 0);
+    return st;
+  }
+  function hashString() {
+    return '#step=' + state.step + '&start=' + state.start + '&n=' + state.n + '&exact=' + (state.exact ? 1 : 0) + '&law=' + (state.law ? 1 : 0) +
+      '&truth=' + (state.truth ? 1 : 0) + '&mode=' + state.mode + '&zeta=' + state.zeta.toFixed(2) + '&periods=' + state.periods +
+      '&noise=' + state.noise.toFixed(3) + '&eq=' + (state.eq ? 1 : 0) + '&seed=' + state.seed;
+  }
+  var hashTimer = 0;
+  function writeHash() {
+    clearTimeout(hashTimer);
+    hashTimer = setTimeout(function () {
+      var h = hashString();
+      if (location.hash === h) return;
+      try { history.replaceState(null, '', h); } catch (err) { /* some file:// contexts refuse; the demo still works */ }
+    }, 150);
+  }
+
+  /* =====================================================================
+     Training runs: one per step, each from the random start of its own stream
+     ===================================================================== */
+  var runs = { 1: null, 2: null, 3: null }, loop = { raf: 0, step: 0 }, STEPS_PER_FRAME = 20;
+  function newRun(step) {
+    var prob = makeProblem(step, settingsOf(step)), P = initKnobs(prob.H, prob.extra, state.seed, step);
+    if (prob.extra) P[prob.K] = prob.rho0;
+    return { step: step, prob: prob, P: P, G: new Float64Array(P.length), opt: new Adam(P.length), W: new Work(prob.H),
+      steps: 0, target: prob.run, hist: [], par: [prob.par(P)], running: false, stop: '', ms: 0, wall: 0, wallStart: 0, ver: 0, curVer: -1, cur: null, dVer: -1, d: null };
+  }
+  function run(step) { if (!runs[step]) runs[step] = newRun(step); return runs[step]; }
+  function resetRun(step) { stopTraining(step); runs[step] = newRun(step); }
+  function oneStep(R) {
+    var G = R.G;
+    G.fill(0);
+    R.hist[R.steps] = R.prob.lossGrad(R.P, G, R.W);        // the loss at the knobs before this step
+    R.opt.step(R.P, G, R.prob.lr(R.steps + 1));
+    R.steps += 1;
+    R.par.push(R.prob.par(R.P));
+    R.ver += 1;
+  }
+  function current(R) { if (R.curVer !== R.ver) { R.cur = R.prob.lossGrad(R.P, null, R.W); R.curVer = R.ver; } return R.cur; }
+  function startTraining(step) {
+    var R = run(step);
+    if (R.running) return;
+    if (R.stop === 'blew') { renderAll(); return; }
+    if (R.steps >= R.target) R.target = R.steps + R.prob.run;     // one more run of the same length
+    stopTraining(loop.step);
+    R.running = true; R.stop = ''; R.wallStart = performance.now();
+    loop.step = step;
+    loop.raf = requestAnimationFrame(trainFrame);
+    renderAll();
+  }
+  function stopTraining(step, reason) {
+    var R = runs[step];
+    if (!R || !R.running) return;
+    R.running = false;
+    if (reason) R.stop = reason;
+    R.wall += performance.now() - R.wallStart;
+    cancelAnimationFrame(loop.raf); loop.raf = 0;
+  }
+  function trainFrame() {
+    var step = loop.step, R = runs[step];
+    if (!R || !R.running) return;
+    var rm = reducedMotion(), t0 = performance.now(), per = rm ? 400 : STEPS_PER_FRAME, i = 0;
+    while (i < per && R.steps < R.target) {
+      oneStep(R); i += 1;
+      if (!isFinite(R.hist[R.steps - 1].total)) break;
+      if (performance.now() - t0 > (rm ? 80 : 45)) break;   // keep the page responsive on slow machines
+    }
+    R.ms += performance.now() - t0;
+    if (!isFinite(R.hist[R.steps - 1].total) || !isFinite(R.P[0])) stopTraining(step, 'blew');
+    else if (R.steps >= R.target) stopTraining(step, 'done');
+    if (state.step === step) {
+      if (R.running && rm) renderSide(step);                   // reduced motion: no moving curves, only the numbers
+      else renderStep(step);
+    }
+    if (R.running) loop.raf = requestAnimationFrame(trainFrame);
+    else { announce(step); writeHash(); }
+  }
+  function trainSync(step, n) {                                // for tests, screenshots and #train=N: the same steps without animation
+    var R = run(step);
+    stopTraining(step);
+    var t0 = performance.now();
+    for (var i = 0; i < n; i++) {
+      oneStep(R);
+      if (!isFinite(R.hist[R.steps - 1].total)) { R.stop = 'blew'; break; }
+    }
+    R.ms += performance.now() - t0;
+    if (R.stop !== 'blew') R.stop = R.steps >= R.target ? 'done' : '';
+    if (R.steps > R.target) R.target = R.steps;
+    return R;
+  }
+
+  /* =====================================================================
+     What the current knobs give (curves, errors, checks), computed once per training step shown
+     ===================================================================== */
+  var GRID = { 1: linspace(0, 5, 201), 2: linspace(0, STEEL.tEnd / STEEL.scale, 321) };
+  function derived(R) {
+    if (R.dVer === R.ver) return R.d;
+    var prob = R.prob, W = R.W, P = R.P, i, t, d = {};
+    if (R.step === 1) {
+      var g = GRID[1], n = g.length, tc = prob.colloc;
+      d.t = g; d.u = new Float64Array(n); d.r = new Float64Array(n); d.maxErr = 0; d.maxR = 0; d.maxRc = 0;
+      for (i = 0; i < n; i++) {
+        prob.out(P, g[i], 1, W);
+        d.u[i] = W.u; d.r[i] = W.u1 + W.u;
+        d.maxErr = Math.max(d.maxErr, Math.abs(W.u - Math.exp(-g[i]))); d.maxR = Math.max(d.maxR, Math.abs(d.r[i]));
+      }
+      d.rc = new Float64Array(tc.length);
+      for (i = 0; i < tc.length; i++) { prob.out(P, tc[i], 1, W); d.rc[i] = W.u1 + W.u; d.maxRc = Math.max(d.maxRc, Math.abs(d.rc[i])); }
+      prob.out(P, 0, 0, W); d.theta0 = W.u;
+    } else if (R.step === 2) {
+      var g2 = GRID[2], n2 = g2.length;
+      d.t = new Float64Array(n2); d.T = new Float64Array(n2);
+      for (i = 0; i < n2; i++) { prob.out(P, g2[i], 0, W); d.t[i] = g2[i] * STEEL.scale; d.T[i] = STEEL.room + STEEL.span * W.u; }
+      d.T16 = d.T[n2 - 1]; d.k = prob.par(P);
+      d.readErr = 0;
+      for (i = 0; i < STEEL.t.length; i++) { prob.out(P, STEEL.t[i] / STEEL.scale, 0, W); d.readErr = Math.max(d.readErr, Math.abs(STEEL.room + STEEL.span * W.u - STEEL.T[i])); }
+    } else {
+      var T = prob.T, n3 = 801, zr = prob.find ? ZETA_TRUE : state.zeta, runMin = Infinity, inc = 0, e;
+      d.t = linspace(0, T, n3); d.u = new Float64Array(n3); d.E = new Float64Array(n3); d.maxErr = 0; d.maxAbs = 0;
+      for (i = 0; i < n3; i++) {
+        t = d.t[i]; prob.out(P, t, 1, W);
+        d.u[i] = W.u; e = 0.5 * W.u1 * W.u1 + 0.5 * W.u * W.u; d.E[i] = e;
+        d.maxErr = Math.max(d.maxErr, Math.abs(W.u - massExact(zr, t))); d.maxAbs = Math.max(d.maxAbs, Math.abs(W.u));
+        if (i > 0) inc = Math.max(inc, e - runMin);
+        runMin = Math.min(runMin, e);
+      }
+      d.energyInc = inc; d.energyOk = inc <= ENERGY_TOL;
+      prob.out(P, 0, 1, W); d.x0 = W.u; d.v0 = W.u1;
+      d.zeta = prob.par(P); d.zref = zr;
+    }
+    R.d = d; R.dVer = R.ver;
+    return d;
+  }
+  var ENERGY_TOL = 0.005;                                      // 1 % of the start energy 1/2
+
+  /* =====================================================================
+     Formatting
+     ===================================================================== */
+  function group(intStr) { return intStr.replace(/\B(?=(\d{3})+(?!\d))/g, NB); }
+  function plain(v, digits) {                                  // plain decimals, never an exponent
+    digits = digits || 2;
+    if (!isFinite(v)) return 'n/a';
+    var a = Math.abs(v), sign = v < 0 ? MINUS : '';
+    if (a === 0) return '0';
+    if (a >= 1000) return sign + group(String(Math.round(a)));
+    if (a < 5e-7) return 'below 0.000001';
+    return sign + a.toPrecision(digits).replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
+  }
+  function fixed(v, dg) { return (v < 0 && Math.abs(v) >= 0.5 * Math.pow(10, -dg) ? MINUS : '') + Math.abs(v).toFixed(dg); }
+  function tickText(v) { var s = +v.toFixed(6); return s < 0 ? MINUS + String(-s) : String(s); }
+  function piText(v) { var k = Math.round(v / Math.PI); return k === 0 ? '0' : (k === 1 ? 'π' : k + 'π'); }
+  function degText(v) { return fixed(v, 1) + NB + '°C'; }
+  function stepsText(n) { return group(String(n)); }
+
+  /* =====================================================================
+     SVG helpers (as in d01 to d03)
+     ===================================================================== */
+  var NS = 'http://www.w3.org/2000/svg';
+  function S(tag, attrs, parent) {
+    var el = document.createElementNS(NS, tag);
+    if (attrs) for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) el.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+  function T(parent, x, y, parts, attrs) {    // parts: strings or {t, cls, sup, sub}
+    var t = S('text', Object.assign({ x: x, y: y }, attrs || {}), parent);
+    [].concat(parts).forEach(function (p) {
+      if (typeof p === 'string') { t.appendChild(document.createTextNode(p)); return; }
+      var ts = S('tspan', p.sup ? { dy: '-0.5em', 'font-size': '78%' } : p.sub ? { dy: '0.3em', 'font-size': '78%' } : null, t);
+      var cls = [p.cls, p.sup ? 'sup' : p.sub ? 'sub' : ''].filter(Boolean).join(' ');   // raised or lowered like HTML sup and sub
+      if (cls) ts.setAttribute('class', cls);
+      ts.textContent = p.t;
+    });
+    return t;
+  }
+  function clearSvg(svg) { while (svg.lastChild && svg.lastChild.nodeName !== 'desc') svg.removeChild(svg.lastChild); }
+  function sizeSvg(svg, W, H) { svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); }
+  function lin(d0, d1, r0, r1) {
+    var f = function (v) { return r0 + (v - d0) * (r1 - r0) / (d1 - d0); };
+    f.inv = function (p) { return d0 + (p - r0) * (d1 - d0) / (r1 - r0); };
+    return f;
+  }
+  function niceTicks(a, b, count) {
+    var raw = (b - a) / count, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw / mag;
+    var step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag, out = [];
+    for (var v = Math.ceil(a / step) * step; v <= b + step * 1e-9; v += step) out.push(Math.abs(v) < step * 1e-9 ? 0 : +v.toFixed(10));
+    return out;
+  }
+  function niceUp(v) {                                         // the smallest 1, 2 or 5 times a power of ten at or above v
+    var e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e);
+    return (m <= 1 + 1e-9 ? 1 : m <= 2 + 1e-9 ? 2 : m <= 5 + 1e-9 ? 5 : 10) * Math.pow(10, e);
+  }
+  function rootPx() { return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16; }
+  function lineScale() { return document.documentElement.classList.contains('presenter') ? 1.6 : 1; }
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  function axes(g, o) {                       // o: sx, sy, x0, x1, y0, y1, xt, yt, xl, yl, W, H, fs
+    S('path', { d: 'M' + o.x0 + ',' + o.y1 + 'V' + o.y0 + 'H' + o.x1, class: 'axis', 'stroke-width': 1 }, g);
+    o.xt.forEach(function (v) {
+      var px = Math.round(o.sx(v)) + 0.5;
+      S('line', { x1: px, x2: px, y1: o.y0, y2: o.y0 + 5, class: 'axis', 'stroke-width': 1 }, g);
+      T(g, px, o.y0 + 1.3 * o.fs, [o.xtf ? o.xtf(v) : tickText(v)], { class: 'tick', 'text-anchor': 'middle' });
+    });
+    o.yt.forEach(function (v) {
+      var py = Math.round(o.sy(v)) + 0.5;
+      S('line', { x1: o.x0 - 5, x2: o.x0, y1: py, y2: py, class: 'axis', 'stroke-width': 1 }, g);
+      T(g, o.x0 - 0.55 * o.fs, py + 0.3 * o.fs, [].concat(o.ytf ? o.ytf(v) : tickText(v)), { class: 'tick', 'text-anchor': 'end' });
+    });
+    if (o.xl) T(g, (o.x0 + o.x1) / 2, o.H - 0.45 * o.fs, o.xl, { class: 'ax-label', 'text-anchor': 'middle' });
+    if (o.yl) {
+      var yLab = T(g, 0, 0, o.yl, { class: 'ax-label', 'text-anchor': 'middle' });
+      yLab.setAttribute('transform', 'translate(' + (0.95 * o.fs) + ',' + ((o.y0 + o.y1) / 2) + ') rotate(-90)');
+    }
+  }
+  /* a plot frame: margins, axes, a clip for the curves; o.bands draws shaded regions under the axes */
+  function frame(svg, W, H, dom, id, o) {
+    var fs = rootPx(), M = o.M || { l: 3.5 * fs, r: 0.9 * fs, t: 0.9 * fs, b: 3.0 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t, sx = lin(dom.x[0], dom.x[1], x0, x1), sy = lin(dom.y[0], dom.y[1], y0, y1);
+    var defs = S('defs', null, svg), cp = S('clipPath', { id: id }, defs);
+    S('rect', { x: x0, y: y1, width: x1 - x0, height: y0 - y1 }, cp);
+    var P = { svg: svg, sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, fs: fs, W: W, H: H, dom: dom, yLo: y1 - H, yHi: y0 + H };
+    if (o.bands) o.bands(P);
+    axes(S('g', null, svg), { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, fs: fs, W: W, H: H, xt: o.xt, yt: o.yt, xl: o.xl, yl: o.yl, xtf: o.xtf, ytf: o.ytf });
+    P.g = S('g', { 'clip-path': 'url(#' + id + ')' }, svg);
+    P.top = S('g', null, svg);
+    return P;
+  }
+  function pathOf(xs, ys, P, toX) {
+    var d = '', n = xs.length;
+    for (var i = 0; i < n; i++) {
+      var py = P.sy(ys[i]);
+      if (py !== py) continue;
+      py = clamp(py, P.yLo, P.yHi);
+      d += (d ? 'L' : 'M') + P.sx(toX ? toX(xs[i]) : xs[i]).toFixed(1) + ',' + py.toFixed(1);
+    }
+    return d;
+  }
+  function dash(lw) { return (7 * lw).toFixed(1) + ' ' + (5 * lw).toFixed(1); }
+  /* collocation points: small violet ticks on the time axis, where the law is checked */
+  function drawColloc(P, ts, toX, lw, labelAt) {
+    var g = S('g', { class: 'colloc-g', 'data-n': ts.length }, P.svg), h = 0.62 * P.fs, sw = 2 * Math.min(lw, 1.3);
+    for (var i = 0; i < ts.length; i++) {
+      var x = P.sx(toX ? toX(ts[i]) : ts[i]);
+      S('line', { x1: x.toFixed(1), x2: x.toFixed(1), y1: P.y0 - 0.5, y2: (P.y0 - h).toFixed(1), class: 'colloc', 'stroke-width': sw, 'data-t': ts[i] }, g);
+    }
+    var right = labelAt !== 'left';
+    T(P.top, right ? P.x1 - 0.3 * P.fs : P.x0 + 0.4 * P.fs, P.y0 - h - 0.45 * P.fs, ['law checked here'], { class: 'colloc-lab halo', 'text-anchor': right ? 'end' : 'start' });
+    return g;
+  }
+  function diamond(parent, x, y, r, cls) {
+    return S('path', { d: 'M' + x.toFixed(1) + ',' + (y - r).toFixed(1) + 'l' + r.toFixed(1) + ',' + r.toFixed(1) + 'l' + (-r).toFixed(1) + ',' + r.toFixed(1) + 'l' + (-r).toFixed(1) + ',' + (-r).toFixed(1) + 'Z', class: cls, 'stroke-width': 1.5 }, parent);
+  }
+  var SW = {
+    model: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-model" stroke-width="3"/>'],
+    truth: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-truth" stroke-width="2" stroke-dasharray="6 4"/>'],
+    colloc: ['0 0 14 14', '<line x1="3" x2="3" y1="3" y2="13" class="colloc" stroke-width="2"/><line x1="7" x2="7" y1="3" y2="13" class="colloc" stroke-width="2"/><line x1="11" x2="11" y1="3" y2="13" class="colloc" stroke-width="2"/>'],
+    read: ['0 0 14 14', '<circle cx="7" cy="7" r="5" class="mk-read" stroke-width="0"/>'],
+    start: ['0 0 14 14', '<path d="M7 1.5L12.5 7L7 12.5L1.5 7Z" class="mk-start" stroke-width="0"/>'],
+    nodata: ['0 0 18 14', '<rect x="1" y="1" width="16" height="12" class="nodata"/>'],
+    law: ['0 0 26 14', '<line x1="1" x2="25" y1="7" y2="7" class="ln-physics" stroke-width="2.5"/>']
+  };
+  function swatch(kind) {
+    var d = SW[kind], vb = d[0].split(' ');
+    return '<svg class="sw" viewBox="' + d[0] + '" style="width:' + (vb[2] / 14).toFixed(3) + 'em;height:' + (vb[3] / 14).toFixed(3) + 'em" aria-hidden="true">' + d[1] + '</svg>';
+  }
+  function li(kind, html) { return '<li data-kind="' + kind + '">' + swatch(kind) + '<span>' + html + '</span></li>'; }
+  var M_THETA = '<span class="math"><i>θ</i>(<i>τ</i>)</span>', M_EXP = '<span class="math">e<sup>−<i>τ</i></sup></span>';
+
+  /* =====================================================================
+     Layout helpers
+     ===================================================================== */
+  var els = {};
+  function $(id) { return document.getElementById(id); }
+  function isWide() { return window.innerWidth >= 768; }
+  /* The main plot fills the viewport below it on wide screens; what sits below it in the figure keeps its height */
+  function mainHeight(step, W, lo, tall) {
+    var fs = rootPx(), k = fs / 16;
+    if (!isWide()) return Math.round(clamp(W * 0.78, 240 * k, 380 * k));
+    var plot = $('plot-' + step), fig = $('fig-' + step);
+    var below = fig.getBoundingClientRect().bottom - plot.getBoundingClientRect().bottom;
+    var top = plot.getBoundingClientRect().top + window.scrollY;
+    var avail = window.innerHeight - top - below - 1.1 * fs;
+    return Math.round(clamp(avail, lo * fs, Math.max(lo * fs, W * tall)));
+  }
+  function smallHeight(rows) { return Math.round(rows * rootPx() * (isWide() ? 1 : 1.2)); }   // phones have room below, so the small charts grow
+
+  /* =====================================================================
+     Charts of the training: the loss terms (log scale) and a learned constant
+     ===================================================================== */
+  var TERM = {
+    law: { cls: 'ln-law', lab: 'law', lcls: 'law' },
+    start: { cls: 'ln-known', lab: 'start value', lcls: 'known' },
+    data: { cls: 'ln-known', lab: 'readings', lcls: 'known' }
+  };
+  function powLabel(e) { return e === 0 ? ['1'] : e === 1 ? ['10'] : ['10', { t: (e < 0 ? MINUS : '') + Math.abs(e), sup: true }]; }
+  function renderLossChart(svg, plotEl, R, keys) {
+    var W = Math.floor(plotEl.clientWidth);
+    if (W < 60) return;
+    var fs = rootPx(), lw = lineScale(), H = smallHeight(6.6), M = { l: 3.2 * fs, r: 6.4 * fs, t: 0.7 * fs, b: 1.9 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var n = R.steps, hist = R.hist, cur = current(R), lo = Infinity, hi = -Infinity, i, k;
+    var vals = function (i, key) { return i < n ? hist[i][key] : cur[key]; };
+    keys.forEach(function (key) {
+      for (i = 0; i <= n; i++) { var v = vals(i, key); if (v > 0 && isFinite(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }
+    });
+    if (!isFinite(lo)) { lo = 1e-4; hi = 1; }
+    var eHi = clamp(Math.ceil(Math.log10(hi) - 1e-9), -6, 4), eLo = clamp(Math.floor(Math.log10(lo) + 1e-9), -16, eHi - 4);
+    var every = eHi - eLo > 8 ? 4 : eHi - eLo > 4 ? 2 : 1;       // ticks at 1, 10^-4, 10^-8, ... (or every 2 or 1 decades)
+    var xmax = Math.max(R.prob.run, n), x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t;
+    var sx = lin(0, xmax, x0, x1), sy = lin(eLo, eHi, y0, y1), gA = S('g', null, svg);
+    for (var e = Math.ceil(eLo / every) * every; e <= eHi; e += every) {
+      var py = Math.round(sy(e)) + 0.5;
+      S('line', { x1: x0, x2: x1, y1: py, y2: py, class: 'gridline', 'stroke-width': 1 }, gA);
+      T(gA, x0 - 0.45 * fs, py + 0.3 * fs, powLabel(e), { class: 'tick', 'text-anchor': 'end' });
+    }
+    S('path', { d: 'M' + x0 + ',' + y1 + 'V' + y0 + 'H' + x1, class: 'axis', 'stroke-width': 1 }, gA);
+    niceTicks(0, xmax, W < 360 ? 2 : 3).forEach(function (v) {
+      var px = Math.round(sx(v)) + 0.5;
+      S('line', { x1: px, x2: px, y1: y0, y2: y0 + 4, class: 'axis', 'stroke-width': 1 }, gA);
+      T(gA, px, y0 + 1.25 * fs, [stepsText(v)], { class: 'tick', 'text-anchor': 'middle' });
+    });
+    var yv = function (v) { return clamp(sy(Math.log10(clamp(v, Math.pow(10, eLo - 1), Math.pow(10, eHi + 1)))), y1 - 2, y0 + 2); };
+    var stride = Math.max(1, Math.ceil(n / 600)), ends = [];
+    keys.forEach(function (key) {
+      var d = '';
+      for (i = 0; i <= n; i += stride) { var v = vals(i, key); if (!(v > 0) || !isFinite(v)) continue; d += (d ? 'L' : 'M') + sx(i).toFixed(1) + ',' + yv(v).toFixed(1); }
+      var vl = vals(n, key);
+      if (vl > 0 && isFinite(vl)) d += (d ? 'L' : 'M') + sx(n).toFixed(1) + ',' + yv(vl).toFixed(1);
+      var tm = TERM[key];
+      S('path', { d: d, class: tm.cls, 'stroke-width': (key === 'law' ? 2 : 1.5) * lw, 'data-term': key }, svg);
+      if (vl > 0 && isFinite(vl)) ends.push({ key: key, y: yv(vl), x: sx(n) });
+    });
+    ends.sort(function (p, q) { return p.y - q.y; });
+    for (k = 1; k < ends.length; k++) if (ends[k].y - ends[k - 1].y < 1.05 * fs) ends[k].y = ends[k - 1].y + 1.05 * fs;
+    var over = ends.length ? ends[ends.length - 1].y - (y0 - 0.45 * fs) : 0;   // the labels stay above the time axis and its numbers
+    if (over > 0) ends.forEach(function (p) { p.y -= over; });
+    ends.forEach(function (p) {
+      var tm = TERM[p.key];
+      S('circle', { cx: p.x.toFixed(1), cy: yv(vals(n, p.key)).toFixed(1), r: 3 * (lw > 1 ? 1.3 : 1), class: tm.lcls === 'law' ? 'mk-law' : 'mk-start', 'stroke-width': 1 }, svg);
+      T(svg, x1 + 0.45 * fs, p.y + 0.3 * fs, [tm.lab], { class: 'dlab ' + tm.lcls });
+    });
+    svg.querySelector('desc').textContent = 'The loss on a log scale over ' + n + ' training steps: ' + keys.map(function (key) {
+      return TERM[key].lab + ' term ' + plain(vals(0, key), 2) + ' at the start, ' + plain(vals(n, key), 2) + ' now';
+    }).join('; ') + '.';
+  }
+  function renderParChart(svg, plotEl, R, o) {           // o: ymax, yt, truth, truthLab, unused (text), name
+    var W = Math.floor(plotEl.clientWidth);
+    if (W < 60) return;
+    var fs = rootPx(), lw = lineScale(), H = smallHeight(6.6), M = { l: 3.2 * fs, r: 4.8 * fs, t: 0.7 * fs, b: 1.9 * fs };
+    clearSvg(svg); sizeSvg(svg, W, H);
+    var n = R.steps, xmax = Math.max(R.prob.run, n), x0 = M.l, x1 = W - M.r, y0 = H - M.b, y1 = M.t;
+    var sx = lin(0, xmax, x0, x1), sy = lin(0, o.ymax, y0, y1), gA = S('g', null, svg);
+    axes(gA, { sx: sx, sy: sy, x0: x0, x1: x1, y0: y0, y1: y1, fs: fs, W: W, H: H, xt: niceTicks(0, xmax, W < 360 ? 2 : 3), yt: o.yt, xtf: stepsText });
+    var ty = sy(o.truth);
+    S('line', { x1: x0, x2: x1, y1: ty, y2: ty, class: 'ln-truth', 'stroke-width': 1.5 * lw, 'stroke-dasharray': dash(lw) }, svg);
+    T(svg, x1 + 0.45 * fs, ty + 0.3 * fs, [o.truthLab], { class: 'truth-lab' });
+    if (o.unused) {
+      T(svg, (x0 + x1) / 2, (y1 + ty) / 2 - 0.2 * fs, [o.unused], { class: 'note-lab', 'text-anchor': 'middle' });
+      svg.querySelector('desc').textContent = o.unused + '.';
+      return;
+    }
+    var stride = Math.max(1, Math.ceil(n / 600)), d = '', i;
+    for (i = 0; i <= n; i += stride) d += (d ? 'L' : 'M') + sx(i).toFixed(1) + ',' + clamp(sy(R.par[i]), y1 - 2, y0 + 2).toFixed(1);
+    d += (d ? 'L' : 'M') + sx(n).toFixed(1) + ',' + clamp(sy(R.par[n]), y1 - 2, y0 + 2).toFixed(1);
+    S('path', { d: d, class: 'ln-physics', 'stroke-width': 2.25 * lw }, svg);
+    S('circle', { cx: sx(n).toFixed(1), cy: clamp(sy(R.par[n]), y1, y0).toFixed(1), r: 3.6 * (lw > 1 ? 1.3 : 1), class: 'mk-law', 'stroke-width': 1.25, 'data-value': R.par[n] }, svg);
+    svg.querySelector('desc').textContent = o.name + ' over ' + n + ' training steps: ' + fixed(R.par[0], 3) + ' at the start, ' + fixed(R.par[n], 3) + ' now (true ' + o.truth + ').';
+  }
+
+  /* =====================================================================
+     Step 1: the law, not the answer
+     ===================================================================== */
+  function renderLegend1() {
+    var h = li('model', 'Network ' + M_THETA);
+    if (state.exact) h += li('truth', 'Exact solution ' + M_EXP);
+    if (state.start !== 'none') h += li('start', 'Start value');
+    h += li('colloc', 'Collocation points');
+    if (els.legend1.innerHTML !== h) els.legend1.innerHTML = h;
+  }
+  function renderPlot1() {
+    var svg = els.svg1, W = Math.floor(els.plot1.clientWidth);
+    if (W < 60) return;
+    var R = run(1), d = derived(R), fs = rootPx(), lw = lineScale(), H = mainHeight(1, W, 15, 0.62);
+    var P = frame(svg, W, H, { x: [0, 5], y: [-0.4, 1.2] }, 'd05-clip-1', { xt: [0, 1, 2, 3, 4, 5], yt: [0, 0.5, 1],
+      xl: ['Time ', { t: 'τ', cls: 'v' }, ' [-]'], yl: ['Temperature ', { t: 'θ', cls: 'v' }, ' [-]'] });
+    var yz = P.sy(0);
+    S('line', { x1: P.x0, x2: P.x1, y1: yz, y2: yz, class: 'zero', 'stroke-width': 1, 'stroke-dasharray': '2 3' }, P.g);
+    T(P.top, P.x0 + 0.4 * fs, yz + 1.15 * fs, ['room temperature'], { class: 'room-lab halo' });
+    drawColloc(P, R.prob.colloc, null, lw, 'right');
+    if (state.exact) {
+      var ex = new Float64Array(d.t.length);
+      for (var i = 0; i < ex.length; i++) ex[i] = Math.exp(-d.t[i]);
+      S('path', { d: pathOf(d.t, ex, P), class: 'ln-truth', 'stroke-width': 2 * lw, 'stroke-dasharray': dash(lw) }, P.g);
+    }
+    S('path', { d: pathOf(d.t, d.u, P), class: 'ln-model', 'stroke-width': 3 * lw, 'data-steps': R.steps }, P.g);
+    if (state.start !== 'none') {
+      diamond(P.top, P.x0, P.sy(1), 0.5 * fs * (lw > 1 ? 1.2 : 1), 'mk-start');
+      T(P.top, P.x0 + 0.85 * fs, P.sy(1) - 0.55 * fs, ['start value'], { class: 'start-lab halo' });
+    }
+    svg.querySelector('desc').textContent = 'The network\'s curve theta(tau) from tau = 0 to 5 after ' + R.steps + ' training steps: it starts at ' + fixed(d.theta0, 3) +
+      ' and differs from the exact solution e^-tau by at most ' + plain(d.maxErr, 2) + '. The law is checked at ' + R.prob.colloc.length + ' collocation points, marked on the time axis.';
+  }
+  function renderResid() {
+    var svg = els.svgResid, W = Math.floor(els.plotResid.clientWidth);
+    if (W < 60) return;
+    var R = run(1), d = derived(R), fs = rootPx(), lw = lineScale(), H = smallHeight(7.2), top = niceUp(Math.max(d.maxR, 1e-3));
+    var P = frame(svg, W, H, { x: [0, 5], y: [-top, top] }, 'd05-clip-r', { M: { l: 3.5 * fs, r: 0.9 * fs, t: 0.6 * fs, b: 1.9 * fs },
+      xt: [0, 1, 2, 3, 4, 5], yt: [-top, 0, top] });
+    S('line', { x1: P.x0, x2: P.x1, y1: P.sy(0), y2: P.sy(0), class: 'zero', 'stroke-width': 1 }, P.g);
+    S('path', { d: pathOf(d.t, d.r, P), class: 'ln-physics', 'stroke-width': 2 * lw, 'data-max': d.maxR, 'data-maxc': d.maxRc }, P.g);
+    var g = S('g', null, P.svg), rr = 3.2 * (lw > 1 ? 1.3 : 1);
+    R.prob.colloc.forEach(function (t, i) { S('circle', { cx: P.sx(t).toFixed(1), cy: clamp(P.sy(d.rc[i]), P.y1, P.y0).toFixed(1), r: rr, class: 'mk-colloc', 'stroke-width': 1 }, g); });
+    svg.querySelector('desc').textContent = 'The residual theta\' + theta of the network along the time axis: at most ' + plain(d.maxR, 2) + ' in size, and at most ' +
+      plain(d.maxRc, 2) + ' at the ' + R.prob.colloc.length + ' collocation points (dots).';
+  }
+  function status1(R, d) {
+    if (R.stop === 'blew') return ['The loss blew up. Press Reset.', 'warn'];
+    if (R.running) return ['Training: every step makes the loss smaller.', ''];
+    if (R.steps === 0) return ['A random start. Press Train.', 'slow'];
+    if (R.stop !== 'done') return ['Paused. Press Train to go on.', 'slow'];
+    if (state.start === 'none') return ['No start value: every <span class="math"><i>C</i> e<sup>−<i>τ</i></sup></span> obeys the law. The network found <span class="math"><i>C</i></span> ≈ ' + fixed(d.theta0, 2) + '.', 'warn'];
+    if (d.maxR > 0.02 && d.maxRc < 0.25 * d.maxR) return ['The law holds at the collocation points, but not between them.', 'warn'];
+    if (state.start === 'built') return ['<span class="math"><i>θ</i>(0) = 1</span> exactly, for any knobs. The curve follows ' + M_EXP + '.', ''];
+    return ['The curve follows ' + M_EXP + ', although the network never saw it.', ''];
+  }
+  function eqText1() {
+    var r = '<span class="math"><i>r</i> = <i>θ</i>′ + <i>θ</i></span>';
+    if (state.start === 'loss') return 'Loss = <span class="t-law">mean of <span class="math"><i>r</i>²</span></span> + <span class="t-known"><span class="math">(<i>θ</i>(0) − 1)²</span></span>, with ' + r + ' at the collocation points.';
+    if (state.start === 'built') return 'Loss = <span class="t-law">mean of <span class="math"><i>r</i>²</span></span>, with ' + r + '. The start value is built in: <span class="math"><i>θ</i> = 1 + <i>τ</i> <i>N</i>(<i>τ</i>)</span>, with <i class="v">N</i> the network.';
+    return 'Loss = <span class="t-law">mean of <span class="math"><i>r</i>²</span></span> only, with ' + r + '. Nothing fixes the start.';
+  }
+  function setNum(el, text, v) { if (el.innerHTML !== text) el.innerHTML = text; el.setAttribute('data-value', String(v)); }
+  function syncTrainButtons(step) {
+    var R = run(step), b = els['train' + step];
+    b.textContent = R.running ? 'Pause' : 'Train';
+    b.setAttribute('aria-pressed', R.running ? 'true' : 'false');
+  }
+  function syncSeg(seg, key) {
+    Array.prototype.forEach.call(seg.querySelectorAll('.seg-opt'), function (lab) {
+      var on = lab.getAttribute('data-key') === String(key);
+      lab.classList.toggle('is-on', on);
+      lab.querySelector('input').checked = on;
+    });
+  }
+  function setStatus(el, st) {
+    if (el.innerHTML !== st[0]) el.innerHTML = st[0];
+    el.className = 'status' + (st[1] ? ' ' + st[1] : '');
+  }
+  function renderSide1() {
+    var R = run(1), d = derived(R);
+    syncSeg(els.segStart, state.start);
+    els.ncol.value = String(state.n);
+    els.ncolOut.textContent = String(state.n);
+    els.ncol.setAttribute('aria-valuetext', state.n + ' collocation points');
+    els.exact1.checked = state.exact;
+    syncTrainButtons(1);
+    setNum(els.err1, plain(d.maxErr, 2), d.maxErr);
+    setNum(els.th01, fixed(d.theta0, 3), d.theta0);
+    var st = status1(R, d);
+    setStatus(els.status1, st);
+    els.status1.setAttribute('data-steps', R.steps);
+    var eq = eqText1();
+    if (els.eq1.innerHTML !== eq) els.eq1.innerHTML = eq;
+  }
+  function render1() {
+    renderLegend1(); renderSide1(); renderLossChart(els.svgLoss1, els.plotLoss1, run(1), run(1).prob.keys); renderResid(); renderPlot1();
+    if (tour.on) tourLayout();
+  }
+
+  /* =====================================================================
+     Step 2: readings and the law
+     ===================================================================== */
+  function renderLegend2() {
+    var h = li('read', 'Readings') + li('model', 'Network');
+    if (state.truth) h += li('truth', 'True cooling');
+    h += li('nodata', 'No readings');
+    if (state.law) h += li('colloc', 'Collocation points');
+    if (els.legend2.innerHTML !== h) els.legend2.innerHTML = h;
+  }
+  function renderPlot2() {
+    var svg = els.svg2, W = Math.floor(els.plot2.clientWidth);
+    if (W < 60) return;
+    var R = run(2), d = derived(R), fs = rootPx(), lw = lineScale(), H = mainHeight(2, W, 17, 0.75);
+    var bands = function (P) {
+      var a = P.sx(8);
+      S('rect', { x: a, y: P.y1, width: P.x1 - a, height: P.y0 - P.y1, class: 'nodata', 'data-from': 8 }, P.svg);
+      S('line', { x1: a, x2: a, y1: P.y1, y2: P.y0, class: 'nodata-edge', 'stroke-width': 1 }, P.svg);
+      T(P.svg, (a + P.x1) / 2, P.y1 + 1.3 * P.fs, ['No readings'], { class: 'nodata-lab', 'text-anchor': 'middle' });
+    };
+    var P = frame(svg, W, H, { x: [0, 16], y: [-40, 210] }, 'd05-clip-2', { bands: bands, xt: [0, 4, 8, 12, 16], yt: [0, 50, 100, 150, 200],
+      xl: ['Time ', { t: 't', cls: 'v' }, ' [min]'], yl: ['Temperature ', { t: 'T', cls: 'v' }, ' [°C]'] });
+    var yr = P.sy(STEEL.room);
+    S('line', { x1: P.x0, x2: P.x1, y1: yr, y2: yr, class: 'room', 'stroke-width': 1.25, 'stroke-dasharray': '2 3' }, P.g);
+    T(P.top, P.x0 + 0.4 * fs, yr - 0.45 * fs, ['room 20 °C'], { class: 'room-lab halo' });
+    if (state.law) drawColloc(P, R.prob.colloc, function (tau) { return tau * STEEL.scale; }, lw, 'left');
+    if (state.truth) {
+      var tt = d.t, tr = new Float64Array(tt.length);
+      for (var i = 0; i < tt.length; i++) tr[i] = steelTrue(tt[i]);
+      S('path', { d: pathOf(tt, tr, P), class: 'ln-truth', 'stroke-width': 2 * lw, 'stroke-dasharray': dash(lw) }, P.g);
+    }
+    S('path', { d: pathOf(d.t, d.T, P), class: 'ln-model', 'stroke-width': 3 * lw, 'data-steps': R.steps }, P.g);
+    var g = S('g', null, P.top), r = 0.42 * fs * (lw > 1 ? 1.2 : 1);
+    STEEL.t.forEach(function (t, j) { S('circle', { cx: P.sx(t).toFixed(1), cy: P.sy(STEEL.T[j]).toFixed(1), r: r, class: 'mk-read', 'stroke-width': 1.5, 'data-t': t, 'data-T': STEEL.T[j] }, g); });
+    var px = P.sx(16), py = clamp(P.sy(d.T16), P.y1, P.y0);
+    S('circle', { cx: px.toFixed(1), cy: py.toFixed(1), r: 0.36 * fs * (lw > 1 ? 1.2 : 1), class: 'mk-model', 'stroke-width': 1.5, 'data-value': d.T16 }, P.top);
+    var up = py > P.y0 - 2.2 * fs;
+    T(P.top, px - 0.6 * fs, py + (up ? -0.7 : 1.35) * fs, [degText(d.T16)], { class: 'pred-lab halo', 'text-anchor': 'end' });
+    svg.querySelector('desc').textContent = 'Temperature of the steel part from 0 to 16 minutes: five readings in the first eight minutes, none after. The network ' +
+      (state.law ? 'with the law in its loss' : 'trained on the readings only') + ' predicts ' + degText(d.T16) + ' at 16 minutes after ' + R.steps + ' training steps; the true cooling gives ' + degText(steelTrue(16)) + '.';
+  }
+  function status2(R, d) {
+    if (R.stop === 'blew') return ['The loss blew up. Press Reset.', 'warn'];
+    if (R.running) return [state.law ? 'Training: the curve and <i class="v">k</i> adjust together.' : 'Training on the five readings only.', ''];
+    if (R.steps === 0) return ['A random start. Press Train.', 'slow'];
+    if (R.stop !== 'done') return ['Paused. Press Train to go on.', 'slow'];
+    if (!state.law) {
+      if (d.T16 < STEEL.room) return ['Without the law: ' + degText(d.T16) + ' at 16 min, colder than the room. Impossible.', 'warn'];
+      return ['Without the law, the curve after 8 min is a guess.', 'warn'];
+    }
+    return ['<span class="math"><i>k</i></span> = ' + fixed(d.k, 3) + ' per min (true 0.25): the law fills the gap after 8 min.', ''];
+  }
+  function eqText2() {
+    var known = '<span class="t-known">mean of (miss at a reading)²</span>';
+    if (!state.law) return 'Loss = ' + known + ' only. The law is not used.';
+    return 'Loss = ' + known + ' + <span class="t-law">mean of <span class="math"><i>r</i>²</span></span>, with <span class="math"><i>r</i> = <i>T</i>′ + <i>k</i> (<i>T</i> − 20 °C)</span> at the collocation points.';
+  }
+  function renderSide2() {
+    var R = run(2), d = derived(R);
+    els.law.checked = state.law; els.truth.checked = state.truth;
+    syncTrainButtons(2);
+    if (state.law) setNum(els.k2, fixed(d.k, 3) + ' <small>per min</small>', d.k);
+    else setNum(els.k2, '<small>not used</small>', '');
+    setNum(els.t162, degText(d.T16), d.T16);
+    els.labT16.innerHTML = 'At 16 min <small class="num">(true ' + degText(steelTrue(16)) + ')</small>';
+    setStatus(els.status2, status2(R, d));
+    els.status2.setAttribute('data-steps', R.steps);
+    var eq = eqText2();
+    if (els.eq2.innerHTML !== eq) els.eq2.innerHTML = eq;
+  }
+  function render2() {
+    var R = run(2);
+    renderLegend2(); renderSide2();
+    renderParChart(els.svgK, els.plotK, R, { ymax: 0.8, yt: [0, 0.25, 0.5, 0.75], truth: 0.25, truthLab: 'true 0.25', name: 'The cooling constant k in 1/min',
+      unused: state.law ? null : 'without the law, k is not used' });
+    renderPlot2();
+    if (tour.on) tourLayout();
+  }
+
+  /* =====================================================================
+     Step 3: the swinging mass
+     ===================================================================== */
+  function massTicks(T) { var out = [], stepK = T > 13 ? 4 : 1; for (var k = 0; k * Math.PI <= T + 1e-9; k += stepK) out.push(k * Math.PI); return out; }
+  function renderLegend3() {
+    var R = run(3), h = li('model', 'Network <span class="math"><i>x</i>(<i>τ</i>)</span>');
+    if (state.exact) h += li('truth', 'Exact motion');
+    if (R.prob.starts) h += li('start', 'Start values');
+    if (R.prob.find) h += li('read', 'Readings') + li('nodata', 'No readings');
+    h += li('colloc', 'Collocation points');
+    if (els.legend3.innerHTML !== h) els.legend3.innerHTML = h;
+    var cap = R.prob.find ? '12 readings with noise in the first period. The network learns the damping <i class="v">ζ</i> together with the curve.'
+      : 'A mass on a spring, released at <span class="math"><i>x</i> = 1</span> from rest: <span class="math"><i>x</i>″ + 2<i>ζx</i>′ + <i>x</i> = 0</span>. Scaled time <i class="v">τ</i>: one period is 2π.';
+    if (els.cap3.innerHTML !== cap) els.cap3.innerHTML = cap;
+  }
+  function renderPlot3() {
+    var svg = els.svg3, W = Math.floor(els.plot3.clientWidth);
+    if (W < 60) return;
+    var R = run(3), d = derived(R), prob = R.prob, fs = rootPx(), lw = lineScale(), H = mainHeight(3, W, 14, 0.6), T3 = prob.T;
+    var bands = prob.find ? function (P) {
+      var a = P.sx(TWO_PI);
+      S('rect', { x: a, y: P.y1, width: P.x1 - a, height: P.y0 - P.y1, class: 'nodata', 'data-from': TWO_PI }, P.svg);
+      S('line', { x1: a, x2: a, y1: P.y1, y2: P.y0, class: 'nodata-edge', 'stroke-width': 1 }, P.svg);
+      T(P.svg, (a + P.x1) / 2, P.y1 + 1.3 * P.fs, ['No readings'], { class: 'nodata-lab', 'text-anchor': 'middle' });
+    } : null;
+    var P = frame(svg, W, H, { x: [0, T3], y: [-1.3, 1.3] }, 'd05-clip-3', { bands: bands, xt: massTicks(T3), xtf: piText, yt: [-1, 0, 1],
+      xl: ['Time ', { t: 'τ', cls: 'v' }, ' [-]'], yl: ['Position ', { t: 'x', cls: 'v' }, ' [-]'] });
+    S('line', { x1: P.x0, x2: P.x1, y1: P.sy(0), y2: P.sy(0), class: 'zero', 'stroke-width': 1 }, P.g);
+    drawColloc(P, prob.colloc, null, lw, 'right');
+    if (state.exact) {
+      var ex = new Float64Array(d.t.length);
+      for (var i = 0; i < ex.length; i++) ex[i] = massExact(d.zref, d.t[i]);
+      S('path', { d: pathOf(d.t, ex, P), class: 'ln-truth', 'stroke-width': 2 * lw, 'stroke-dasharray': dash(lw) }, P.g);
+    }
+    S('path', { d: pathOf(d.t, d.u, P), class: 'ln-model', 'stroke-width': 3 * lw, 'data-steps': R.steps }, P.g);
+    if (prob.find) {
+      var g = S('g', null, P.top), r = 0.36 * fs * (lw > 1 ? 1.2 : 1);
+      prob.readings.forEach(function (x, j) { S('circle', { cx: P.sx(MASS.t[j]).toFixed(1), cy: P.sy(x).toFixed(1), r: r, class: 'mk-read', 'stroke-width': 1.25, 'data-x': x }, g); });
+    }
+    if (prob.starts) diamond(P.top, P.x0, P.sy(1), 0.5 * fs * (lw > 1 ? 1.2 : 1), 'mk-start');
+    svg.querySelector('desc').textContent = 'Position of the mass from tau = 0 to ' + piText(T3) + ' after ' + R.steps + ' training steps. ' +
+      (prob.find ? '12 readings with noise in the first period; the network\'s damping is ' + fixed(d.zeta, 3) + '. ' : '') +
+      'The network differs from the exact motion by at most ' + plain(d.maxErr, 2) + '.';
+  }
+  function renderEnergy() {
+    var svg = els.svgEnergy, W = Math.floor(els.plotEnergy.clientWidth);
+    if (W < 60) return;
+    var R = run(3), d = derived(R), fs = rootPx(), lw = lineScale(), H = smallHeight(6.4), T3 = R.prob.T;
+    var P = frame(svg, W, H, { x: [0, T3], y: [0, 0.6] }, 'd05-clip-e', { M: { l: 3.5 * fs, r: 0.9 * fs, t: 0.5 * fs, b: 1.9 * fs }, xt: massTicks(T3), xtf: piText, yt: [0, 0.5] });
+    if (state.exact) {
+      var ex = new Float64Array(d.t.length);
+      for (var i = 0; i < ex.length; i++) { var x = massExact(d.zref, d.t[i]), v = massExactV(d.zref, d.t[i]); ex[i] = 0.5 * v * v + 0.5 * x * x; }
+      S('path', { d: pathOf(d.t, ex, P), class: 'ln-truth', 'stroke-width': 1.75 * lw, 'stroke-dasharray': dash(lw) }, P.g);
+    }
+    S('path', { d: pathOf(d.t, d.E, P), class: 'ln-physics', 'stroke-width': 2.25 * lw }, P.g);
+    els.energyOk.innerHTML = 'Energy never increases: <span class="ans">' + (d.energyOk ? 'yes' : 'no') + '</span>';
+    els.energyOk.setAttribute('data-ok', d.energyOk ? 'yes' : 'no');
+    els.energyOk.setAttribute('data-inc', String(d.energyInc));
+    svg.querySelector('desc').textContent = 'The energy of the network\'s motion over time. ' + (d.energyOk ? 'It never increases.' : 'It increases somewhere, which a damped mass never does.');
+  }
+  function status3(R, d) {
+    var prob = R.prob;
+    if (R.stop === 'blew') return ['The loss blew up. Press Reset.', 'warn'];
+    if (R.running) return [prob.find ? 'Training: the curve and <i class="v">ζ</i> adjust together.' : 'Training: every step makes the loss smaller.', ''];
+    if (R.steps === 0) return ['A random start. Press Train.', 'slow'];
+    if (R.stop !== 'done') return ['Paused. Press Train to go on.', 'slow'];
+    if (prob.find) return ['Damping found: <span class="math"><i>ζ</i></span> = ' + fixed(d.zeta, 3) + ' (true 0.1), from 12 noisy readings.', ''];
+    if (!prob.starts) return ['Rest at <span class="math"><i>x</i> = 0</span> obeys the law too. Only the start values pick the motion.', 'warn'];
+    if (d.maxErr > 0.1) return ['Long times are hard: after the first swings the network comes to rest. More in Lecture 6.', 'warn'];
+    return ['The network follows the exact motion.', ''];
+  }
+  function eqText3(prob) {
+    var r = '<span class="math"><i>r</i> = <i>x</i>″ + 2<i>ζx</i>′ + <i>x</i></span>', law = '<span class="t-law">mean of <span class="math"><i>r</i>²</span></span>';
+    if (prob.find) return 'Loss = <span class="t-known">readings</span> + ' + law + ' + <span class="t-known">start values</span>; <i class="v">ζ</i> is a knob.';
+    if (!prob.starts) return 'Loss = ' + law + ' only, with ' + r + '.';
+    return 'Loss = ' + law + ' + <span class="t-known"><span class="math">(<i>x</i>(0) − 1)² + <i>x</i>′(0)²</span></span>, with ' + r + '.';
+  }
+  function renderSide3() {
+    var R = run(3), d = derived(R), prob = R.prob, find = prob.find;
+    syncSeg(els.segMode, state.mode);
+    syncSeg(els.segSpan, state.periods);
+    els.zeta.value = String(state.zeta); els.zetaOut.textContent = state.zeta.toFixed(2);
+    els.zeta.setAttribute('aria-valuetext', 'damping ' + state.zeta.toFixed(2));
+    els.noise.value = String(state.noise); els.noiseOut.textContent = state.noise.toFixed(3);
+    els.noise.setAttribute('aria-valuetext', 'noise ' + state.noise.toFixed(3));
+    els.zetaField.hidden = find; els.spanField.hidden = find; els.eqBtn.hidden = find; els.noiseField.hidden = !find;
+    els.eqBtn.setAttribute('aria-pressed', state.eq ? 'true' : 'false');
+    els.exact3.checked = state.exact;
+    syncTrainButtons(3);
+    if (find) {
+      els.labA3.innerHTML = 'Damping <i class="v">ζ</i> <small class="num">(true 0.1)</small>';
+      els.a3.className = 'num-val law';
+      setNum(els.a3, fixed(d.zeta, 3), d.zeta);
+      els.labB3.textContent = 'Largest error';
+      setNum(els.b3, plain(d.maxErr, 2), d.maxErr);
+    } else {
+      els.labA3.textContent = 'Largest error';
+      els.a3.className = 'num-val';
+      setNum(els.a3, plain(d.maxErr, 2), d.maxErr);
+      els.labB3.innerHTML = '<span class="math"><i>x</i>(0)</span> of the network';
+      setNum(els.b3, fixed(d.x0, 3), d.x0);
+    }
+    setStatus(els.status3, status3(R, d));
+    els.status3.setAttribute('data-steps', R.steps);
+    var t = find ? 'Learned damping <i class="v">ζ</i> over the training steps' : 'Loss over the training steps (log scale)';
+    if (els.chartTitle3.innerHTML !== t) els.chartTitle3.innerHTML = t;
+    var eq = eqText3(prob);
+    if (els.eq3.innerHTML !== eq) els.eq3.innerHTML = eq;
+  }
+  function render3() {
+    var R = run(3);
+    renderLegend3(); renderSide3();
+    if (R.prob.find) {
+      var top = 0.4;
+      R.par.forEach(function (z) { if (z > top) top = z; });
+      top = Math.min(1, Math.ceil(top * 5 - 1e-9) / 5);
+      renderParChart(els.svgC3, els.plotC3, R, { ymax: top, yt: [0, +(top / 2).toFixed(2), top], truth: ZETA_TRUE, truthLab: 'true 0.1', name: 'The damping zeta' });
+    }
+    else renderLossChart(els.svgC3, els.plotC3, R, R.prob.keys);
+    renderEnergy(); renderPlot3();
+    if (tour.on) tourLayout();
+  }
+
+  /* =====================================================================
+     Settings that change the problem: a fresh random start, idle
+     ===================================================================== */
+  function changed(step, what) {
+    resetRun(step);
+    renderAll(); writeHash();
+    if (what) say(what);
+  }
+  function setStart(v) { if (v === state.start) return; state.start = v; changed(1, { loss: 'Start value in the loss.', built: 'Start value built in.', none: 'No start value.' }[v]); }
+  function setN(v) { v = clamp(Math.round(v), 4, 64); if (v === state.n) return; state.n = v; changed(1, v + ' collocation points.'); }
+  function setLaw(on) { if (on === state.law) return; state.law = on; changed(2, on ? 'The law is in the loss.' : 'The law is switched off: readings only.'); }
+  function setMode(m) { if (m === state.mode) return; state.mode = m; changed(3, m === 'find' ? 'Find the damping from 12 readings.' : 'Solve the law.'); }
+  function setZeta(z) { z = +snap(clamp(z, 0, 0.5), 0.05).toFixed(2); if (z === state.zeta) return; state.zeta = z; changed(3, 'Damping ' + z.toFixed(2) + '.'); }
+  function setPeriods(p) { p = p === 10 ? 10 : 2; if (p === state.periods) return; state.periods = p; changed(3, p + ' periods.'); }
+  function setNoise(v) { v = +snap(clamp(v, 0, 0.05), 0.005).toFixed(3); if (v === state.noise) return; state.noise = v; changed(3, 'Noise ' + v.toFixed(3) + '.'); }
+  function setEq(on) {                                          // equation only: no start values; switching it on trains at once
+    if (state.mode !== 'forward') { state.mode = 'forward'; }
+    state.eq = on; resetRun(3); renderAll(); writeHash();
+    if (on) startTraining(3); else say('Start values back in the loss.');
+  }
+
+  /* =====================================================================
+     Guided tour (the placement routine of d01 to d03: the note never covers its focus or the main plot)
+     ===================================================================== */
+  function tourTrain(step) { return function () { if (!run(step).running && run(step).stop !== 'done') startTraining(step); }; }
+  var TOUR = {
+    1: [
+      { el: 'plot-1', text: 'The network starts as a random curve. The law is never shown.' },
+      { el: 'start-field', text: 'The start value θ(0) = 1 goes into the loss.' },
+      { el: 'train-row-1', text: 'Train: each step shrinks the residual and the start value term.', act: tourTrain(1) },
+      { el: 'resid-box', text: 'The residual shrinks along the whole axis: the law holds.' },
+      { el: 'loss-box-1', text: 'Both terms fall, yet nobody showed the network the answer.' }
+    ],
+    2: [
+      { el: 'plot-2', text: 'Five readings in eight minutes. After that: no readings.' },
+      { el: 'law-row', text: 'The cooling law goes into the loss; k is a knob.' },
+      { el: 'train-row-2', text: 'Train: the network learns the curve and k together.', act: tourTrain(2) },
+      { el: 'k-box', text: 'k settles near the true 0.25 per minute.' },
+      { el: 'nums-2', text: 'The prediction at 16 minutes matches the true cooling.' }
+    ],
+    3: [
+      { el: 'plot-3', text: 'A mass released at x = 1. The law is checked everywhere.' },
+      { el: 'train-row-3', text: 'Train: the network follows the exact motion over two periods.', act: tourTrain(3) },
+      { el: 'energy-box', text: 'The energy never increases: a check that needs no answer.' },
+      { el: 'eq-btn', text: 'Without start values, rest at x = 0 obeys the law too.', act: function () { if (!state.eq) setEq(true); } },
+      { el: 'mode-field', text: 'Now learn the damping from 12 noisy readings.', act: function () { if (state.mode !== 'find') setMode('find'); tourTrain(3)(); } },
+      { el: 'chart-box-3', text: 'The damping settles near the true 0.1.', act: function () { if (state.mode !== 'find') setMode('find'); tourTrain(3)(); } }
+    ]
+  };
+  var tour = { on: false, tab: 1, i: 0, steps: [], timer: 0 };
+  function tourSteps(tab) { return TOUR[tab].filter(function (st) { return !st.when || st.when(); }); }
+  function tourEl(st) { return $(st.el); }
+  function tourTargetId() { var st = tour.on && tour.steps[tour.i]; return st ? st.el : null; }
+  function startTour() {
+    clearTimeout(tour.timer);
+    tour.on = true; tour.tab = state.step; tour.steps = tourSteps(tour.tab); tour.i = 0;
+    if (tour.tab === 3 && (state.mode !== 'forward' || state.eq)) { state.mode = 'forward'; state.eq = false; resetRun(3); renderAll(); }
+    els.tour.hidden = false;
+    document.documentElement.classList.add('touring');
+    tourTransition(function () { tour.i = 0; placeTour(); });
+  }
+  function endTour() {
+    if (!tour.on) return;
+    tour.on = false; clearTimeout(tour.timer);
+    els.tour.hidden = true; els.tour.classList.remove('fading');
+    document.documentElement.classList.remove('touring');
+    els.tourBtn.focus({ preventScroll: true });
+  }
+  function nextTour() {
+    if (!tour.on) return;
+    if (tour.i < tour.steps.length - 1) { tourTransition(function () { tour.i += 1; placeTour(); }); return; }
+    if (tour.tab < 3) {
+      tourTransition(function () {
+        var t = tour.tab + 1;
+        if (t === 3 && (state.mode !== 'forward' || state.eq)) { state.mode = 'forward'; state.eq = false; resetRun(3); }
+        showStep(t, false); tour.tab = t; tour.steps = tourSteps(t); tour.i = 0; placeTour();
+      });
+      return;
+    }
+    endTour();
+  }
+  function prevTour() { if (tour.on && tour.i > 0) tourTransition(function () { tour.i -= 1; placeTour(); }); }
+  function tourTransition(change) {           // fade out, move the spotlight, fade in; the step's own change comes after that
+    clearTimeout(tour.timer);
+    if (reducedMotion()) { change(); runTourAct(); return; }
+    els.tour.classList.add('fading');
+    tour.timer = setTimeout(function () {
+      change();
+      els.tour.classList.remove('fading');
+      tour.timer = setTimeout(runTourAct, 380);
+    }, 170);
+  }
+  function runTourAct() { var st = tour.on && tour.steps[tour.i]; if (st && st.act) { st.act(); if (tour.on) tourLayout(); } }
+  var TAB_NAMES = { 1: 'The law', 2: 'Readings and the law', 3: 'The swinging mass' };
+  function placeTour() {
+    var st = tour.steps[tour.i], n = tour.steps.length, last = tour.i === n - 1;
+    els.tour.setAttribute('data-tab', tour.tab);
+    els.tour.setAttribute('data-i', tour.i);
+    els.tour.setAttribute('data-n', n);
+    els.tourCount.textContent = TAB_NAMES[tour.tab] + ' · ' + (tour.i + 1) + ' of ' + n;
+    els.tourText.textContent = st.text;
+    els.tourPrev.disabled = tour.i === 0;
+    els.tourNext.textContent = last ? (tour.tab < 3 ? 'On to step ' + (tour.tab + 1) : 'Finish') : 'Next';
+    var el = tourEl(st), r = el.getBoundingClientRect(), bh = els.tourBox.offsetHeight || 140;
+    var need = r.height + (isWide() ? 0 : bh + 24), top = r.top;
+    if (top < 60 || r.top + need > window.innerHeight - 16) {   // bring the focus (and the note) into view, instantly
+      var want = need < window.innerHeight - 80 ? (window.innerHeight - need) / 2 : 60;
+      window.scrollTo(window.scrollX, Math.max(0, window.scrollY + top - want));
+    }
+    tourLayout();
+    try { els.tourNext.focus({ preventScroll: true }); } catch (err) { els.tourNext.focus(); }
+  }
+  function place(el, x, y, w, h) {
+    el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px';
+    if (w !== undefined) { el.style.width = Math.max(0, Math.round(w)) + 'px'; el.style.height = Math.max(0, Math.round(h)) + 'px'; }
+  }
+  function tourLayout() {
+    if (!tour.on) return;
+    var st = tour.steps[tour.i], el = st && tourEl(st);
+    if (!el) return;
+    var r = el.getBoundingClientRect(), sx = window.scrollX, sy = window.scrollY, pad = 6, de = document.documentElement;
+    var docW = de.clientWidth, docH = Math.max(de.scrollHeight, sy + window.innerHeight);
+    var hx = Math.max(0, r.left + sx - pad), hy = Math.max(0, r.top + sy - pad);
+    var hw = Math.min(docW - hx, r.width + 2 * pad), hh = r.height + 2 * pad;
+    place(els.veilT, 0, 0, docW, hy);
+    place(els.veilB, 0, hy + hh, docW, docH - hy - hh);
+    place(els.veilL, 0, hy, hx, hh);
+    place(els.veilR, hx + hw, hy, docW - hx - hw, hh);
+    place(els.tourRing, hx, hy, hw, hh);
+    var box = els.tourBox, bw = box.offsetWidth, bh = box.offsetHeight, gap = 14, vw = de.clientWidth, vh = window.innerHeight;
+    var hole = { x: hx, y: hy, w: hw, h: hh }, avoid = [], plot = $('plot-' + state.step);
+    if (plot && plot !== el && !el.contains(plot)) {                // the main plot stays visible, also when a part of it is the focus
+      var pr = plot.getBoundingClientRect();
+      if (pr.width) avoid.push({ x: pr.left + sx, y: pr.top + sy, w: pr.width, h: pr.height });
+    }
+    var hit = function (a, b) { return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h; };
+    var fitY = function (yy) { return clamp(yy, sy + 8, Math.max(sy + 8, sy + vh - bh - 8)); };
+    var xs = [hx, sx + vw - bw - 8, sx + 8], cands = [{ x: hx + hw + gap, y: fitY(hy) }];
+    xs.forEach(function (xx) { cands.push({ x: xx, y: hy + hh + gap }); });                 // below the focus
+    xs.forEach(function (xx) { cands.push({ x: xx, y: hy - gap - bh }); });                 // above it
+    cands.push({ x: hx - gap - bw, y: fitY(hy) });                                           // left of it
+    var free = function (c) {
+      var rr = { x: c.x, y: c.y, w: bw, h: bh };
+      if (c.x < sx + 7.5 || c.x + bw > sx + vw - 7.5 || c.y < 0 || hit(rr, hole)) return false;
+      return !avoid.some(function (a) { return hit(rr, a); });
+    };
+    var inView = function (c) { return c.y >= sy + 4 && c.y + bh <= sy + vh - 4; };
+    var pick = cands.filter(function (c) { return free(c) && inView(c); })[0] || cands.filter(free)[0] ||
+      { x: clamp(hx, sx + 8, sx + vw - bw - 8), y: hy + hh + gap };
+    place(box, pick.x, pick.y);
+    if (pick.y + bh > sy + vh - 8) window.scrollTo(sx, Math.min(hy - 8, pick.y + bh + 8 - vh));
+    else if (pick.y < sy + 8) window.scrollTo(sx, Math.max(0, pick.y - 8));
+  }
+
+  /* =====================================================================
+     Announcements for screen readers
+     ===================================================================== */
+  var liveTimer = 0;
+  function say(text) { clearTimeout(liveTimer); liveTimer = setTimeout(function () { els.live.textContent = text; }, 700); }
+  function announce(step) {
+    var R = run(step), d = derived(R);
+    if (step === 1) say('After ' + R.steps + ' training steps: largest error ' + plain(d.maxErr, 2) + ', start value ' + fixed(d.theta0, 3) + '.');
+    else if (step === 2) say('After ' + R.steps + ' training steps: ' + (state.law ? 'cooling constant ' + fixed(d.k, 3) + ' per minute, ' : '') + degText(d.T16) + ' at 16 minutes.');
+    else say('After ' + R.steps + ' training steps: ' + (R.prob.find ? 'damping ' + fixed(d.zeta, 3) + ', ' : '') + 'largest error ' + plain(d.maxErr, 2) + '. Energy never increases: ' + (d.energyOk ? 'yes.' : 'no.'));
+  }
+
+  /* =====================================================================
+     More options: tables, how it is computed, the check against finite differences
+     ===================================================================== */
+  function renderTables() {
+    els.tblSteel.innerHTML = STEEL.t.map(function (t, i) {
+      return '<tr><td>' + t + '</td><td>' + fixed(STEEL.T[i], 1) + '</td><td>' + fixed(steelTrue(t), 1) + '</td></tr>';
+    }).join('');
+    var xd = massReadings(state.noise);
+    els.tblMassCap.textContent = 'The swinging mass (step 3), noise ' + state.noise.toFixed(3);
+    els.tblMass.innerHTML = MASS.t.map(function (t, i) {
+      return '<tr><td>' + t.toFixed(3) + '</td><td>' + fixed(xd[i], 3) + '</td><td>' + fixed(massExact(ZETA_TRUE, t), 3) + '</td></tr>';
+    }).join('');
+    els.startOut.textContent = 'Random start ' + state.seed;
+  }
+  function renderStatic() {
+    els.how.innerHTML = [
+      'The network has one input, two hidden layers of tanh units (20 units each in steps 1 and 2, 24 in step 3) and one output: <span class="math"><i>u</i> = <b>w</b><sub>3</sub> · tanh(<b>W</b><sub>2</sub> tanh(<b>w</b><sub>1</sub> <i>x</i> + <b>b</b><sub>1</sub>) + <b>b</b><sub>2</sub>) + <i>b</i><sub>3</sub></span>. The time enters as <i class="v">x</i> = <i class="v">τ</i> in steps 1 and 2 and as <span class="math"><i>x</i> = 2<i>τ</i>/<i>T</i> − 1</span> in step 3, with <i class="v">T</i> the end of the time span. Random start: the knobs of each layer are uniform between <span class="math">±1/√(inputs)</span>, drawn with a fixed random-number generator (mulberry32), in the order <b>w</b><sub>1</sub>, <b>b</b><sub>1</sub>, <b>W</b><sub>2</sub> row by row, <b>b</b><sub>2</sub>, <b>w</b><sub>3</sub>, <i>b</i><sub>3</sub>; each step has its own stream.',
+      'Exact derivatives: the page carries <span class="math"><i>u</i>′</span> and <span class="math"><i>u</i>″</span> through the network together with <i class="v">u</i>, layer by layer. For a unit <span class="math"><i>h</i> = tanh(<i>z</i>)</span>: <span class="math"><i>h</i>′ = (1 − <i>h</i>²) <i>z</i>′</span> and <span class="math"><i>h</i>″ = (1 − <i>h</i>²) <i>z</i>″ − 2<i>h</i> (1 − <i>h</i>²) <i>z</i>′²</span>. This is the chain rule of Lecture 2, taken with respect to the input; it is exact up to rounding. The button above compares it with finite differences.',
+      'The loss. Step 1: the mean of <span class="math"><i>r</i>²</span> over the collocation points, <span class="math"><i>r</i> = <i>θ</i>′ + <i>θ</i></span>, evenly spaced on [0, 5], plus <span class="math">(<i>θ</i>(0) − 1)²</span> when the start value is in the loss; built in, the output is <span class="math"><i>θ</i> = 1 + <i>τ</i> <i>N</i>(<i>τ</i>)</span> with the network <i class="v">N</i>, so <span class="math"><i>θ</i>(0) = 1</span> for any knobs. Step 2: the mean squared miss at the five readings plus the mean of <span class="math"><i>r</i>²</span> over 64 collocation points from 0 to 16 min. Step 3: the mean of <span class="math"><i>r</i>²</span>, <span class="math"><i>r</i> = <i>x</i>″ + 2<i>ζx</i>′ + <i>x</i></span>, over 128 collocation points (256 for 10 periods), plus <span class="math">(<i>x</i>(0) − 1)² + <i>x</i>′(0)²</span>, plus the mean squared miss at the 12 readings when the damping is found. Every term has the weight 1.',
+      'Scaled units in step 2: the page trains with <span class="math"><i>θ</i> = (<i>T</i> − 20 °C) / 180 °C</span> and <span class="math"><i>τ</i> = <i>t</i> / 4 min</span>, so all numbers are of size 1. The law <span class="math"><i>T</i>′ = −<i>k</i> (<i>T</i> − 20 °C)</span> becomes <span class="math"><i>dθ</i>/<i>dτ</i> + 4 min · <i>k</i> <i>θ</i> = 0</span>. The cooling constant is a knob: <span class="math"><i>k</i> = ln(1 + e<sup><i>ρ</i></sup>)</span> (softplus), always positive, with <i class="v">ρ</i> = 0 at the start (<i class="v">k</i> = 0.69 per min). The damping of step 3 is a knob in the same way, starting at 0.3.',
+      'Training: the gradient of the loss with respect to every knob, including <i class="v">k</i> or <i class="v">ζ</i>, comes from a backward pass (backpropagation) through the extended computation of <i class="v">u</i>, <span class="math"><i>u</i>′</span> and <span class="math"><i>u</i>″</span>. The knobs move with Adam (as in PyTorch: 0.9, 0.999, 10<sup>−8</sup>), step size 0.01; in step 3 the step size is 0.01 for 4000 steps and then falls to 0.001 at step 6000. One press of Train runs 3000 steps in step 1, 4000 in step 2 and 6000 in step 3; the plots are redrawn every 20 steps.',
+      'The numbers. Largest error: on 201 evenly spaced times (step 1) or 801 (step 3), against <span class="math">e<sup>−<i>τ</i></sup></span> or the exact motion <span class="math"><i>x</i> = e<sup>−<i>ζτ</i></sup> (cos <i>ωτ</i> + <i>ζ</i>/<i>ω</i> sin <i>ωτ</i>)</span>, <span class="math"><i>ω</i> = √(1 − <i>ζ</i>²)</span>. The energy <span class="math"><i>E</i> = <i>x</i>′²/2 + <i>x</i>²/2</span> of the network is checked on 801 times: "never increases" means that no value exceeds an earlier one by more than 1 % of the start energy 1/2, because the network is not exact.',
+      'The 12 readings of step 3 use the times and the noise pattern of the lecture\'s example: reading = exact motion for <i class="v">ζ</i> = 0.1 + noise × a fixed standard normal number. The lecture\'s reference runs (PyTorch, 64 bit, larger networks) reach: step 1, largest error 0.00048 with the start value in the loss; step 2, <i class="v">k</i> = 0.2497 per min and 23.30 °C at 16 min; step 3, largest error 0.00003 over two periods, damping 0.0987.'
+    ].map(function (t) { return '<p>' + t + '</p>'; }).join('');
+  }
+  /* compares the exact derivatives and the gradient of the current step with finite differences */
+  function selfCheck() {
+    var R = run(state.step), prob = R.prob, P = Float64Array.from(R.P), W = new Work(prob.H), f = function (t) { prob.out(P, t, 0, W); return W.u; };
+    var worstD = 0, ts = [0.13, 0.37, 0.61, 0.89].map(function (q) { return q * prob.T; }), h = 1e-3 * prob.T;
+    ts.forEach(function (t) {
+      prob.out(P, t, 2, W);
+      var u1 = W.u1, u2 = W.u2, fp2 = f(t + 2 * h), fp = f(t + h), f0 = f(t), fm = f(t - h), fm2 = f(t - 2 * h);
+      var d1 = (-fp2 + 8 * fp - 8 * fm + fm2) / (12 * h), d2 = (-fp2 + 16 * fp - 30 * f0 + 16 * fm - fm2) / (12 * h * h);
+      worstD = Math.max(worstD, Math.abs(u1 - d1) / Math.max(Math.abs(d1), 1e-3), Math.abs(u2 - d2) / Math.max(Math.abs(d2), 1e-3));
+    });
+    var G = new Float64Array(P.length), gmax = 0, worstG = 0, rng = mulberry32(7), idx = [], i;
+    prob.lossGrad(P, G, W);
+    for (i = 0; i < G.length; i++) gmax = Math.max(gmax, Math.abs(G[i]));
+    for (i = 0; i < 24; i++) idx.push(Math.floor(rng() * prob.L.n));
+    if (prob.extra) idx.push(prob.K);
+    idx.forEach(function (j) {
+      var s = P[j], dh = 1e-5 * Math.max(1, Math.abs(s)), q = function (hh) { P[j] = s + hh; var lp = prob.lossGrad(P, null, W).total; P[j] = s - hh; var lm = prob.lossGrad(P, null, W).total; P[j] = s; return (lp - lm) / (2 * hh); };
+      var fd = (4 * q(dh / 2) - q(dh)) / 3;
+      worstG = Math.max(worstG, Math.abs(fd - G[j]) / Math.max(Math.abs(G[j]), 1e-6 * gmax, 1e-12));
+    });
+    return { derivatives: worstD, gradient: worstG, knobs: idx.length, times: ts.length };
+  }
+  function sci(v) { if (!(v > 0)) return '0'; var e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e); return m.toFixed(1) + ' · 10<sup>' + (e < 0 ? MINUS : '') + Math.abs(e) + '</sup>'; }
+
+  /* =====================================================================
+     Controls and wiring
+     ===================================================================== */
+  function renderSide(step) { if (step === 1) renderSide1(); else if (step === 2) renderSide2(); else renderSide3(); }
+  function renderStep(step) { if (step === 1) render1(); else if (step === 2) render2(); else render3(); }
+  function showStep(step, focus) {
+    if (step !== state.step) stopTraining(state.step);
+    state.step = step;
+    [1, 2, 3].forEach(function (s) {
+      var on = s === step, tab = $('tab-' + s);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.tabIndex = on ? 0 : -1;
+      $('panel-' + s).hidden = !on;
+    });
+    if (focus) $('tab-' + step).focus();
+    renderAll();
+    writeHash();
+  }
+  function renderAll() {
+    renderStep(state.step);
+    if (els.more.open) renderTables();
+    if (tour.on) tourLayout();
+  }
+  function rerender() { arrange(); renderAll(); }
+  /* Phones: the instructions and the main controls sit right under the plot, so the plot stays in view while they are used */
+  var MOBILE_MOVES = {
+    1: [['plot-1', ['steps-1', 'start-field', 'train-row-1', 'nums-1', 'status-1']], ['resid-box', ['n-field', 'loss-box-1', 'eq-1', 'exact-row-1']]],
+    2: [['plot-2', ['steps-2', 'law-row', 'train-row-2', 'nums-2', 'status-2', 'truth-row']]],
+    3: [['plot-3', ['steps-3', 'mode-field', 'zeta-field', 'span-field', 'noise-field', 'train-row-3', 'eq-btn', 'nums-3', 'status-3']], ['energy-box', ['chart-box-3', 'eq-3', 'exact-row-3']]]
+  };
+  var sideKids = {}, arranged = null;
+  function arrange() {                          // every moved block comes from the side column; going back restores its original order
+    var mobile = !isWide();
+    if (arranged === mobile) return;
+    arranged = mobile;
+    [1, 2, 3].forEach(function (s) {
+      var side = $('side-' + s);
+      if (!sideKids[s]) sideKids[s] = Array.prototype.slice.call(side.children);
+      if (mobile) MOBILE_MOVES[s].forEach(function (mv) { var after = $(mv[0]); mv[1].forEach(function (id) { var el = $(id); after.parentNode.insertBefore(el, after.nextSibling); after = el; }); });
+      else sideKids[s].forEach(function (el) { side.appendChild(el); });
+    });
+  }
+  function togglePresenter(force) {
+    var on = typeof force === 'boolean' ? force : !document.documentElement.classList.contains('presenter');
+    document.documentElement.classList.toggle('presenter', on);
+    els.pm.setAttribute('aria-pressed', on ? 'true' : 'false');
+    rerender();
+  }
+  function trainToggle(step) {
+    var R = run(step);
+    if (R.running) { stopTraining(step); renderAll(); announce(step); writeHash(); }
+    else startTraining(step);
+  }
+  function wireSeg(seg, fn) {
+    Array.prototype.forEach.call(seg.querySelectorAll('input'), function (inp) {
+      inp.addEventListener('change', function () { if (inp.checked) fn(inp.value); });
+    });
+  }
+  function init() {
+    var ids = { legend1: 'legend-1', plot1: 'plot-1', svg1: 'svg-1', plotResid: 'plot-resid', svgResid: 'svg-resid', segStart: 'seg-start', ncol: 'ncol', ncolOut: 'ncol-out',
+      train1: 'train-1', reset1: 'reset-1', err1: 'err-1', th01: 'th0-1', status1: 'status-1', plotLoss1: 'plot-loss-1', svgLoss1: 'svg-loss-1', eq1: 'eq-1', exact1: 'exact-1',
+      legend2: 'legend-2', plot2: 'plot-2', svg2: 'svg-2', law: 'law', train2: 'train-2', reset2: 'reset-2', k2: 'k-2', t162: 't16-2', labT16: 'lab-t16', status2: 'status-2',
+      plotK: 'plot-k', svgK: 'svg-k', eq2: 'eq-2', truth: 'truth',
+      legend3: 'legend-3', plot3: 'plot-3', svg3: 'svg-3', cap3: 'cap-3', plotEnergy: 'plot-energy', svgEnergy: 'svg-energy', energyOk: 'energy-ok', segMode: 'seg-mode',
+      zetaField: 'zeta-field', zeta: 'zeta', zetaOut: 'zeta-out', spanField: 'span-field', segSpan: 'seg-span', noiseField: 'noise-field', noise: 'noise', noiseOut: 'noise-out',
+      train3: 'train-3', reset3: 'reset-3', eqBtn: 'eq-btn', labA3: 'lab-a-3', a3: 'a-3', labB3: 'lab-b-3', b3: 'b-3', status3: 'status-3', chartTitle3: 'chart-title-3',
+      plotC3: 'plot-c3', svgC3: 'svg-c3', eq3: 'eq-3', exact3: 'exact-3',
+      live: 'live', pm: 'pm', more: 'more', newStart: 'new-start', startOut: 'start-out', selfCheck: 'self-check', checkOut: 'check-out',
+      tblSteel: 'tbl-steel', tblMass: 'tbl-mass', tblMassCap: 'tbl-mass-cap', how: 'how' };
+    for (var k in ids) els[k] = $(ids[k]);
+    ['tour', 'tour-box', 'tour-ring', 'tour-count', 'tour-text', 'tour-prev', 'tour-next', 'tour-end', 'tour-btn', 'veil-t', 'veil-b', 'veil-l', 'veil-r'].forEach(function (id) {
+      els[id.replace(/-(\w)/g, function (m, c) { return c.toUpperCase(); })] = $(id);
+    });
+    // swatches in the checkbox rows
+    [['exact-row-1', 'truth'], ['truth-row', 'truth'], ['exact-row-3', 'truth'], ['law-row', 'law']].forEach(function (p) { $(p[0]).querySelector('.sw-slot').outerHTML = swatch(p[1]); });
+    renderStatic();
+
+    // step tabs (arrow keys move between them)
+    [1, 2, 3].forEach(function (s) {
+      var tab = $('tab-' + s);
+      tab.addEventListener('click', function () { if (state.step !== s) showStep(s, false); });
+      tab.addEventListener('keydown', function (ev) {
+        var to = null;
+        if (ev.key === 'ArrowRight') to = s === 3 ? 1 : s + 1;
+        if (ev.key === 'ArrowLeft') to = s === 1 ? 3 : s - 1;
+        if (ev.key === 'Home') to = 1;
+        if (ev.key === 'End') to = 3;
+        if (to !== null) { ev.preventDefault(); showStep(to, true); }
+      });
+    });
+    // step 1
+    wireSeg(els.segStart, setStart);
+    els.ncol.addEventListener('input', function () { setN(+els.ncol.value); });
+    els.exact1.addEventListener('change', function () { state.exact = els.exact1.checked; renderAll(); writeHash(); });
+    els.train1.addEventListener('click', function () { trainToggle(1); });
+    els.reset1.addEventListener('click', function () { resetRun(1); renderAll(); say('Back to the random start.'); });
+    // step 2
+    els.law.addEventListener('change', function () { setLaw(els.law.checked); });
+    els.truth.addEventListener('change', function () { state.truth = els.truth.checked; renderAll(); writeHash(); });
+    els.train2.addEventListener('click', function () { trainToggle(2); });
+    els.reset2.addEventListener('click', function () { resetRun(2); renderAll(); say('Back to the random start.'); });
+    // step 3
+    wireSeg(els.segMode, setMode);
+    wireSeg(els.segSpan, function (v) { setPeriods(+v); });
+    els.zeta.addEventListener('input', function () { setZeta(+els.zeta.value); });
+    els.noise.addEventListener('input', function () { setNoise(+els.noise.value); });
+    els.eqBtn.addEventListener('click', function () { setEq(!state.eq); });
+    els.exact3.addEventListener('change', function () { state.exact = els.exact3.checked; renderAll(); writeHash(); });
+    els.train3.addEventListener('click', function () { trainToggle(3); });
+    els.reset3.addEventListener('click', function () { resetRun(3); renderAll(); say('Back to the random start.'); });
+    // more options
+    els.newStart.addEventListener('click', function () {
+      state.seed = state.seed >= 999999 ? 1 : state.seed + 1;
+      [1, 2, 3].forEach(function (s) { if (runs[s]) resetRun(s); });
+      renderAll(); renderTables(); writeHash();
+      say('New random start: every network starts again.');
+    });
+    els.selfCheck.addEventListener('click', function () {
+      var r = selfCheck();
+      els.checkOut.innerHTML = 'Largest relative difference: derivatives ' + sci(r.derivatives) + ' (' + r.times + ' times), gradient ' + sci(r.gradient) + ' (' + r.knobs + ' knobs), in step ' + state.step + '.';
+      els.checkOut.setAttribute('data-deriv', String(r.derivatives)); els.checkOut.setAttribute('data-grad', String(r.gradient));
+    });
+    els.more.addEventListener('toggle', function () { if (els.more.open) renderTables(); });
+    els.pm.addEventListener('click', function () { togglePresenter(); });
+    els.tourBtn.addEventListener('click', function () { startTour(); });
+    els.tourNext.addEventListener('click', nextTour);
+    els.tourPrev.addEventListener('click', prevTour);
+    els.tourEnd.addEventListener('click', endTour);
+    document.addEventListener('keydown', function (ev) {
+      if (ev.defaultPrevented || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      var t = ev.target, onRange = !!(t && t.tagName === 'INPUT' && t.type === 'range');
+      if (tour.on) {
+        if (ev.key === 'Escape') { ev.preventDefault(); endTour(); return; }
+        if (ev.key === 'PageDown' || (!onRange && (ev.key === 'ArrowRight' || ev.key === 'ArrowDown'))) { ev.preventDefault(); nextTour(); return; }
+        if (ev.key === 'PageUp' || (!onRange && (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp'))) { ev.preventDefault(); prevTour(); }
+        return;
+      }
+      var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [role=radiogroup], [contenteditable]'));
+      if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'p' && ev.key !== 'P') return;
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
+      var t = ev.target;
+      if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
+      ev.preventDefault();
+      togglePresenter();
+    });
+    window.addEventListener('hashchange', function () {
+      if (location.hash === hashString()) return;
+      var before = [1, 2, 3].map(function (s) { return JSON.stringify(settingsOf(s)); }), seed = state.seed;
+      state = readHash();
+      [1, 2, 3].forEach(function (s, i) { if (runs[s] && (JSON.stringify(settingsOf(s)) !== before[i] || seed !== state.seed)) resetRun(s); });
+      if (boot.train) trainSync(state.step, boot.train);
+      showStep(state.step, false);
+    });
+    var lastW = 0, raf = 0, lastH = window.innerHeight;
+    var schedule = function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(rerender); };
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function () {
+        var w = document.getElementById('main').clientWidth;
+        if (w === lastW) return;
+        lastW = w; schedule();                  // deferred to the next frame: no resize loop
+      }).observe(document.getElementById('main'));
+    }
+    window.addEventListener('resize', function () {
+      if (tour.on) tourLayout();
+      if (window.innerHeight !== lastH || !('ResizeObserver' in window)) { lastH = window.innerHeight; schedule(); }
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { schedule(); });
+
+    state = readHash();
+    arrange();
+    if (boot.train) trainSync(state.step, boot.train);
+    showStep(state.step, false);
+    renderAll();                                  // second pass: plot heights from the settled layout
+    document.documentElement.setAttribute('data-ready', '1');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.remove('no-anim'); }); });
+  }
+
+  // Small API for tests and for slides that script the demo.
+  function fromArr(a) { return Float64Array.from(a); }
+  function settingsFor(step, s) { return Object.assign({}, step === 1 ? { start: 'loss', n: 32 } : step === 2 ? { law: true } : { mode: 'forward', zeta: 0.1, periods: 2, noise: 0.02, eq: false }, s || {}); }
+  window.d05 = {
+    layout: function (H) { return layout(H); },
+    width: function (step) { return WIDTH[step]; },
+    init: function (step, seed) { var p = makeProblem(step, settingsFor(step)), P = initKnobs(p.H, p.extra, seed, step); if (p.extra) P[p.K] = p.rho0; return Array.from(P); },
+    problem: function (step, s) {
+      var p = makeProblem(step, settingsFor(step, s));
+      return { H: p.H, a: p.a, c: p.c, extra: p.extra, rho0: p.rho0, T: p.T, run: p.run, colloc: Array.from(p.colloc), keys: p.keys.slice(), readings: p.readings ? p.readings.slice() : null, lr: [1, 2, 4000, 4500, 5000, 6000, 7000].map(p.lr) };
+    },
+    netForward: function (H, a, c, P, ts) {      // the bare network and its exact input derivatives
+      var L = layout(H), W = new Work(H), Pk = fromArr(P), out = { u: [], u1: [], u2: [] };
+      ts.forEach(function (t) { pointForward(Pk, L, a, c, t, 2, W); out.u.push(W.u); out.u1.push(W.u1); out.u2.push(W.u2); });
+      return out;
+    },
+    forward: function (step, s, P, ts) {         // the output of a step (with the start value built in when chosen)
+      var p = makeProblem(step, settingsFor(step, s)), W = new Work(p.H), Pk = fromArr(P), out = { u: [], u1: [], u2: [] };
+      ts.forEach(function (t) { p.out(Pk, t, 2, W); out.u.push(W.u); out.u1.push(W.u1); out.u2.push(W.u2); });
+      return out;
+    },
+    loss: function (step, s, P) { var p = makeProblem(step, settingsFor(step, s)); return p.lossGrad(fromArr(P), null, new Work(p.H)); },
+    lossGrad: function (step, s, P) {
+      var p = makeProblem(step, settingsFor(step, s)), Pk = fromArr(P), G = new Float64Array(Pk.length), terms = p.lossGrad(Pk, G, new Work(p.H));
+      return { terms: terms, G: Array.from(G) };
+    },
+    adamRun: function (step, s, P, n) {          // n training steps from the knobs P, without touching the page
+      var p = makeProblem(step, settingsFor(step, s)), Pk = fromArr(P), G = new Float64Array(Pk.length), opt = new Adam(Pk.length), W = new Work(p.H), hist = [];
+      for (var i = 0; i < n; i++) { G.fill(0); hist.push(p.lossGrad(Pk, G, W).total); opt.step(Pk, G, p.lr(i + 1)); }
+      return { P: Array.from(Pk), hist: hist };
+    },
+    knobs: function () { return Array.from(run(state.step).P); },
+    history: function () { var R = run(state.step); return { loss: R.hist.map(function (h) { return Object.assign({}, h); }), par: R.par.slice() }; },
+    train: function (n) { trainSync(state.step, n); renderAll(); return window.d05.state(); },
+    start: function () { startTraining(state.step); return run(state.step).running; },
+    selfCheck: selfCheck,
+    state: function () {
+      var R = run(state.step), d = derived(R), cur = current(R);
+      var out = Object.assign({}, state, { steps: R.steps, target: R.target, running: R.running, stop: R.stop, loss: Object.assign({}, cur), ms: R.ms, wall: R.wall });
+      if (state.step === 1) Object.assign(out, { maxErr: d.maxErr, theta0: d.theta0, maxR: d.maxR, maxRc: d.maxRc });
+      else if (state.step === 2) Object.assign(out, { k: d.k, T16: d.T16, readErr: d.readErr });
+      else Object.assign(out, { maxErr: d.maxErr, x0: d.x0, v0: d.v0, maxAbs: d.maxAbs, zetaLearned: d.zeta, energyOk: d.energyOk, energyInc: d.energyInc });
+      return out;
+    },
+    curve: function () { var d = derived(run(state.step)); return { t: Array.from(d.t), u: Array.from(d.u || d.T), E: d.E ? Array.from(d.E) : null }; },
+    set: function (patch) {
+      var old = JSON.stringify([settingsOf(1), settingsOf(2), settingsOf(3), state.seed]);
+      if ('start' in patch && ['loss', 'built', 'none'].indexOf(patch.start) >= 0) state.start = patch.start;
+      if ('n' in patch) state.n = clamp(Math.round(patch.n), 4, 64);
+      if ('exact' in patch) state.exact = !!patch.exact;
+      if ('law' in patch) state.law = !!patch.law;
+      if ('truth' in patch) state.truth = !!patch.truth;
+      if ('mode' in patch && (patch.mode === 'forward' || patch.mode === 'find')) state.mode = patch.mode;
+      if ('zeta' in patch) state.zeta = +snap(clamp(patch.zeta, 0, 0.5), 0.05).toFixed(2);
+      if ('periods' in patch) state.periods = patch.periods === 10 ? 10 : 2;
+      if ('noise' in patch) state.noise = +snap(clamp(patch.noise, 0, 0.05), 0.005).toFixed(3);
+      if ('eq' in patch) state.eq = !!patch.eq;
+      if ('seed' in patch) state.seed = clampInt(patch.seed, 1, 999999, 1);
+      var now = JSON.stringify([settingsOf(1), settingsOf(2), settingsOf(3), state.seed]);
+      if (now !== old) [1, 2, 3].forEach(function (s) { if (runs[s]) resetRun(s); });
+      if ('reset' in patch) resetRun(patch.step || state.step);
+      if (patch.step && patch.step !== state.step) showStep(patch.step, false); else renderAll();
+      writeHash();
+      return window.d05.state();
+    },
+    tour: function () { return { on: tour.on, tab: tour.tab, i: tour.i, n: tour.steps.length, target: tourTargetId() }; }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
