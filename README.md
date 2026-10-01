@@ -13,6 +13,7 @@ Each demo is a single self-contained HTML file that works offline. Short links o
 | [Physics in the loss](d05-pinn/) | 5 | https://alhermann.github.io/mlps-demos/go/d05 |
 | [Fields and rubber](d06-fields/) | 6 | https://alhermann.github.io/mlps-demos/go/d06 |
 | [Stencils and images](d07-stencils/) | 7 | https://alhermann.github.io/mlps-demos/go/d07 |
+| [Diffusion in two dimensions](d08-diffusion/) | 8 | https://alhermann.github.io/mlps-demos/go/d08 |
 
 © 2026 Alexander Hermann, Institute for Artificial Intelligence and Simulation in Mechanics, TUHH. The Poppins font embedded in the pages is licensed under the SIL Open Font Licence 1.1 (Copyright 2020 The Poppins Project Authors). Data sources are credited inside each demo.
 
