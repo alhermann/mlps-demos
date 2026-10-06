@@ -474,7 +474,7 @@ html.shot-slide .site-head,html.shot-slide .flow,html.shot-slide .tabs,html.shot
         </fieldset>
         <fieldset class="opt">
           <legend>Rubber data</legend>
-          <label class="check"><input id="rsplit" type="checkbox">Random split: new points inside the range</label>
+          <label class="check" title="Key: R"><input id="rsplit" type="checkbox">Random split: new points inside the range</label>
           <p class="note">Normally the new data are all points above stretch 5.</p>
         </fieldset>
         <fieldset class="opt">
@@ -1845,13 +1845,18 @@ html.shot-slide .site-head,html.shot-slide .flow,html.shot-slide .tabs,html.shot
       var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [contenteditable]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
+    // Keys for the lecture, so that nobody has to scroll in front of the room: P presenter mode,
+    // R random split, under More options (the same as the control).
     document.addEventListener('keydown', function (ev) {
-      if (ev.key !== 'p' && ev.key !== 'P') return;
+      var k = (ev.key || '').toLowerCase();
+      if (k !== 'p' && k !== 'r') return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
       var t = ev.target;
       if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
       ev.preventDefault();
-      togglePresenter();
+      if (k === 'p') { togglePresenter(); return; }
+      var c = document.getElementById('rsplit');
+      if (c) c.click();
     });
     window.addEventListener('hashchange', function () {
       if (location.hash === hashString()) return;

@@ -337,7 +337,7 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
         <input id="kappa" type="range" min="0" max="3" step="0.1" value="2">
         <div class="scale" aria-hidden="true"><span>0</span><span>3</span></div>
       </div>
-      <button class="btn btn-primary" id="auto-btn" type="button">Let the computer drill</button>
+      <button class="btn btn-primary" id="auto-btn" type="button" title="Key: D">Let the computer drill</button>
       <button class="btn" id="restart-btn" type="button">Start again</button>
     </div>
   </section>
@@ -1535,13 +1535,18 @@ tr.is-current td{background:var(--soft);font-weight:600;color:var(--emph)}
         !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [role=radiogroup], [contenteditable], .plot[tabindex]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
+    // Keys for the lecture, so that nobody has to scroll in front of the room: P presenter mode,
+    // D let the computer drill, in step 2 (the same as the control).
     document.addEventListener('keydown', function (ev) {
-      if (ev.key !== 'p' && ev.key !== 'P') return;
+      var k = (ev.key || '').toLowerCase();
+      if (k !== 'p' && k !== 'd') return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
       var t = ev.target;
       if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
       ev.preventDefault();
-      togglePresenter();
+      if (k === 'p') { togglePresenter(); return; }
+      var c = document.getElementById('auto-btn');
+      if (c && c.offsetParent && !c.disabled) c.click();
     });
     window.addEventListener('hashchange', function () {
       if (location.hash === hashString()) return;
