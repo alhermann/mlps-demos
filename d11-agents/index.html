@@ -351,7 +351,7 @@ th.txt,td.txt{text-align:left}
       </div>
       <div class="head-actions">
         <button id="tour-btn" class="btn" type="button">Guide me</button>
-        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Shortcut: <kbd>P</kbd></span></p>
+        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Keys: <kbd>P</kbd> presenter mode, <kbd>C</kbd> input checks, <kbd>V</kbd> verifier</span></p>
       </div>
     </div>
     <p class="context">An agent is a loop: the language model writes a tool call as text, and our program runs the tool.</p>
@@ -1867,13 +1867,19 @@ th.txt,td.txt{text-align:left}
       var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, textarea, summary, button, [role=tab], [role=radiogroup], [contenteditable]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
+    // Keys for the lecture, so that nobody has to scroll in front of the room: P presenter mode, C input checks on or
+    // off, V verifier on or off (before the first call, both ticks sit below the screen edge in presenter mode at
+    // 1920 x 1000). Typing into the call or the answer is left alone.
     document.addEventListener('keydown', function (ev) {
-      if (ev.key !== 'p' && ev.key !== 'P') return;
+      var k = (ev.key || '').toLowerCase();
+      if (k !== 'p' && k !== 'c' && k !== 'v') return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
       var t = ev.target;
       if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
       ev.preventDefault();
-      togglePresenter();
+      if (k === 'p') togglePresenter();
+      else if (k === 'c') els.checks.click();
+      else els.verifier.click();
     });
     window.addEventListener('hashchange', function () {
       if (location.hash === hashString()) return;

@@ -279,7 +279,7 @@ input[type=range]:focus-visible{outline-offset:3px}
       </div>
       <div class="head-actions">
         <button id="tour-btn" class="btn" type="button">Guide me</button>
-        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Shortcut: <kbd>P</kbd></span></p>
+        <p class="pm-hint"><button id="pm" class="btn" type="button" aria-pressed="false">Presenter mode</button><span>Keys: <kbd>P</kbd> presenter mode, <kbd>S</kbd> chart of the states</span></p>
       </div>
     </div>
     <p class="context">A world model predicts what happens next: networks learned a swinging pendulum from recordings, as numbers and as camera frames.</p>
@@ -312,8 +312,8 @@ input[type=range]:focus-visible{outline-offset:3px}
     </figure>
     <div class="side" id="side-1">
       <ol class="steps" id="steps-1">
-        <li><span>Start inside the shaded range: compare the swings.</span></li>
-        <li><span>Start at 150°: when does the model go wrong?</span></li>
+        <li><span>From rest: up to which start angle can we trust it?</span></li>
+        <li><span>Straight down, pushed with 6 rad/s: does it follow?</span></li>
         <li><span>Watch the energy: where does it rise?</span></li>
         <li><span id="step-1-4"></span></li>
       </ol>
@@ -1208,7 +1208,7 @@ input[type=range]:focus-visible{outline-offset:3px}
       'Training (in the lecture): ' + SET.nSwings + ' recorded swings of ' + (SET.stepsPerSwing * DT) + ' s, started at angles up to ±' + SET.theta0Deg[1] + '° with angular velocities up to ±' + SET.omega0[1] + ' rad/s, give ' + (SET.nSwings * SET.stepsPerSwing).toLocaleString('en-GB').replace(/,/g, NB) + ' pairs of a state and the state ' + DT + ' s later; Adam on all pairs at once, ' + Lc.stateEpochs + ' epochs, the squared error of the scaled change. The largest angle in the recordings is ' + r1 + '°. On ' + Lc.nTest + ' test swings the median error of one step is ' + Lc.oneStepDeg.toFixed(4) + '°, of a rollout ' + Lc.median2s.toFixed(2) + '° after 2 s and ' + Lc.median20s.toFixed(1) + '° after 20 s. Started at 150°, outside the recordings, it is ' + Lc.at2s.outside.toFixed(1) + '° off after 2 s, and its energy rises to ' + Lc.eMaxOutside.toFixed(2) + ' times the start value. Trained on rollouts of 20 steps instead, it is ' + Lc.median20sRollout20.toFixed(2) + '° off after 20 s inside, but still ' + Lc.rollout20at2sOutside.toFixed(0) + '° after 2 s at 150°.',
       'The energy per unit mass, <span class="math"><i>E</i> = <i>L</i>²<i>ω</i>²/2 + <i>g</i><i>L</i> (1 − cos <i>θ</i>)</span> in J/kg, is shown relative to its value at the start. A damped pendulum loses energy all the time. Red: the model\'s energy lies above its lowest value so far by more than ' + Math.round(100 * RISE) + ' % of the start value, and at least ' + RISE_ABS + ' J/kg (a small allowance for the errors of the network). The difference is the angle between the two balls, the short way round.',
       'The recorded range. In the picture and the angle chart: the angles of the recordings, up to ' + RANGE.toFixed(1) + '°. In the chart of the state (angle and angular velocity): all states with an energy up to that of the most energetic recorded state, ' + EMAX.toFixed(2) + ' J/kg, the energy of a swing of ' + SET.eMaxThetaDeg.toFixed(1) + '°; every recorded state lies in it. A start counts as inside when its energy is in this range: a damped pendulum never gains energy, so its whole swing then stays inside. A start at 80° with 3 rad/s is outside, although 80° is less than 90°.',
-      'Pixels: frames of 32 × 32 pixels (the pivot in the middle, the rod 11 px, the ball of radius 3 px) and a fly that jumps at random by a normal step of 2.5 px per frame, so that nobody can predict it. A next-frame predictor (an encoder and a decoder, 64 numbers in the middle) learned from 300 recorded swings with the fly, ' + Lc.pixelEpochs + ' epochs, with the squared error (mean squared error on the test frames ' + Lc.pixelMse.toFixed(4) + ' per pixel, brightness from 0 to 1). The swings shown are four of its 60 test swings, never used in training. Next frame: predicted from the two true frames before it. Fed back: from 0.10 s on, the predictor gets its own frames as input. The brightness is stored in 256 steps.'
+      'Pixels: frames of 32 × 32 pixels (the pivot in the middle, the rod 11 px, the ball of radius 3 px) and a fly that moves at random, by a normal step of 2.5 px per frame: roughly predictable, but not to the pixel. A next-frame predictor (an encoder and a decoder, 64 numbers in the middle) learned from 300 recorded swings with the fly, ' + Lc.pixelEpochs + ' epochs, with the squared error (mean squared error on the test frames ' + Lc.pixelMse.toFixed(4) + ' per pixel, brightness from 0 to 1). The swings shown are four of its 60 test swings, never used in training. Next frame: predicted from the two true frames before it. Fed back: from 0.10 s on, the predictor gets its own frames as input. The brightness is stored in 256 steps.'
     ].map(function (t) { return '<p>' + t + '</p>'; }).join('');
     els.source.textContent = 'Sources: our own data and networks, made with the lecture\'s code (lectures/L12_world_models/compute.py).';
   }
@@ -1370,13 +1370,25 @@ input[type=range]:focus-visible{outline-offset:3px}
       var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [role=radiogroup], [role=slider], [contenteditable]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
+    // Keys for the lecture, so that nobody has to scroll in front of the room: P presenter mode; S brings the chart of
+    // the states (angle and angular velocity) into view, which lies below the screen edge in presenter mode at
+    // 1920 x 1000, and pressed again goes back to the top.
+    function showStateChart() {
+      if (state.tab !== 1) showStep(1, false);
+      var box = document.getElementById('state-box'), r = box.getBoundingClientRect();
+      var behavior = reducedMotion() ? 'auto' : 'smooth';
+      if (window.scrollY > 0 && r.top >= -1 && r.bottom <= window.innerHeight + 1) window.scrollTo({ top: 0, behavior: behavior });
+      else box.scrollIntoView({ block: 'end', behavior: behavior });
+    }
     document.addEventListener('keydown', function (ev) {
-      if (ev.key !== 'p' && ev.key !== 'P') return;
+      var k = (ev.key || '').toLowerCase();
+      if (k !== 'p' && k !== 's') return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
       var t = ev.target;
       if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
       ev.preventDefault();
-      togglePresenter();
+      if (k === 'p') togglePresenter();
+      else showStateChart();
     });
     window.addEventListener('hashchange', function () {
       if (location.hash === hashString()) return;
