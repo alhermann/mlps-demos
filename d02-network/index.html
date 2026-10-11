@@ -456,7 +456,7 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
           <label class="check"><input id="beyond" type="checkbox">Show beyond the data</label>
           <label class="check"><input id="phys" type="checkbox">Show the physics check</label>
           <p class="note">Beyond the last measurement the network can only guess.</p>
-          <p class="note">Keys: <kbd>B</kbd> shows beyond the data, <kbd>N</kbd> gives a new random start.</p>
+          <p class="note">Keys: <kbd>T</kbd> trains or pauses, <kbd>B</kbd> shows beyond the data, <kbd>N</kbd> gives a new random start.</p>
         </fieldset>
         <fieldset class="opt">
           <legend>A trained network</legend>
@@ -2087,17 +2087,19 @@ html.shot-slide .site-head,html.shot-slide .tabs,html.shot-slide #more,html.shot
       var quiet = !t || t === document.body || t === document.documentElement || !(t.closest && t.closest('input, select, textarea, summary, [role=tab], [contenteditable], #plot-pick, #plot-2[role=slider]'));
       if (ev.key === 'ArrowRight' && quiet) { ev.preventDefault(); startTour(); }
     });
-    // Keys for the lecture, so that nobody has to scroll to More options in front of the room:
-    // P presenter mode, B show beyond the data, N new random start (the same as the controls).
+    // Keys for the lecture, so that nobody has to scroll in front of the room: P presenter mode, T train or
+    // pause (the button sits at the bottom edge in presenter mode at 1920 x 1000), B show beyond the data,
+    // N new random start (the same as the controls).
     document.addEventListener('keydown', function (ev) {
       var k = (ev.key || '').toLowerCase();
-      if (k !== 'p' && k !== 'b' && k !== 'n') return;
+      if (k !== 'p' && k !== 'b' && k !== 'n' && k !== 't') return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
       var t = ev.target;
       if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/.test(t.type)))) return;
       ev.preventDefault();
       if (k === 'p') togglePresenter();
       else if (k === 'b') els.beyond.click();
+      else if (k === 't') els.trainBtn.click();
       else els.newStart.click();
     });
     window.addEventListener('hashchange', function () {
