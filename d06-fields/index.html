@@ -208,6 +208,8 @@ input[type=range]:focus-visible{outline-offset:3px}
 .plot .r2.one{fill:var(--c-truth)}
 .plot .r2.bad{fill:var(--c-warn)}
 .plot .r2{font-size:.875rem;font-weight:600;font-variant-numeric:tabular-nums}
+.plot .hidden-note{font-size:.875rem;font-weight:600;fill:var(--c-truth)}
+#show-row{margin:.25rem 0 .5rem}
 
 /* ---------- more options ---------- */
 .more{border-top:1px solid var(--struct);border-bottom:1px solid var(--struct)}
@@ -416,7 +418,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
     </figure>
     <div class="side" id="side-3">
       <ol class="steps" id="steps-3">
-        <li>Train on uniaxial tension only: check the other tests.</li>
+        <li>Trained on uniaxial tension only: predict the other tests, then show them.</li>
         <li>Switch the sign constraint off: what breaks?</li>
         <li>Add one equibiaxial test: what changes?</li>
       </ol>
@@ -430,6 +432,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
       </div>
       <label class="check" id="sign-row"><input id="sign" type="checkbox">Sign constraint: every weight ≥ 0</label>
       <label class="check" id="one-row"><input id="one" type="checkbox"><span class="sw-slot"></span>Show the one-term model</label>
+      <div class="btn-row" id="show-row"><button id="show-pred" class="btn" type="button" aria-pressed="false">Show the predictions</button></div>
       <div class="nums" id="nums-3" role="group" aria-label="Equibiaxial tension at the largest measured stretch">
         <div><span class="num-lab">Equibiaxial, stretch 4.45</span><span class="num-val" id="et-3" data-value=""></span></div>
         <div><span class="num-lab" id="lab-meas">Measured there</span><span class="num-val navy" id="meas-3" data-value=""></span></div>
@@ -828,7 +831,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
   /* =====================================================================
      State and URL hash
      ===================================================================== */
-  var DEFAULTS = { step: 1, nx: 101, net: 'hard', ti: 5, err: false, mode: 'plain', s: 10, snap: 1000, exact: true, train: 'ut', sign: true, one: false };
+  var DEFAULTS = { step: 1, nx: 101, net: 'hard', ti: 5, err: false, mode: 'plain', s: 10, snap: 1000, exact: true, train: 'ut', sign: true, one: false, show: false };
   var state = Object.assign({}, DEFAULTS);
   var SNAPS = [0, 100, 1000, 5000, 20000];
   function clampInt(v, lo, hi, def) { v = parseInt(v, 10); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; }
@@ -846,13 +849,14 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
     if (['ut', 'utet', 'all'].indexOf(p.get('train')) >= 0) st.train = p.get('train');
     if (p.has('sign')) st.sign = p.get('sign') !== '0';
     if (p.has('one')) st.one = p.get('one') === '1';
+    if (p.has('show')) st.show = p.get('show') === '1';
     return st;
   }
   function tText(ti) { return (0.02 * ti).toFixed(2); }
   function hashString() {
     return '#step=' + state.step + '&nx=' + state.nx + '&net=' + state.net + '&t=' + tText(state.ti) + '&err=' + (state.err ? 1 : 0) +
       '&mode=' + state.mode + '&s=' + state.s + '&snap=' + state.snap + '&exact=' + (state.exact ? 1 : 0) +
-      '&train=' + state.train + '&sign=' + (state.sign ? 1 : 0) + '&one=' + (state.one ? 1 : 0);
+      '&train=' + state.train + '&sign=' + (state.sign ? 1 : 0) + '&one=' + (state.one ? 1 : 0) + '&show=' + (state.show ? 1 : 0);
   }
   var hashTimer = 0;
   function writeHash() {
@@ -1530,22 +1534,25 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
       S('line', { x1: x0, x2: x1, y1: sy(0), y2: sy(0), class: 'zero', 'stroke-width': 1 }, g);
       T(g, x0, y1 - 0.55 * fs, [TEST_NAME[m]], { class: 'panel-title' });
       var gc = S('g', { 'clip-path': 'url(#d06-clip-3-' + m + ')' }, g), xs = linspace(pn.x[0], pn.x[1], 240);
-      if (one) S('path', { d: pathOf(xs, Array.from(xs, function (l) { return modelStress(m, l, one); }), P), class: 'ln-one', 'stroke-width': 2 * lw, 'stroke-dasharray': dashDot(lw), 'data-test': m }, gc);
-      S('path', { d: pathOf(xs, Array.from(xs, function (l) { return modelStress(m, l, fit); }), P), class: 'ln-model', 'stroke-width': 2.75 * lw, 'data-test': m }, gc);
+      var hid = !state.show && trained.indexOf(m) < 0;          // not trained on and not yet shown: predict first
+      if (hid) T(g, x0 + 0.45 * fs, y1 + 1.2 * fs, ['hidden: predict first'], { class: 'hidden-note', 'data-test': m });
+      if (one && !hid) S('path', { d: pathOf(xs, Array.from(xs, function (l) { return modelStress(m, l, one); }), P), class: 'ln-one', 'stroke-width': 2 * lw, 'stroke-dasharray': dashDot(lw), 'data-test': m }, gc);
+      if (!hid) S('path', { d: pathOf(xs, Array.from(xs, function (l) { return modelStress(m, l, fit); }), P), class: 'ln-model', 'stroke-width': 2.75 * lw, 'data-test': m }, gc);
       var isTrained = trained.indexOf(m) >= 0, gm = S('g', { class: isTrained ? 'pts-train' : 'pts-held', 'data-test': m }, g), r = 0.26 * fs * (lw > 1 ? 1.2 : 1);
       RUB[m][0].forEach(function (l, i) {
         var cx = sx(l), cy = sy(RUB[m][1][i]);
         if (isTrained) S('circle', { cx: cx.toFixed(1), cy: cy.toFixed(1), r: r, class: 'mk-train', 'stroke-width': 1 }, gm);
         else S('rect', { x: (cx - 0.9 * r).toFixed(1), y: (cy - 0.9 * r).toFixed(1), width: (1.8 * r).toFixed(1), height: (1.8 * r).toFixed(1), class: 'mk-held', 'stroke-width': 1.6 }, gm);
       });
-      var rows = [{ v: fit.r2[m], cls: 'model' }];
-      if (one) rows.push({ v: one.r2[m], cls: 'one' });
+      var rows = hid ? [] : [{ v: fit.r2[m], cls: 'model' }];
+      if (one && !hid) rows.push({ v: one.r2[m], cls: 'one' });
       rows.forEach(function (rw, k) {
         T(g, x0 + 0.45 * fs, y1 + (1.2 + 1.2 * k) * fs, ['R', { t: '2', sup: true }, ' ' + r2Text(rw.v)], { class: 'r2 halo ' + (rw.v < 0 ? 'bad' : rw.cls), 'data-r2': rw.v, 'data-model': k ? 'one' : 'six' });
       });
     });
     svg.querySelector('desc').textContent = 'Stress against stretch in three tests of one rubber, the model trained on ' + ({ ut: 'uniaxial tension only', utet: 'uniaxial and equibiaxial tension', all: 'all three tests' })[state.train] +
-      (state.sign ? ' with' : ' without') + ' the sign constraint. R squared: ' + TESTS.map(function (m) { return TEST_NAME[m].toLowerCase() + ' ' + r2Text(fit.r2[m]); }).join(', ') + '.';
+      (state.sign ? ' with' : ' without') + ' the sign constraint. R squared: ' + TESTS.filter(function (m) { return state.show || trained.indexOf(m) >= 0; }).map(function (m) { return TEST_NAME[m].toLowerCase() + ' ' + r2Text(fit.r2[m]); }).join(', ') +
+      (state.show || trained.length === 3 ? '.' : '; the predictions for the other tests are hidden.');
   }
   function renderWeights() {
     var svg = els.svgW, W = Math.floor(els.plotW.clientWidth);
@@ -1575,8 +1582,9 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
   }
   var CHECK_IDS = { p1: 'chkP1', w: 'chkW', pos: 'chkPos', rise: 'chkRise' };
   function status3(fit) {
-    var ok = fit.checks.ok;
-    if (!state.sign && (!ok.w || !ok.pos)) return ['No sign constraint: stress below zero near rest, and ' + mpaText(fit.etLast) + ' in equibiaxial tension.', 'warn'];
+    var ok = fit.checks.ok, hideET = etHidden();
+    if (!state.sign && (!ok.w || !ok.pos)) return ['No sign constraint: stress below zero near rest' + (hideET ? '.' : ', and ' + mpaText(fit.etLast) + ' in equibiaxial tension.'), 'warn'];
+    if (!state.show && TRAIN_SETS[state.train].length < 3) return ['What will the model predict for the tests it was not trained on? Predict, then show the predictions.', ''];
     if (state.train === 'ut') return ['A near-perfect fit here, but ' + bigText(fit.etLast / ET_MEAS) + ' times the measured equibiaxial stress.', 'warn'];
     if (!state.sign) return ['With two kinds of test, the free weights fit too, but they guarantee nothing.', ''];
     if (state.train === 'utet') return ['One equibiaxial test fixes it: pure shear, never seen, is predicted too.', ''];
@@ -1586,11 +1594,14 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
     var fit = curFit(), ck = fit.checks, off = Math.abs(fit.etLast / ET_MEAS - 1) > 0.5;
     syncSeg(els.segTrain, state.train);
     els.sign.checked = state.sign; els.one.checked = state.one;
-    setNum(els.et3, mpaText(fit.etLast), fit.etLast);
-    els.et3.className = 'num-val' + (off ? ' bad' : '');
+    var hideET = etHidden();
+    els.showPred.textContent = state.show ? 'Hide the predictions' : 'Show the predictions';
+    els.showPred.setAttribute('aria-pressed', state.show ? 'true' : 'false');
+    setNum(els.et3, hideET ? '?' : mpaText(fit.etLast), hideET ? '' : fit.etLast);
+    els.et3.className = 'num-val' + (off && !hideET ? ' bad' : '');
     if (state.one) {                                            // vote 3: the one-term model against the six terms
       var o = oneFit();
-      setNum(els.meas3, mpaText(o.etLast), o.etLast);
+      setNum(els.meas3, hideET ? '?' : mpaText(o.etLast), hideET ? '' : o.etLast);
       els.meas3.className = 'num-val one';
       els.labMeas.innerHTML = '<span>One-term model <small class="num">(measured ' + plain(ET_MEAS, 3) + ')</small></span>';
     } else {
@@ -1627,9 +1638,11 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
   function setSpread(s) { s = +s; if (SPREADS.indexOf(s) < 0 || s === state.s) return; state.s = s; var c = curOsc(); changed('Spread ' + s + ': largest error ' + plain(c.maxErr, 2) + '.'); }
   function setSnap(n) { n = +n; if (SNAPS.indexOf(n) < 0 || n === state.snap) return; state.snap = n; changed(n ? 'The fit after ' + n + ' steps.' : 'The fit at the random start.'); }
   function setExact(on) { if (on === state.exact) return; state.exact = on; changed(null); }
-  function setTrain(k) { if (!TRAIN_SETS[k] || k === state.train) return; state.train = k; var f = curFit(); changed('Trained on ' + ({ ut: 'uniaxial tension', utet: 'uniaxial and equibiaxial tension', all: 'all three tests' })[k] + '. Equibiaxial at stretch 4.45: ' + mpaText(f.etLast).replace(NB, ' ') + '.'); }
+  function setTrain(k) { if (!TRAIN_SETS[k] || k === state.train) return; state.train = k; var f = curFit(); changed('Trained on ' + ({ ut: 'uniaxial tension', utet: 'uniaxial and equibiaxial tension', all: 'all three tests' })[k] + (etHidden() ? '.' : '. Equibiaxial at stretch 4.45: ' + mpaText(f.etLast).replace(NB, ' ') + '.')); }
   function setSign(on) { if (on === state.sign) return; state.sign = on; var f = curFit(); changed((on ? 'Sign constraint on' : 'Sign constraint off') + (f.checks.ok.pos && f.checks.ok.w ? ': the guarantees hold.' : ': the guarantees break.')); }
   function setOne(on) { if (on === state.one) return; state.one = on; changed(on ? 'The one-term model is shown.' : null); }
+  function etHidden() { return !state.show && TRAIN_SETS[state.train].indexOf('ET') < 0; }
+  function setShow(on) { if (on === state.show) return; state.show = on; var f = curFit(); changed(on ? 'Predictions shown. Equibiaxial at stretch 4.45: ' + mpaText(f.etLast).replace(NB, ' ') + '.' : 'Predictions hidden.'); }
 
   /* =====================================================================
      Guided tour (the placement routine of d01 to d05: the note never covers its focus or the main plot)
@@ -1650,8 +1663,8 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
       { el: 'err-box', text: 'Time-marching: five scaled windows keep the error tiny.', act: function () { setMode('march'); } }
     ],
     3: [
-      { el: 'plot-3', text: 'Trained on uniaxial tension only: a near-perfect fit there.' },
-      { el: 'nums-3', text: 'Equibiaxial tension: 33 MPa predicted where 2.5 MPa was measured.' },
+      { el: 'plot-3', text: 'Trained on uniaxial tension only: predict the other tests.' },
+      { el: 'nums-3', text: 'Equibiaxial tension: 33 MPa predicted where 2.5 MPa was measured.', act: function () { setShow(true); } },
       { el: 'checks', text: 'Yet the guarantees hold: no stress at rest, positive in tension.' },
       { el: 'checks', text: 'Sign constraint off: stress and energy dip below zero.', act: function () { setSign(false); } },
       { el: 'plot-3', text: 'One equibiaxial test fixes it: pure shear is predicted too.', act: function () { state.sign = true; setTrain('utet'); renderAll(); writeHash(); } }
@@ -1660,7 +1673,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
   var TOUR_START = {
     1: function () { state.nx = 101; state.net = 'hard'; state.err = false; },
     2: function () { state.mode = 'plain'; state.s = 10; state.exact = true; },
-    3: function () { state.train = 'ut'; state.sign = true; state.one = false; }
+    3: function () { state.train = 'ut'; state.sign = true; state.one = false; state.show = false; }
   };
   var tour = { on: false, tab: 1, i: 0, steps: [], timer: 0 };
   function tourEl(st) { return $(st.el); }
@@ -1872,7 +1885,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
       legend2: 'legend-2', plot2: 'plot-2', svg2: 'svg-2', asideTitle: 'aside-title', segSnap: 'seg-snap', plotAside: 'plot-aside', svgAside: 'svg-aside',
       segMode: 'seg-mode', spreadField: 'spread-field', segSpread: 'seg-spread', err2: 'err-2', rel2: 'rel-2', status2: 'status-2', plotErr: 'plot-err', svgErr: 'svg-err',
       eq2: 'eq-2', exact: 'exact',
-      legend3: 'legend-3', plot3: 'plot-3', svg3: 'svg-3', plotW: 'plot-w', svgW: 'svg-w', segTrain: 'seg-train', sign: 'sign', one: 'one', et3: 'et-3', meas3: 'meas-3', labMeas: 'lab-meas',
+      legend3: 'legend-3', plot3: 'plot-3', svg3: 'svg-3', plotW: 'plot-w', svgW: 'svg-w', segTrain: 'seg-train', sign: 'sign', one: 'one', showPred: 'show-pred', et3: 'et-3', meas3: 'meas-3', labMeas: 'lab-meas',
       status3: 'status-3', chkP1: 'chk-p1', chkW: 'chk-w', chkPos: 'chk-pos', chkRise: 'chk-rise', eq3: 'eq-3',
       live: 'live', pm: 'pm', more: 'more', retime: 'retime', retimeOut: 'retime-out', kkt: 'kkt', kktOut: 'kkt-out', tblRod: 'tbl-rod', tblW: 'tbl-w', tblWCap: 'tbl-w-cap',
       tblData: 'tbl-data', how: 'how' };
@@ -1910,6 +1923,7 @@ caption{caption-side:top;text-align:left;font-size:.875rem;font-weight:600;color
     wireSeg(els.segTrain, setTrain);
     els.sign.addEventListener('change', function () { setSign(els.sign.checked); });
     els.one.addEventListener('change', function () { setOne(els.one.checked); });
+    els.showPred.addEventListener('click', function () { setShow(!state.show); });
     // more options
     els.retime.addEventListener('click', function () {
       GRIDS.forEach(function (nx) { cnRun(nx, true); });
