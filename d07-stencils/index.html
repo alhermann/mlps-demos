@@ -19,7 +19,7 @@
   --canvas:#FFFFFF; --soft:#F2F4F5; --ink:#265D71; --emph:#003566; --struct:#00C1D4; --mute:#6B757D; --line:#C9D3D8;
   --c-train:#003566; --c-new:#D55E00; --c-new-text:#B24E00; --c-model:#007A85; --c-truth:#265D71;
   --c-physics:#7300FE; --c-warn:#D93636; --grid:#E3E8EA; --light:#E1ECF0;
-  --matrix:#6E767C; --incl:#C07A4B;
+  --matrix:#A07741; --incl:#3A2D1B;
   --font:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --math:"Cambria","STIX Two Text","Times New Roman","Cambria Math","STIX Two Math",serif;
 }
@@ -520,7 +520,7 @@ th.txt,td.txt{text-align:left}
         <button class="btn" id="rotate" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8.5A4.5 4.5 0 1 1 8 4h3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 1.5L12 4 9.5 6.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Rotate by 90°</button>
         <button class="btn" id="original" type="button">Original tile</button>
       </div>
-      <figcaption class="cap" id="cap-4">A test tile, 64 × 64 pixels, periodic: matrix (grey, conductivity 1) and inclusions (copper, 10). Click or drag to paint. The solver balances the heat in every pixel; the network has 7010 numbers.</figcaption>
+      <figcaption class="cap" id="cap-4">A test tile, 64 × 64 pixels, periodic: matrix (light brown, like the iron, conductivity 1) and inclusions (dark, like the graphite, 10). Click or drag to paint. The solver balances the heat in every pixel; the network has 7010 numbers.</figcaption>
     </figure>
     <div class="side" id="side-4">
       <ol class="steps" id="steps-4">
@@ -739,7 +739,7 @@ th.txt,td.txt{text-align:left}
     return LUTS[name];
   }
   function lutAt(name, t, out) { var L = lut(name), q = clamp(Math.round(t * 255), 0, 255) * 3; out[0] = L[q]; out[1] = L[q + 1]; out[2] = L[q + 2]; return out; }
-  var C_MATRIX = [110, 118, 124], C_INCL = [192, 122, 75];      // the two phases, as in figures.py
+  var C_MATRIX = [160, 119, 65], C_INCL = [58, 45, 27];      // the two phases, as in figures.py
   function mix(a, b, t, out) { for (var k = 0; k < 3; k++) out[k] = Math.round(a[k] + (b[k] - a[k]) * t); return out; }
   /* The colour of a value: the phases (0 matrix, 1 inclusion, in between mixed), grey (0 black, 1 white), or a
      diverging map for signed values (blue below 0, red above, as in figure L07-kernels). */

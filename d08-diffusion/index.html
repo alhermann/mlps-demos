@@ -19,7 +19,7 @@
   --canvas:#FFFFFF; --soft:#F2F4F5; --ink:#265D71; --emph:#003566; --struct:#00C1D4; --mute:#6B757D; --line:#C9D3D8;
   --c-train:#003566; --c-new:#D55E00; --c-new-text:#B24E00; --c-model:#007A85; --c-truth:#265D71;
   --c-physics:#7300FE; --c-warn:#D93636; --grid:#E3E8EA; --light:#E1ECF0;
-  --matrix:#6E767C; --incl:#C07A4B;
+  --matrix:#A07741; --incl:#3A2D1B;
   --font:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --math:"Cambria","STIX Two Text","Times New Roman","Cambria Math","STIX Two Math",serif;
 }
@@ -592,8 +592,8 @@ th.txt,td.txt{text-align:left}
     centre: ['0 0 14 14', '<path d="M7 1.5v11M1.5 7h11" fill="none" stroke="#265D71" stroke-width="1.8"/>'],
     mean: ['0 0 14 14', '<path d="M7 1.6L12.4 7 7 12.4 1.6 7z" fill="#265D71"/>'],
     spread: ['0 0 16 16', '<circle cx="8" cy="8" r="6" fill="none" stroke="#265D71" stroke-width="2"/>'],
-    m0: ['0 0 14 14', '<rect x="1" y="1" width="12" height="12" fill="#6E767C"/>'],
-    m1: ['0 0 14 14', '<rect x="1" y="1" width="12" height="12" fill="#C07A4B"/>'],
+    m0: ['0 0 14 14', '<rect x="1" y="1" width="12" height="12" fill="#A07741"/>'],
+    m1: ['0 0 14 14', '<rect x="1" y="1" width="12" height="12" fill="#3A2D1B"/>'],
     solver: ['0 0 14 14', '<circle cx="7" cy="7" r="4.5" fill="#003566"/>'],
     target: ['0 0 22 14', '<path d="M11 1v12" fill="none" stroke="#265D71" stroke-width="1.6" stroke-dasharray="3 2"/>']
   };
@@ -1305,7 +1305,7 @@ th.txt,td.txt{text-align:left}
     });
     return TILES;
   }
-  var C_MATRIX = [110, 118, 124], C_INCL = [192, 122, 75];      // the two phases, as in figures.py
+  var C_MATRIX = [160, 119, 65], C_INCL = [58, 45, 27];      // the two phases, as in figures.py
   function paintTile(cv, img) {
     if (cv.width !== N4) cv.width = N4;
     if (cv.height !== N4) cv.height = N4;
@@ -1386,7 +1386,7 @@ th.txt,td.txt{text-align:left}
     setNum(els.mean4, kText(S4.mean), S4.mean);
     els.mean4.className = 'num-val ' + (state.set === 'w3' ? 'bad' : 'navy');
     setStatus(els.status4, status4());
-    var cap = state.set === 'none' ? 'Twelve tiles generated without a target, 64 × 64 pixels, periodic: matrix (grey, conductivity 1) and inclusions (copper, 10). Under each tile: ' + KXX + ' from the solver.'
+    var cap = state.set === 'none' ? 'Twelve tiles generated without a target, 64 × 64 pixels, periodic: matrix (light brown, like the iron, conductivity 1) and inclusions (dark, like the graphite, 10). Under each tile: ' + KXX + ' from the solver.'
       : 'Four of the 60 tiles generated for half inclusions and ' + KXX + ' = 4 with weight <i class="v">w</i> = ' + (state.set === 'w0' ? '0' : '3') + '; shares of inclusions ' + S4.share.map(function (v) { return v.toFixed(2); }).join(', ') + '. Under each tile: ' + KXX + ' from the solver.';
     if (els.cap4.innerHTML !== cap) els.cap4.innerHTML = cap;
   }
